@@ -226,6 +226,7 @@ minetest.register_entity("tnt:smoke", {
 	physical = true,
 	visual = "sprite",
 	textures = {"tnt_smoke.png"},
+	collisionbox = {0,0,0,0,0,0},
 	
 	timer = 0,
 	time = 5,
