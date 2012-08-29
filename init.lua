@@ -79,7 +79,7 @@ end
 minetest.register_node("tnt:tnt", {
 	description = "TNT",
 	tiles = {"tnt_top.png", "tnt_bottom.png", "tnt_side.png"},
-	groups = {dig_immediate=2},
+	groups = {dig_immediate=2, mesecon=2},
 	sounds = default.node_sound_wood_defaults(),
 	
 	on_punch = function(pos, node, puncher)
@@ -123,7 +123,9 @@ burn = function(pos)
 		if minetest.env:get_node(pos).name ~= "tnt:gunpowder_burning" then
 			return
 		end
-		minetest.env:remove_node(pos)
+		minetest.after(0.5, function(pos)
+			minetest.env:remove_node(pos)
+		end, {x=pos.x, y=pos.y, z=pos.z})
 		for dx=-1,1 do
 			for dz=-1,1 do
 				for dy=-1,1 do
@@ -157,7 +159,8 @@ minetest.register_node("tnt:gunpowder", {
 	sunlight_propagates = true,
 	walkable = false,
 	tiles = {"tnt_gunpowder.png",},
-	inventory_image = "tnt_gunpowder.png",
+	inventory_image = "tnt_gunpowder_inventory.png",
+	wield_image = "tnt_gunpowder_inventory.png",
 	selection_box = {
 		type = "fixed",
 		fixed = {-1/2, -1/2, -1/2, 1/2, -1/2+1/16, 1/2},
@@ -242,15 +245,12 @@ minetest.register_entity("tnt:smoke", {
 
 if minetest.get_modpath("mesecons") ~= nil then
 	minetest.after(0, function()
-		minetest.debug("[tnt_debug] ---")
-		minetest.debug("[tnt_debug] registger mesecon function")
 		
-		mesecon:register_effector("tnt:tnt", "tnt:tnt")
+		--mesecon:add_rules("tnt_above", {{x=0,y=1,z=0}}) FIXME
+		mesecon:register_effector("tnt:tnt", "tnt:tnt") --, mesecon:get_rules("tnt_above"))
 		
 		mesecon:register_on_signal_on(function(pos, node)
-			minetest.debug("[tnt_debug] register_on_signal_on()")
 			if node.name == "tnt:tnt" then
-				minetest.debug("[tnt_debug] BOOM!")
 				minetest.env:set_node(pos, {name="tnt:tnt_burning"})
 				boom(pos, 0)
 			end
