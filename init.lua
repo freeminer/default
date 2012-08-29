@@ -241,5 +241,20 @@ minetest.register_entity("tnt:smoke", {
 })
 
 if minetest.get_modpath("mesecons") ~= nil then
-	minetest.debug("===================MESECONS installed.=================")
+	minetest.after(0, function()
+		minetest.debug("[tnt_debug] ---")
+		minetest.debug("[tnt_debug] registger mesecon function")
+		
+		mesecon:register_effector("tnt:tnt", "tnt:tnt")
+		
+		mesecon:register_on_signal_on(function(pos, node)
+			minetest.debug("[tnt_debug] register_on_signal_on()")
+			if node.name == "tnt:tnt" then
+				minetest.debug("[tnt_debug] BOOM!")
+				minetest.env:set_node(pos, {name="tnt:tnt_burning"})
+				boom(pos, 0)
+			end
+		end)
+		
+	end)
 end
