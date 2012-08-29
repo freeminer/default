@@ -28,7 +28,7 @@ boom = function(pos, time)
 		if minetest.env:get_node(pos).name ~= "tnt:tnt_burning" then
 			return
 		end
-		minetest.sound_play("tnt_explode", {pos=pos, gain=1.5})
+		minetest.sound_play("tnt_explode", {pos=pos, gain=1.5, max_hear_distance=2*64})
 		minetest.env:set_node(pos, {name="tnt:boom"})
 		minetest.after(0.5, function(pos)
 			minetest.env:remove_node(pos)
