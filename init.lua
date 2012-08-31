@@ -18,6 +18,7 @@ local destroy = function(pos)
 		if obj == nil then
 			return
 		end
+		obj:get_luaentity().collect = true
 		obj:setacceleration({x=0, y=-10, z=0})
 		obj:setvelocity({x=math.random(0,6)-3, y=10, z=math.random(0,6)-3})
 	end
@@ -40,7 +41,15 @@ boom = function(pos, time)
 				local obj_p = obj:getpos()
 				local vec = {x=obj_p.x-pos.x, y=obj_p.y-pos.y, z=obj_p.z-pos.z}
 				local dist = (vec.x^2+vec.y^2+vec.z^2)^0.5
-				obj:set_hp(obj:get_hp()-(80*0.5^dist)*2)
+				local damage = (80*0.5^dist)*2
+				obj:set_hp(obj:get_hp()-damage)
+				--[[obj:punch(obj, 1.0, { FIXME
+					full_punch_interval=1.0,
+					groupcaps={
+						fleshy={times={[1]=1/damage, [2]=1/damage, [3]=1/damage}},
+						snappy={times={[1]=1/damage, [2]=1/damage, [3]=1/damage}},
+					}
+				}, nil)]]
 			end
 		end
 		
