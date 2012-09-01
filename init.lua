@@ -9,9 +9,17 @@ local destroy = function(pos)
 			minetest.env:set_node(pos, {name="fire:basic_flame"})
 			return
 		end
-		if minetest.registered_nodes[nodename].drop ~= nil then
-			if minetest.registered_nodes[nodename].drop.items == nil then
-				nodename = minetest.registered_nodes[nodename].drop
+		if not minetest.get_modpath("item_drop") then
+			if minetest.registered_nodes[nodename].drop ~= nil then
+				if minetest.registered_nodes[nodename].drop.items == nil then
+					nodename = minetest.registered_nodes[nodename].drop
+				end
+			end
+		else
+			if drops[nodename] ~= nil then
+				if drops[nodename].items == nil then
+					nodename = drops[nodename]
+				end
 			end
 		end
 		local obj = minetest.env:add_item(pos, nodename)
