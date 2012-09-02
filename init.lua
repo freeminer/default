@@ -9,26 +9,33 @@ local destroy = function(pos)
 			minetest.env:set_node(pos, {name="fire:basic_flame"})
 			return
 		end
+		local drop
 		if not minetest.get_modpath("item_drop") then
-			if minetest.registered_nodes[nodename].drop ~= nil then
-				if minetest.registered_nodes[nodename].drop.items == nil then
-					nodename = minetest.registered_nodes[nodename].drop
-				end
-			end
+			drop = minetest.get_node_drops(nodename, "")
 		else
-			if drops[nodename] ~= nil then
-				if drops[nodename].items == nil then
-					nodename = drops[nodename]
+			drop = minetest.get_drops(nodename, "")
+		end
+		for _,item in ipairs(drop) do
+			if type(item) == "string" then
+				local obj = minetest.env:add_item(pos, item)
+				if obj == nil then
+					return
+				end
+				obj:get_luaentity().collect = true
+				obj:setacceleration({x=0, y=-10, z=0})
+				obj:setvelocity({x=math.random(0,6)-3, y=10, z=math.random(0,6)-3})
+			else
+				for i=1,item:get_count() do
+					local obj = minetest.env:add_item(pos, item:get_name())
+					if obj == nil then
+						return
+					end
+					obj:get_luaentity().collect = true
+					obj:setacceleration({x=0, y=-10, z=0})
+					obj:setvelocity({x=math.random(0,6)-3, y=10, z=math.random(0,6)-3})
 				end
 			end
 		end
-		local obj = minetest.env:add_item(pos, nodename)
-		if obj == nil then
-			return
-		end
-		obj:get_luaentity().collect = true
-		obj:setacceleration({x=0, y=-10, z=0})
-		obj:setvelocity({x=math.random(0,6)-3, y=10, z=math.random(0,6)-3})
 	end
 end
 
