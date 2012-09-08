@@ -5,6 +5,7 @@ local destroy = function(pos)
 	local nodename = minetest.env:get_node(pos).name
 	if nodename ~= "air" then
 		minetest.env:remove_node(pos)
+		nodeupdate(pos)
 		if minetest.registered_nodes[nodename].groups.flammable ~= nil then
 			minetest.env:set_node(pos, {name="fire:basic_flame"})
 			return
