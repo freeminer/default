@@ -53,8 +53,7 @@ boom = function(pos, time)
 				local vec = {x=obj_p.x-pos.x, y=obj_p.y-pos.y, z=obj_p.z-pos.z}
 				local dist = (vec.x^2+vec.y^2+vec.z^2)^0.5
 				local damage = (80*0.5^dist)*2
-				--obj:set_hp(obj:get_hp()-damage)
-				obj:punch(obj, 1.0, { --FIXME
+				obj:punch(obj, 1.0, {
 					full_punch_interval=1.0,
 					groupcaps={
 						fleshy={times={[1]=1/damage, [2]=1/damage, [3]=1/damage}},
@@ -112,7 +111,6 @@ minetest.register_node("tnt:tnt", {
 })
 
 minetest.register_node("tnt:tnt_burning", {
-	--tiles = {"tnt_top_burning.png", "tnt_bottom.png", "tnt_side.png"},
 	tiles = {{name="tnt_top_burning_animated.png", animation={type="vertical_frames", aspect_w=16, aspect_h=16, length=1}}, "tnt_bottom.png", "tnt_side.png"},
 	light_source = 5,
 	drop = "",
@@ -201,7 +199,6 @@ minetest.register_node("tnt:gunpowder_burning", {
 	sunlight_propagates = true,
 	walkable = false,
 	light_source = 5,
-	--tiles = {"tnt_gunpowder_burning.png"},
 	tiles = {{name="tnt_gunpowder_burning_animated.png", animation={type="vertical_frames", aspect_w=16, aspect_h=16, length=1}}},
 	selection_box = {
 		type = "fixed",
