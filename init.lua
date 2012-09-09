@@ -48,19 +48,19 @@ boom = function(pos, time)
 		
 		local objects = minetest.env:get_objects_inside_radius(pos, 7)
 		for _,obj in ipairs(objects) do
-			if obj:is_player() or obj:get_luaentity().name ~= "__builtin:item" then
+			if obj:is_player() or (obj:get_luaentity() and obj:get_luaentity().name ~= "__builtin:item") then
 				local obj_p = obj:getpos()
 				local vec = {x=obj_p.x-pos.x, y=obj_p.y-pos.y, z=obj_p.z-pos.z}
 				local dist = (vec.x^2+vec.y^2+vec.z^2)^0.5
 				local damage = (80*0.5^dist)*2
-				obj:set_hp(obj:get_hp()-damage)
-				--[[obj:punch(obj, 1.0, { FIXME
+				--obj:set_hp(obj:get_hp()-damage)
+				obj:punch(obj, 1.0, { --FIXME
 					full_punch_interval=1.0,
 					groupcaps={
 						fleshy={times={[1]=1/damage, [2]=1/damage, [3]=1/damage}},
 						snappy={times={[1]=1/damage, [2]=1/damage, [3]=1/damage}},
 					}
-				}, nil)]]
+				}, nil)
 			end
 		end
 		
