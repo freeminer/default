@@ -66,7 +66,7 @@ boom = function(pos, time)
 		
 		for dx=-2,2 do
 			for dz=-2,2 do
-				for dy=-2,2 do
+				for dy=2,-2,-1 do
 					pos.x = pos.x+dx
 					pos.y = pos.y+dy
 					pos.z = pos.z+dz
