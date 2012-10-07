@@ -278,3 +278,7 @@ if minetest.get_modpath("mesecons") ~= nil then
 		
 	end)
 end
+
+if minetest.setting_get("log_mods") then
+	minetest.log("action", "tnt loaded")
+end
