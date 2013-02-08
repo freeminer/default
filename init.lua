@@ -244,9 +244,9 @@ minetest.register_craft({
 minetest.register_craft({
 	output = "tnt:tnt",
 	recipe = {
-		{"", "default:wood", ""},
-		{"default:wood", "tnt:gunpowder", "default:wood"},
-		{"", "default:wood", ""}
+		{"", "group:wood", ""},
+		{"group:wood", "tnt:gunpowder", "group:wood"},
+		{"", "group:wood", ""}
 	}
 })
 
