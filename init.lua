@@ -55,11 +55,8 @@ boom = function(pos, time)
 				local damage = (80*0.5^dist)*2
 				obj:punch(obj, 1.0, {
 					full_punch_interval=1.0,
-					groupcaps={
-						fleshy={times={[1]=1/damage, [2]=1/damage, [3]=1/damage}},
-						snappy={times={[1]=1/damage, [2]=1/damage, [3]=1/damage}},
-					}
-				}, nil)
+					damage_grups={fleshy=damage},
+				}, vec)
 			end
 		end
 		
