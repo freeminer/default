@@ -1,13 +1,13 @@
 local destroy = function(pos)
-	if math.random(1,5) <= 4 then
-		minetest.env:add_entity({x=pos.x+math.random(0,10)/10-0.5, y=pos.y, z=pos.z+math.random(0,10)/10-0.5}, "tnt:smoke")
-	end
 	local nodename = minetest.env:get_node(pos).name
 	if nodename ~= "air" then
 		minetest.env:remove_node(pos)
 		nodeupdate(pos)
 		if minetest.registered_nodes[nodename].groups.flammable ~= nil then
 			minetest.env:set_node(pos, {name="fire:basic_flame"})
+			return
+		end
+		if math.random(1,3) == 3 then
 			return
 		end
 		local drop = minetest.get_node_drops(nodename, "")
@@ -89,6 +89,23 @@ boom = function(pos, time)
 				end
 			end
 		end
+		
+		minetest.add_particlespawner(
+			100, --amount
+			0.1, --time
+			{x=pos.x-3, y=pos.y-3, z=pos.z-3}, --minpos
+			{x=pos.x+3, y=pos.y+3, z=pos.z+3}, --maxpos
+			{x=-0, y=-0, z=-0}, --minvel
+			{x=0, y=0, z=0}, --maxvel
+			{x=-0.5,y=5,z=-0.5}, --minacc
+			{x=0.5,y=5,z=0.5}, --maxacc
+			0.1, --minexptime
+			1, --maxexptime
+			8, --minsize
+			15, --maxsize
+			false, --collisiondetection
+			"tnt_smoke.png" --texture
+		)
 	end, pos)
 end
 
@@ -245,28 +262,6 @@ minetest.register_craft({
 		{"group:wood", "tnt:gunpowder", "group:wood"},
 		{"", "group:wood", ""}
 	}
-})
-
-minetest.register_entity("tnt:smoke", {
-	physical = true,
-	visual = "sprite",
-	textures = {"tnt_smoke.png"},
-	collisionbox = {0,0,0,0,0,0},
-	
-	timer = 0,
-	time = 5,
-	
-	on_activate = function(self, staticdata)
-		self.object:setacceleration({x=math.random(0,10)/10-0.5, y=5, z=math.random(0,10)/10-0.5})
-		self.time = math.random(1, 10)/10
-	end,
-	
-	on_step = function(self, dtime)
-		self.timer = self.timer+dtime
-		if self.timer > self.time then
-			self.object:remove()
-		end
-	end,
 })
 
 if minetest.setting_get("log_mods") then
