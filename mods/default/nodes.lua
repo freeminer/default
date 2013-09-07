@@ -137,8 +137,7 @@ minetest.register_node("default:sand", {
 	leveled = 1,
 	liquidtype = "flowing",
 	paramtype2 = "leveled",
-	liquid_alternative_source = "default:sand",
-	groups = {crumbly=3, falling_node=1, sand=1, liquid=1},
+	groups = {crumbly=3, falling_node=1, sand=1, liquid_flow=1},
 	sounds = default.node_sound_sand_defaults(),
 })
 
@@ -149,8 +148,7 @@ minetest.register_node("default:desert_sand", {
 	leveled = 1,
 	liquidtype = "flowing",
 	paramtype2 = "leveled",
-	liquid_alternative_source = "default:desert_sand",
-	groups = {crumbly=3, falling_node=1, sand=1, liquid=1},
+	groups = {crumbly=3, falling_node=1, sand=1, liquid_flow=1},
 	sounds = default.node_sound_sand_defaults(),
 })
 
@@ -158,11 +156,10 @@ minetest.register_node("default:gravel", {
 	description = "Gravel",
 	tiles = {"default_gravel.png"},
 	is_ground_content = true,
-	groups = {crumbly=2, falling_node=1, liquid=1},
+	groups = {crumbly=2, falling_node=1, liquid_flow=1},
 	leveled = 1,
 	liquidtype = "flowing",
 	paramtype2 = "leveled",
-	liquid_alternative_source = "default:gravel",
 	sounds = default.node_sound_dirt_defaults({
 		footstep = {name="default_gravel_footstep", gain=0.5},
 		dug = {name="default_gravel_footstep", gain=1.0},
