@@ -1,9 +1,10 @@
 -- Snow
 minetest.register_globalstep(function(dtime)
-	if weather ~= "snow" then return end
 	for _, player in ipairs(minetest.get_connected_players()) do
 		local ppos = player:getpos()
-
+		local strength = get_snow(ppos)
+--print("p he=".. minetest.get_heat(ppos).." hu=".. minetest.get_humidity(ppos) .. " s=" .. strength)
+		if strength > 0 then
 		-- Make sure player is not in a cave/house...
 		if minetest.env:get_node_light(ppos, 0.5) ~= 15 then return end
 
@@ -31,6 +32,7 @@ minetest.register_globalstep(function(dtime)
 			4, 4,
 			25, 25,
 			false, "weather_snow.png", player:get_player_name())
+		end
 	end
 end)
 
@@ -40,34 +42,35 @@ local snow_box =
 	fixed = {-0.5, -0.5, -0.5, 0.5, -0.4, 0.5}
 }
 
--- Snow cover
-minetest.register_node("weather:snow_cover", {
-	tiles = {"weather_snow_cover.png"},
-	drawtype = "nodebox",
-	paramtype = "light",
-	node_box = snow_box,
-	selection_box = snow_box,
-	groups = {not_in_creative_inventory = 1, crumbly = 3, attached_node = 1},
-	drop = {}
-})
 
---[[ Enable this section if you have a very fast PC
+-- -[[ Enable this section if you have a very fast PC
 minetest.register_abm({
-	nodenames = {"group:crumbly", "group:snappy", "group:cracky", "group:choppy"},
+	nodenames = {"group:crumbly", "group:snappy", "group:cracky", "group:choppy", "group:melts"},
 	neighbors = {"default:air"},
 	interval = 10.0, 
 	chance = 80,
+	--interval = 1.0, 
+	--chance = 5,
 	action = function (pos, node, active_object_count, active_object_count_wider)
-		if weather == "snow" then
-			if minetest.registered_nodes[node.name].drawtype == "normal"
-			or minetest.registered_nodes[node.name].drawtype == "allfaces_optional" then
-				local np = addvectors(pos, {x=0, y=1, z=0})
-				if minetest.env:get_node_light(np, 0.5) == 15
-				and minetest.env:get_node(np).name == "air" then
-					minetest.env:add_node(np, {name="weather:snow_cover"})
-				end
+		local snow = get_snow(pos)
+		if snow == 0 then return end
+		if minetest.registered_nodes[node.name].drawtype ~= "normal"
+			and minetest.registered_nodes[node.name].drawtype ~= "nodebox"
+			and minetest.registered_nodes[node.name].drawtype ~= "allfaces_optional" then return end
+		local np = addvectors(pos, {x=0, y=1, z=0})
+		if minetest.env:get_node_light(np, 0.5) ~= 15 then return end
+		local addsnow = 1
+		if minetest.env:get_node(pos).name == "default:snow" then
+			if minetest.env:add_node_level(pos, 4) > 0 then
+				minetest.env:add_node(pos, {name="default:ice"})
+			else
+				addsnow = 0
 			end
+		end
+		if addsnow > 0 and minetest.env:get_node(np).name == "air" then
+			minetest.env:add_node(np, {name="snow"})
+			minetest.env:add_node_level(np)
 		end
 	end
 })
-]]
+--]]

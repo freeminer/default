@@ -1,8 +1,9 @@
 -- Rain
 minetest.register_globalstep(function(dtime)
-	if weather ~= "rain" then return end
 	for _, player in ipairs(minetest.get_connected_players()) do
 		local ppos = player:getpos()
+		local strength = get_rain(ppos)
+		if strength > 0 then
 
 		-- Make sure player is not in a cave/house...
 		if minetest.env:get_node_light(ppos, 0.5) ~= 15 then return end
@@ -20,5 +21,50 @@ minetest.register_globalstep(function(dtime)
 			0.8, 0.8,
 			25, 25,
 			false, "weather_rain.png", player:get_player_name())
+		end
 	end
 end)
+
+-- -[[ Enable this section if you have a very fast PC
+minetest.register_abm({
+	nodenames = {"group:crumbly", "group:snappy", "group:cracky", "group:choppy", "group:water"},
+	neighbors = {"default:air"},
+	interval = 10.0, 
+	chance = 80,
+	action = function (pos, node, active_object_count, active_object_count_wider)
+		-- todo! chance must depend on rain value
+		if get_rain(pos) == 0 then return end
+		if minetest.registered_nodes[node.name].drawtype ~= "normal"
+			and minetest.registered_nodes[node.name].drawtype ~= "nodebox"
+			and minetest.registered_nodes[node.name].drawtype ~= "flowingliquid"
+			and minetest.registered_nodes[node.name].drawtype ~= "liquid"
+			and minetest.registered_nodes[node.name].drawtype ~= "allfaces_optional" then  return end
+		local np = addvectors(pos, {x=0, y=1, z=0})
+		if minetest.env:get_node_light(np, 0.5) == 15 then
+			if minetest.env:get_node(pos).name == "default:water_flowing" then
+				minetest.env:add_node_level(pos, 1)
+			elseif minetest.env:get_node(np).name == "air" then
+				minetest.env:add_node(np, {name="water_flowing"})
+				minetest.env:add_node_level(np)
+			end
+		end
+	end
+})
+--]]
+
+-- evaporate
+minetest.register_abm({
+	nodenames = {"default:water_flowing"},
+	neighbors = {"default:air"},
+	interval = 10.0, 
+	chance = 10,
+	action = function (pos, node, active_object_count, active_object_count_wider)
+		-- todo! chance must depend on humidity
+		if get_rain(pos) > 0 or minetest.get_humidity(pos) > 90 then return end
+		local np = addvectors(pos, {x=0, y=1, z=0})
+		--if minetest.env:get_node_light(np, 0.5) == 15 then
+		if minetest.env:get_node(np).name == "air" then
+			minetest.env:add_node_level(pos, -1)
+		end
+	end
+})
