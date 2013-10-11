@@ -32,7 +32,8 @@ minetest.register_abm({
 	chance = 80,
 	action = function (pos, node, active_object_count, active_object_count_wider)
 		-- todo! chance must depend on rain value
-		if get_rain(pos) == 0 then return end
+		local amount = get_rain(pos)
+		if amount == 0 then return end
 		if minetest.registered_nodes[node.name].drawtype ~= "normal"
 			and minetest.registered_nodes[node.name].drawtype ~= "nodebox"
 			and minetest.registered_nodes[node.name].drawtype ~= "flowingliquid"

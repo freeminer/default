@@ -52,8 +52,8 @@ minetest.register_abm({
 	--interval = 1.0, 
 	--chance = 5,
 	action = function (pos, node, active_object_count, active_object_count_wider)
-		local snow = get_snow(pos)
-		if snow == 0 then return end
+		local amount = get_snow(pos)
+		if amount == 0 then return end
 		if minetest.registered_nodes[node.name].drawtype ~= "normal"
 			and minetest.registered_nodes[node.name].drawtype ~= "nodebox"
 			and minetest.registered_nodes[node.name].drawtype ~= "allfaces_optional" then return end
