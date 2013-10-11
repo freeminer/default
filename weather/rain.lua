@@ -21,10 +21,10 @@ minetest.register_globalstep(function(dtime)
 			minexptime=0.8, maxexptime=0.8,
 			minsize=25, maxsize=25,
 			collisiondetection=false, vertical=true, texture="weather_rain.png", player=player:get_player_name()})
+		end
 	end
 end)
 
--- -[[ Enable this section if you have a very fast PC
 minetest.register_abm({
 	nodenames = {"group:crumbly", "group:snappy", "group:cracky", "group:choppy", "group:water"},
 	neighbors = {"default:air"},
@@ -50,7 +50,6 @@ minetest.register_abm({
 		end
 	end
 })
---]]
 
 -- evaporate
 minetest.register_abm({
