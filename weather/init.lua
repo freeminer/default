@@ -13,21 +13,22 @@ end
 local cloud_height = tonumber(minetest.setting_get("cloud_height"));
 
 get_snow = function (p)
-	--if 1 then return 1 end
+	if not p then return 0 end
 	if p.y > cloud_height then return 0 end
-	local heat = minetest.get_heat(p);
+	local heat = minetest.get_heat(p)
 	if heat >= 0 then return 0 end
-	local humidity = minetest.get_humidity(p);
+	local humidity = minetest.get_humidity(p)
 	if humidity < 65 then return 0 end
 	--print('S h='..minetest.get_heat(p)..' h='..minetest.get_humidity(p))
 	return 100/humidity
 end
 
 get_rain = function (p)
+	if not p then return 0 end
 	if p.y > cloud_height then return 0 end
-	local heat = minetest.get_heat(p);
+	local heat = minetest.get_heat(p)
 	if heat <= 0 then return 0 end
-	local humidity = minetest.get_humidity(p);
+	local humidity = minetest.get_humidity(p)
 	if humidity < 65 then return 0 end
 	--print('R h='..minetest.get_heat(p)..' h='..minetest.get_humidity(p))
 	return 100/humidity
