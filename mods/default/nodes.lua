@@ -197,7 +197,10 @@ minetest.register_node("default:sand", {
 	description = "Sand",
 	tiles = {"default_sand.png"},
 	is_ground_content = true,
-	groups = {crumbly=3, falling_node=1, sand=1},
+	leveled = 1,
+	liquidtype = "flowing",
+	paramtype2 = "leveled",
+	groups = {crumbly=3, falling_node=1, sand=1, liquid_flow=1},
 	sounds = default.node_sound_sand_defaults(),
 })
 
@@ -205,7 +208,10 @@ minetest.register_node("default:desert_sand", {
 	description = "Desert Sand",
 	tiles = {"default_desert_sand.png"},
 	is_ground_content = true,
-	groups = {crumbly=3, falling_node=1, sand=1},
+	leveled = 1,
+	liquidtype = "flowing",
+	paramtype2 = "leveled",
+	groups = {crumbly=3, falling_node=1, sand=1, liquid_flow=1},
 	sounds = default.node_sound_sand_defaults(),
 })
 
@@ -213,7 +219,10 @@ minetest.register_node("default:gravel", {
 	description = "Gravel",
 	tiles = {"default_gravel.png"},
 	is_ground_content = true,
-	groups = {crumbly=2, falling_node=1},
+	groups = {crumbly=2, falling_node=1, liquid_flow=1},
+	leveled = 1,
+	liquidtype = "flowing",
+	paramtype2 = "leveled",
 	sounds = default.node_sound_dirt_defaults({
 		footstep = {name="default_gravel_footstep", gain=0.5},
 		dug = {name="default_gravel_footstep", gain=1.0},
@@ -560,7 +569,8 @@ minetest.register_node("default:lava_flowing", {
 		},
 	},
 	paramtype = "light",
-	paramtype2 = "flowingliquid",
+	paramtype2 = "leveled",
+	leveled = 4,
 	light_source = LIGHT_MAX - 1,
 	walkable = false,
 	pointable = false,
@@ -606,6 +616,7 @@ minetest.register_node("default:lava_source", {
 	liquid_alternative_source = "default:lava_source",
 	liquid_viscosity = LAVA_VISC,
 	liquid_renewable = false,
+	leveled = 4,
 	damage_per_second = 4*2,
 	post_effect_color = {a=192, r=255, g=64, b=0},
 	groups = {lava=3, liquid=2, hot=1200, igniter=1},
@@ -1365,6 +1376,7 @@ minetest.register_node("default:snow", {
 	paramtype = "light",
 	buildable_to = true,
 	leveled = 7,
+	paramtype2 = "leveled",
 	drawtype = "nodebox",
 	freezemelt = "default:water_flowing",
 	node_box = {
