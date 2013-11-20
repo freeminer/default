@@ -129,7 +129,10 @@ minetest.register_node("default:dirt", {
 	description = "Dirt",
 	tiles = {"default_dirt.png"},
 	is_ground_content = true,
-	groups = {crumbly=3,soil=1,melt=800},
+	groups = {crumbly=3, soil=1, melt=800, liquid_flow=1},
+	leveled = 1,
+	liquidtype = "flowing",
+	paramtype2 = "leveled",
 	freezemelt = "default:sand",
 	sounds = default.node_sound_dirt_defaults(),
 })
