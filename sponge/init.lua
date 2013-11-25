@@ -12,7 +12,7 @@ minetest.register_node("sponge:sponge", {
 	groups = {snappy=2, flammable=1},
 })
 
-minetest.register_node("sponge:iron_sponge", {
+minetest.register_node("sponge:iron", {
 	description = "Iron Sponge",
 	drawtype = "normal",
 	tiles = {"iron_sponge.png"},
@@ -24,7 +24,7 @@ minetest.register_node("sponge:iron_sponge", {
 	buildable_to = false,
 	groups = {cracky=2},
 })
-
+minetest.register_alias("sponge:iron_sponge", "sponge:iron")
 
 --[[
 minetest.register_node("sponge:fake_air", {
@@ -51,7 +51,7 @@ local replacewith = "air"
 
 minetest.register_abm({
     nodenames = {"default:water_source", "default:water_flowing"},
-    neighbors = {"sponge:sponge", "sponge:iron_sponge"},
+    neighbors = {"sponge:sponge", "sponge:iron"},
     interval = 1.0,
     chance = 1,
     action = function(pos, node, active_object_count, active_object_count_wider)
@@ -80,7 +80,7 @@ end
 })
 
 minetest.register_abm(
-{nodenames = {"sponge:iron_sponge"},
+{nodenames = {"sponge:iron"},
 interval = 1.0,
 chance = 1,
 action = function(pos, node, active_object_count, active_object_count_wider)
@@ -110,7 +110,7 @@ action = function(pos, node, active_object_count, active_object_count_wider)
             for k=-2,2 do
                 p = {x=pos.x+i, y=pos.y+j, z=pos.z+k}
                 n = minetest.env:get_node(p)
-                if (n.name=="sponge:iron_sponge") or (n.name == "sponge:sponge") then
+                if (n.name=="sponge:iron") or (n.name == "sponge:sponge") then
                 spongecount=spongecount+1
                 end
             end
@@ -133,7 +133,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "sponge:iron_sponge",
+	output = "sponge:iron",
 	recipe = {
 		{'default:steel_ingot', 'default:steel_ingot', 'default:steel_ingot'},
 		{'default:steel_ingot', 'sponge:sponge', 'default:steel_ingot'},
