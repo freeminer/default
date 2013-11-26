@@ -209,7 +209,7 @@ minetest.register_ore({
 	flags          = "absheight",
 })
 
-if minetest.setting_get("mg_name") == "indev" then
+--if minetest.setting_get("mg_name") == "indev" then
 	-- Floatlands and high mountains springs
 	minetest.register_ore({
 		ore_type       = "scatter",
@@ -270,7 +270,7 @@ if minetest.setting_get("mg_name") == "indev" then
 		height_min     = -31000,
 		height_max     = -100,
 	})
-end
+--end
 
 minetest.register_ore({
 	ore_type       = "scatter",
