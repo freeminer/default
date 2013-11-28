@@ -128,6 +128,7 @@ minetest.register_biome({
 
 
 --trees
+--[[ TODO
 minetest.register_decoration({
 	deco_type = "schematic",
 	place_on  = "default:dirt_with_grass",
@@ -143,6 +144,7 @@ minetest.register_decoration({
 		persist = 0.66
 	}
 })
+]]
 
 --papyrus
 minetest.register_decoration({
