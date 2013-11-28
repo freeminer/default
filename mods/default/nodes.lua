@@ -999,25 +999,8 @@ function hacky_swap_node(pos,name)
 	meta:from_table(meta0)
 end
 
-minetest.register_abm({
-	nodenames = {"default:furnace","default:furnace_active"},
-	interval = 1.0,
-	chance = 1,
-	action = function(pos, node, active_object_count, active_object_count_wider)
-		local meta = minetest.get_meta(pos)
-		for i, name in ipairs({
-				"fuel_totaltime",
-				"fuel_time",
-				"src_totaltime",
-				"src_time"
-		}) do
-			if meta:get_string(name) == "" then
-				meta:set_float(name, 0.0)
-			end
-		end
-
+function default.furnace_step(pos, node, meta)
 		local inv = meta:get_inventory()
-
 		local srclist = inv:get_list("src")
 		local cooked = nil
 		local aftercooked
@@ -1050,11 +1033,10 @@ minetest.register_abm({
 			local percent = math.floor(meta:get_float("fuel_time") /
 					meta:get_float("fuel_totaltime") * 100)
 			meta:set_string("infotext","Furnace active: "..percent.."%")
-			hacky_swap_node(pos,"default:furnace_active")
+		node.name = "default:furnace_active"
 			meta:set_string("formspec",default.get_furnace_active_formspec(pos, percent))
 			return
 		end
-
 		local fuel = nil
 		local afterfuel
 		local cooked = nil
@@ -1067,27 +1049,51 @@ minetest.register_abm({
 		if fuellist then
 			fuel, afterfuel = minetest.get_craft_result({method = "fuel", width = 1, items = fuellist})
 		end
-
 		if fuel.time <= 0 then
 			meta:set_string("infotext","Furnace out of fuel")
-			hacky_swap_node(pos,"default:furnace")
+		node.name = "default:furnace"
 			meta:set_string("formspec", default.furnace_inactive_formspec)
 			return
 		end
-
 		if cooked.item:is_empty() then
 			if was_active then
 				meta:set_string("infotext","Furnace is empty")
-				hacky_swap_node(pos,"default:furnace")
+			node.name = "default:furnace"
 				meta:set_string("formspec", default.furnace_inactive_formspec)
 			end
 			return
 		end
-
 		meta:set_string("fuel_totaltime", fuel.time)
 		meta:set_string("fuel_time", 0)
 		
 		inv:set_stack("fuel", 1, afterfuel.items[1])
+end
+
+minetest.register_abm({
+	nodenames = {"default:furnace","default:furnace_active"},
+	interval = 1.0,
+	chance = 1,
+	action = function(pos, node, active_object_count, active_object_count_wider)
+		local meta = minetest.get_meta(pos)
+		for i, name in ipairs({
+				"fuel_totaltime",
+				"fuel_time",
+				"src_totaltime",
+				"src_time"
+		}) do
+			if meta:get_string(name) == "" then
+				meta:set_float(name, 0.0)
+			end
+		end
+		local gt = minetest.get_gametime()
+		if meta:get_string("game_time") == "" then
+			meta:set_int("game_time", gt-1)
+		end
+		for i = 1, math.min(1200, gt-meta:get_int("game_time")) do
+			default.furnace_step(pos, node, meta)
+		end
+		hacky_swap_node(pos, node.name)
+		meta:set_int("game_time", gt)
 	end,
 })
 
