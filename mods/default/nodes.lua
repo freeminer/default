@@ -1366,7 +1366,7 @@ minetest.register_node("default:ice", {
 	is_ground_content = true,
 	paramtype = "light",
 	freezemelt = "default:water_source",
-	groups = {cracky=3, melt=3, slippery=>1},
+	groups = {cracky=3, melt=3, slippery=1},
 	sounds = default.node_sound_glass_defaults(),
 })
 
