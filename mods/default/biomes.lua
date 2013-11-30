@@ -1,4 +1,97 @@
 
+
+-- TODO: remake schematics/*.mts files and remove aliases:
+minetest.register_alias("base:jungletree", "default:jungletree")
+minetest.register_alias("base:leaves", "default:leaves")
+minetest.register_alias("base:dirt", "default:dirt")
+minetest.register_alias("base:tree", "default:tree")
+minetest.register_alias("base:sand", "default:sand")
+minetest.register_alias("base:stone", "default:stone")
+
+
+minetest.register_biome({
+	name           = "default_normal",
+	
+	height_min     = 3,
+	height_max     = 40,
+	heat_point     = 40.0,
+	humidity_point = 40.0,
+})
+
+minetest.register_biome({
+	name           = "default_forest",
+	
+	height_min     = 3,
+	height_max     = 40,
+	heat_point     = 40.0,
+	humidity_point = 55.0,
+})
+
+minetest.register_biome({
+	name           = "default_jungle",
+	
+	height_min     = 3,
+	height_max     = 40,
+	heat_point     = 60.0,
+	humidity_point = 70.0,
+})
+
+minetest.register_biome({
+	name           = "default_firforest",
+	
+	height_min     = 3,
+	height_max     = 40,
+	heat_point     = 20.0,
+	humidity_point = 55.0,
+})
+
+minetest.register_biome({
+	name           = "default_highland",
+	
+	height_min     = 41,
+	height_max     = 31000,
+	heat_point     = 40.0,
+	humidity_point = 40.0,
+})
+
+minetest.register_biome({
+	name           = "default_ocean_sand",
+	
+	node_top       = "base:sand",
+	depth_top      = 3,
+	node_filler    = "base:stone",
+	depth_filler   = 0,
+	
+	height_min     = -31000,
+	height_max     = 2,
+	heat_point     = 40.0,
+	humidity_point = 40.0,
+})
+
+minetest.register_biome({
+	name           = "default_ocean_dirt",
+	
+	height_min     = -31000,
+	height_max     = 2,
+	heat_point     = 20.0,
+	humidity_point = 40.0,
+})
+
+minetest.register_biome({
+	name           = "default_desert",
+	
+	node_top       = "base:sand",
+	depth_top      = 20,
+	node_filler    = "base:stone",
+	
+	height_min     = 3,
+	height_max     = 80,
+	heat_point     = 90.0,
+	humidity_point = 0.0,
+})
+
+
+
 minetest.register_biome({
 	name           = "Ocean",
 
@@ -145,6 +238,46 @@ minetest.register_decoration({
 	}
 })
 ]]
+
+minetest.register_decoration({
+	deco_type = "schematic",
+	place_on = "default:dirt_with_grass",
+	sidelen = 16,
+	fill_ratio = 0.005,
+	biomes = {"default_normal"},
+	schematic = minetest.get_modpath("default").."/schematics/base_tree.mts",
+	flags = "place_center_x, place_center_z",
+})
+
+minetest.register_decoration({
+	deco_type = "schematic",
+	place_on = "default:dirt_with_grass",
+	sidelen = 8,
+	fill_ratio = 0.1,
+	biomes = {"default_forest"},
+	schematic = minetest.get_modpath("default").."/schematics/base_tree.mts",
+	flags = "place_center_x, place_center_z",
+})
+
+minetest.register_decoration({
+	deco_type = "schematic",
+	place_on = "default:dirt_with_grass",
+	sidelen = 8,
+	fill_ratio = 0.2,
+	biomes = {"default_jungle"},
+	schematic = minetest.get_modpath("default").."/schematics/base_jungletree.mts",
+	flags = "place_center_x, place_center_z",
+})
+
+minetest.register_decoration({
+	deco_type = "schematic",
+	place_on = "default:dirt_with_grass",
+	sidelen = 16,
+	fill_ratio = 0.02,
+	biomes = {"default_firforest"},
+	schematic = minetest.get_modpath("default").."/schematics/base_fir.mts",
+	flags = "place_center_x, place_center_z",
+})
 
 --papyrus
 minetest.register_decoration({
