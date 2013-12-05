@@ -46,7 +46,7 @@ local snow_box =
 -- -[[ Enable this section if you have a very fast PC
 minetest.register_abm({
 	nodenames = {"group:crumbly", "group:snappy", "group:cracky", "group:choppy", "group:melts"},
-	neighbors = {"default:air"},
+	neighbors = {"air"},
 	interval = 10.0, 
 	chance = 80,
 	--interval = 1.0, 
