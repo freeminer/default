@@ -1005,18 +1005,13 @@ minetest.register_node("default:furnace_active", {
 	end,
 })
 
-function hacky_swap_node(pos,name)
+local function swap_node(pos,name)
 	local node = minetest.get_node(pos)
-	local meta = minetest.get_meta(pos)
-	local meta0 = meta:to_table()
 	if node.name == name then
 		return
 	end
 	node.name = name
-	local meta0 = meta:to_table()
-	minetest.set_node(pos,node)
-	meta = minetest.get_meta(pos)
-	meta:from_table(meta0)
+	minetest.swap_node(pos,node)
 end
 
 function default.furnace_step(pos, node, meta)
@@ -1112,7 +1107,7 @@ minetest.register_abm({
 		for i = 1, math.min(1200, gt-meta:get_int("game_time")) do
 			default.furnace_step(pos, node, meta)
 		end
-		hacky_swap_node(pos, node.name)
+		swap_node(pos, node.name)
 		meta:set_int("game_time", gt)
 	end,
 })
