@@ -129,7 +129,7 @@ minetest.register_node("default:dirt", {
 	description = "Dirt",
 	tiles = {"default_dirt.png"},
 	is_ground_content = true,
-	groups = {crumbly=3, soil=1, melt=800, liquid_flow=1},
+	groups = {crumbly=3, soil=1, melt=45, liquid_flow=1},
 	leveled = 1,
 	liquidtype = "flowing",
 	paramtype2 = "leveled",
@@ -151,7 +151,7 @@ minetest.register_abm({
 			name == "default:snowblock" or name == "default:ice"
 		then
 			minetest.set_node(pos, {name = "default:dirt_with_snow"})
-		elseif (not weather or minetest.get_heat(pos) > 5) and nodedef and
+		elseif (not weather or (minetest.get_heat(pos) > 5 and minetest.get_humidity(pos) > 22)) and nodedef and
 			(minetest.get_node_light(above) or 0) >= 13
 		then
 			minetest.set_node(pos, {name = "default:dirt_with_grass"})
@@ -169,9 +169,9 @@ minetest.register_abm({
 		local nodedef = minetest.registered_nodes[name]
 		if (name == "ignore" or not nodedef) then return end
 		if ( not ((nodedef.sunlight_propagates or nodedef.paramtype == "light")
-				and nodedef.liquidtype == "none")) or (weather 
-				and (minetest.get_heat(pos) < -5 or minetest.get_heat(pos) > 50))
-				or name == "default:snow" or name == "default:snowblock" or name == "default:ice" 
+				and nodedef.liquidtype == "none")) or (weather
+				and (minetest.get_heat(pos) < -5 or minetest.get_heat(pos) > 50 or minetest.get_humidity(pos) < 10))
+				or name == "default:snow" or name == "default:snowblock" or name == "default:ice"
 		then
 			minetest.set_node(pos, {name = "default:dirt"})
 		end
@@ -205,6 +205,17 @@ minetest.register_node("default:sand", {
 	paramtype2 = "leveled",
 	groups = {crumbly=3, falling_node=1, sand=1, liquid_flow=1},
 	sounds = default.node_sound_sand_defaults(),
+})
+
+minetest.register_abm({
+	nodenames = {"default:sand", "default:desert_sand"},
+	neighbors = {"default:water_flowing"},
+	interval = 30,
+	chance = 20,
+	action = function(pos, node)
+		if (not weather or (minetest.get_heat(pos) > 40 or minetest.get_humidity(pos) < 50)) then return end
+		minetest.set_node(pos, {name = "default:dirt"})
+	end
 })
 
 minetest.register_node("default:desert_sand", {
