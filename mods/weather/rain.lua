@@ -14,15 +14,16 @@ minetest.register_globalstep(function(dtime)
 		local vel = {x=0, y=   -4, z=0}
 		local acc = {x=0, y=-9.81, z=0}
 
---[[ only after https://github.com/minetest/minetest/pull/675
-		minetest.add_particlespawner({amount=25, time=0.5,
+-- only after https://github.com/minetest/minetest/pull/675
+		freeminer.add_particlespawner({amount=25, time=0.5,
 			minpos=minp, maxpos=maxp,
 			minvel=vel, maxvel=vel,
 			minacc=acc, maxacc=acc,
 			minexptime=0.8, maxexptime=0.8,
 			minsize=25, maxsize=25,
 			collisiondetection=false, vertical=true, texture="weather_rain.png", player=player:get_player_name()})
-]]--
+		end
+--[[ old, pre vertical rain
 		minetest.add_particlespawner(25, 0.5,
 			minp, maxp,
 			vel, vel,
@@ -31,6 +32,7 @@ minetest.register_globalstep(function(dtime)
 			25, 25,
 			false, "weather_rain.png", player:get_player_name())
 		end
+]]--
 	end
 end)
 
