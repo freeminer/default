@@ -69,8 +69,9 @@ action = function(pos, node, active_object_count, active_object_count_wider)
             for k=-1,1 do
                 p = {x=pos.x+i, y=pos.y+j, z=pos.z+k}
                 n = minetest.env:get_node(p)
-                if (n.name=="default:water_flowing") 
-                or (n.name == "default:water_source") then
+                if n.name == "default:water_flowing"
+                or n.name == "default:water_source"
+                then
                     minetest.env:add_node(p, {name=replacewith})
                 end
             end
@@ -89,7 +90,12 @@ action = function(pos, node, active_object_count, active_object_count_wider)
             for k=-2,2 do
                 p = {x=pos.x+i, y=pos.y+j, z=pos.z+k}
                 n = minetest.env:get_node(p)
-                if minetest.registered_nodes[n.name] and minetest.registered_nodes[n.name].liquidtype ~= "none" then
+                -- if minetest.registered_nodes[n.name] and minetest.registered_nodes[n.name].liquidtype ~= "none" then
+                if n.name == "default:water_flowing"
+                or n.name == "default:water_source"
+                or n.name == "default:lava_flowing"
+                or n.name == "default:lava_source"
+                then
                     minetest.env:add_node(p, {name=replacewith})
                 end
             end
