@@ -22,7 +22,7 @@ minetest.register_biome({
 	name           = "default_forest",
 	
 	height_min     = 3,
-	height_max     = 40,
+	height_max     = 1000,
 	heat_point     = 40.0,
 	humidity_point = 55.0,
 })
@@ -31,7 +31,7 @@ minetest.register_biome({
 	name           = "default_jungle",
 	
 	height_min     = 3,
-	height_max     = 40,
+	height_max     = 1000,
 	heat_point     = 60.0,
 	humidity_point = 70.0,
 })
@@ -40,7 +40,7 @@ minetest.register_biome({
 	name           = "default_firforest",
 	
 	height_min     = 3,
-	height_max     = 40,
+	height_max     = 400,
 	heat_point     = 20.0,
 	humidity_point = 55.0,
 })
@@ -48,7 +48,7 @@ minetest.register_biome({
 minetest.register_biome({
 	name           = "default_highland",
 	
-	height_min     = 41,
+	height_min     = 200,
 	height_max     = 31000,
 	heat_point     = 40.0,
 	humidity_point = 40.0,
@@ -85,7 +85,7 @@ minetest.register_biome({
 	node_filler    = "base:stone",
 	
 	height_min     = 3,
-	height_max     = 80,
+	height_max     = 300,
 	heat_point     = 90.0,
 	humidity_point = 0.0,
 })
@@ -131,7 +131,7 @@ minetest.register_biome({
 	depth_filler   = 3,
 
 	height_min     = 1,
-	height_max     = 3,
+	height_max     = 5,
 	heat_point     = 50.0,
 	humidity_point = 10.0
 })
@@ -153,7 +153,6 @@ minetest.register_biome({
 	humidity_point = 60.0
 })
 
-
 minetest.register_biome({
 	name           = "Snow Plains",
 
@@ -170,7 +169,7 @@ minetest.register_biome({
 	name           = "Plains",
 
 	height_min     = 1,
-	height_max     = 20,
+	height_max     = 40,
 	heat_point     = 40.0,
 	humidity_point = 50.0
 })
@@ -179,7 +178,7 @@ minetest.register_biome({
 	name           = "Hills",
 
 	height_min     = 21,
-	height_max     = 40,
+	height_max     = 400,
 	heat_point     = 40.0,
 	humidity_point = 50.0
 })
@@ -200,7 +199,7 @@ minetest.register_biome({
 	name           = "Extreme Hills",
 
 	height_min     = 41,
-	height_max     = 300,
+	height_max     = 3000,
 	heat_point     = 40.0,
 	humidity_point = 50.0
 })
@@ -214,7 +213,7 @@ minetest.register_biome({
 	depth_filler   = 10,
 
 	height_min     = 3,
-	height_max     = 15,
+	height_max     = 35,
 	heat_point     = 90.0,
 	humidity_point = 0.0
 })
