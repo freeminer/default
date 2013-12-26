@@ -22,7 +22,7 @@ minetest.register_biome({
 	name           = "default_forest",
 	
 	height_min     = 3,
-	height_max     = 1000,
+	height_max     = 3000,
 	heat_point     = 40.0,
 	humidity_point = 55.0,
 })
@@ -31,7 +31,7 @@ minetest.register_biome({
 	name           = "default_jungle",
 	
 	height_min     = 3,
-	height_max     = 1000,
+	height_max     = 2500,
 	heat_point     = 60.0,
 	humidity_point = 70.0,
 })
@@ -40,7 +40,7 @@ minetest.register_biome({
 	name           = "default_firforest",
 	
 	height_min     = 3,
-	height_max     = 400,
+	height_max     = 1500,
 	heat_point     = 20.0,
 	humidity_point = 55.0,
 })
@@ -199,7 +199,7 @@ minetest.register_biome({
 	name           = "Extreme Hills",
 
 	height_min     = 41,
-	height_max     = 3000,
+	height_max     = 5000,
 	heat_point     = 40.0,
 	humidity_point = 50.0
 })
