@@ -131,7 +131,7 @@ minetest.register_node("default:dirt", {
 	description = "Dirt",
 	tiles = {"default_dirt.png"},
 	is_ground_content = true,
-	groups = {crumbly=3, soil=1, melt=45, liquid_flow=1},
+	groups = {crumbly=3, soil=1, melt=50, liquid_flow=1},
 	leveled = 1,
 	liquidtype = "flowing",
 	paramtype2 = "leveled",
@@ -213,9 +213,10 @@ minetest.register_abm({
 	nodenames = {"default:sand", "default:desert_sand"},
 	neighbors = {"default:water_flowing"},
 	interval = 30,
+	neighbors_range = 3,
 	chance = 20,
 	action = function(pos, node)
-		if (not weather or (minetest.get_heat(pos) > 40 or minetest.get_humidity(pos) < 50)) then return end
+		if (not weather or (minetest.get_heat(pos) > 40 or minetest.get_humidity(pos) < 20)) then return end
 		minetest.set_node(pos, {name = "default:dirt"})
 	end
 })
