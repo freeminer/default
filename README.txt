@@ -42,6 +42,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 License of media (textures and sounds)
 --------------------------------------
+This games makes use of PixelBOX texture pack; PixelBOX is drawn by Gambit and
+is licensed under WTFPL. Refer to commit f205661d858eccb1cff759d9ce0412f2b6e309b0
+for file list.
+
 Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
 See README.txt in each mod directory for information about other authors.
 
