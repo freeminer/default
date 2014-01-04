@@ -15,7 +15,7 @@ minetest.register_globalstep(function(dtime)
 		local acc = {x=0, y=-9.81, z=0}
 
 -- only after https://github.com/minetest/minetest/pull/675
-		freeminer.add_particlespawner({amount=25, time=0.5,
+		freeminer.add_particlespawner({amount=20, time=0.5,
 			minpos=minp, maxpos=maxp,
 			minvel=vel, maxvel=vel,
 			minacc=acc, maxacc=acc,

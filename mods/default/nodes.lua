@@ -212,9 +212,9 @@ minetest.register_node("default:sand", {
 minetest.register_abm({
 	nodenames = {"default:sand", "default:desert_sand"},
 	neighbors = {"default:water_flowing"},
-	interval = 30,
+	interval = 10,
 	neighbors_range = 3,
-	chance = 20,
+	chance = 10,
 	action = function(pos, node)
 		if (not weather or (minetest.get_heat(pos) > 40 or minetest.get_humidity(pos) < 20)) then return end
 		minetest.set_node(pos, {name = "default:dirt"})
