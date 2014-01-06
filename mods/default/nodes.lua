@@ -1,6 +1,14 @@
 -- mods/default/nodes.lua
 
 local weather = minetest.setting_getbool("weather")
+local flowing_sand_type = "flowing"
+local flowing_sand_leveled = 1
+local flowing_sand_paramtype2 = "leveled"
+if minetest.setting_getbool("flowing_sand_disable") then
+	flowing_sand_type = "none"
+	flowing_sand_leveled = 0
+	flowing_sand_paramtype2 = "none"
+end
 
 minetest.register_node("default:stone", {
 	description = "Stone",
@@ -132,9 +140,9 @@ minetest.register_node("default:dirt", {
 	tiles = {"default_dirt.png"},
 	is_ground_content = true,
 	groups = {crumbly=3, soil=1, melt=50, liquid_flow=1, weight=2000},
-	leveled = 1,
-	liquidtype = "flowing",
-	paramtype2 = "leveled",
+	leveled = flowing_sand_leveled,
+	liquidtype = flowing_sand_type,
+	paramtype2 = flowing_sand_paramtype2,
 	melt = "default:sand",
 	sounds = default.node_sound_dirt_defaults(),
 })
@@ -202,9 +210,9 @@ minetest.register_node("default:sand", {
 	description = "Sand",
 	tiles = {"default_sand.png"},
 	is_ground_content = true,
-	leveled = 1,
-	liquidtype = "flowing",
-	paramtype2 = "leveled",
+	leveled = flowing_sand_leveled,
+	liquidtype = flowing_sand_type,
+	paramtype2 = flowing_sand_paramtype2,
 	groups = {crumbly=3, falling_node=1, sand=1, liquid_flow=1, weight=2000},
 	sounds = default.node_sound_sand_defaults(),
 })
@@ -225,9 +233,9 @@ minetest.register_node("default:desert_sand", {
 	description = "Desert Sand",
 	tiles = {"default_desert_sand.png"},
 	is_ground_content = true,
-	leveled = 1,
-	liquidtype = "flowing",
-	paramtype2 = "leveled",
+	leveled = flowing_sand_leveled,
+	liquidtype = flowing_sand_type,
+	paramtype2 = flowing_sand_paramtype2,
 	groups = {crumbly=3, falling_node=1, sand=1, liquid_flow=1, weight=2000},
 	sounds = default.node_sound_sand_defaults(),
 })
@@ -237,9 +245,9 @@ minetest.register_node("default:gravel", {
 	tiles = {"default_gravel.png"},
 	is_ground_content = true,
 	groups = {crumbly=2, falling_node=1, liquid_flow=1, weight=2000},
-	leveled = 1,
-	liquidtype = "flowing",
-	paramtype2 = "leveled",
+	leveled = flowing_sand_leveled,
+	liquidtype = flowing_sand_type,
+	paramtype2 = flowing_sand_paramtype2,
 	sounds = default.node_sound_dirt_defaults({
 		footstep = {name="default_gravel_footstep", gain=0.5},
 		dug = {name="default_gravel_footstep", gain=1.0},
