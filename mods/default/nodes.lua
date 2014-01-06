@@ -139,7 +139,7 @@ minetest.register_node("default:dirt", {
 	description = "Dirt",
 	tiles = {"default_dirt.png"},
 	is_ground_content = true,
-	groups = {crumbly=3, soil=1, melt=50, liquid_flow=1, weight=2000},
+	groups = {crumbly=3, soil=1, melt=50, liquid_drop=1, weight=2000},
 	leveled = flowing_sand_leveled,
 	liquidtype = flowing_sand_type,
 	paramtype2 = flowing_sand_paramtype2,
@@ -213,7 +213,7 @@ minetest.register_node("default:sand", {
 	leveled = flowing_sand_leveled,
 	liquidtype = flowing_sand_type,
 	paramtype2 = flowing_sand_paramtype2,
-	groups = {crumbly=3, falling_node=1, sand=1, liquid_flow=1, weight=2000},
+	groups = {crumbly=3, falling_node=1, sand=1, liquid_drop=1, weight=2000},
 	sounds = default.node_sound_sand_defaults(),
 })
 
@@ -236,7 +236,7 @@ minetest.register_node("default:desert_sand", {
 	leveled = flowing_sand_leveled,
 	liquidtype = flowing_sand_type,
 	paramtype2 = flowing_sand_paramtype2,
-	groups = {crumbly=3, falling_node=1, sand=1, liquid_flow=1, weight=2000},
+	groups = {crumbly=3, falling_node=1, sand=1, liquid_drop=1, weight=2000},
 	sounds = default.node_sound_sand_defaults(),
 })
 
@@ -244,7 +244,7 @@ minetest.register_node("default:gravel", {
 	description = "Gravel",
 	tiles = {"default_gravel.png"},
 	is_ground_content = true,
-	groups = {crumbly=2, falling_node=1, liquid_flow=1, weight=2000},
+	groups = {crumbly=2, falling_node=1, liquid_drop=1, weight=2000},
 	leveled = flowing_sand_leveled,
 	liquidtype = flowing_sand_type,
 	paramtype2 = flowing_sand_paramtype2,
@@ -557,7 +557,7 @@ minetest.register_node("default:water_flowing", {
 	freeze = "default:snow",
 	melt = "air",
 	post_effect_color = {a=64, r=100, g=100, b=200},
-	groups = {water=3, liquid=3, puts_out_fire=1, not_in_creative_inventory=1, freeze=-5, melt=100, weight=1000},
+	groups = {water=3, liquid=3, puts_out_fire=1, not_in_creative_inventory=1, freeze=-5, melt=100, liquid_drop=1, weight=1000},
 })
 
 minetest.register_node("default:water_source", {
@@ -590,7 +590,7 @@ minetest.register_node("default:water_source", {
 	freeze = "default:ice",
 	melt = "air",
 	post_effect_color = {a=64, r=100, g=100, b=200},
-	groups = {water=3, liquid=3, puts_out_fire=1, freeze=-1, melt=105, weight=1000},
+	groups = {water=3, liquid=3, puts_out_fire=1, freeze=-1, melt=105, liquid_drop=1, weight=1000},
 })
 
 minetest.register_node("default:lava_flowing", {
@@ -627,7 +627,7 @@ minetest.register_node("default:lava_flowing", {
 	liquid_renewable = false,
 	damage_per_second = 4*2,
 	post_effect_color = {a=192, r=255, g=64, b=0},
-	groups = {lava=3, liquid=2, hot=700, igniter=1, not_in_creative_inventory=1,wield_light=2, weight=2000},
+	groups = {lava=3, liquid=2, hot=700, igniter=1, not_in_creative_inventory=1,wield_light=2, liquid_drop=1, weight=2000},
 })
 
 minetest.register_node("default:lava_source", {
@@ -661,7 +661,7 @@ minetest.register_node("default:lava_source", {
 	leveled = 4,
 	damage_per_second = 4*2,
 	post_effect_color = {a=192, r=255, g=64, b=0},
-	groups = {lava=3, liquid=2, hot=1200, igniter=1,wield_light=5, weight=2000},
+	groups = {lava=3, liquid=2, hot=1200, igniter=1, wield_light=5, liquid_drop=1, weight=2000},
 })
 
 minetest.register_node("default:torch", {
