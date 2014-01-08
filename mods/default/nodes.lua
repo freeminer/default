@@ -139,7 +139,7 @@ minetest.register_node("default:dirt", {
 	description = "Dirt",
 	tiles = {"default_dirt.png"},
 	is_ground_content = true,
-	groups = {crumbly=3, soil=1, melt=50, liquid_drop=1, weight=2000},
+	groups = {crumbly=3, soil=1, melt=55, liquid_drop=1, weight=2000},
 	leveled = flowing_sand_leveled,
 	liquidtype = flowing_sand_type,
 	paramtype2 = flowing_sand_paramtype2,
@@ -150,7 +150,7 @@ minetest.register_node("default:dirt", {
 minetest.register_abm({
 	nodenames = {"default:dirt"},
 	interval = 2,
-	chance = 200,
+	chance = 100,
 	action = function(pos, node)
 		local above = {x=pos.x, y=pos.y+1, z=pos.z}
 		local name = minetest.get_node(above).name
@@ -160,11 +160,11 @@ minetest.register_abm({
 		if (weather and minetest.get_heat(pos) < -10) or name == "default:snow" or
 			name == "default:snowblock" or name == "default:ice"
 		then
-			minetest.set_node(pos, {name = "default:dirt_with_snow"})
+			minetest.set_node(pos, {name = "default:dirt_with_snow"}, 2)
 		elseif (not weather or (minetest.get_heat(pos) > 5 and minetest.get_humidity(pos) > 22)) and nodedef and
 			(minetest.get_node_light(above) or 0) >= 13
 		then
-			minetest.set_node(pos, {name = "default:dirt_with_grass"})
+			minetest.set_node(pos, {name = "default:dirt_with_grass"}, 2)
 		end
 	end
 })
@@ -183,7 +183,7 @@ minetest.register_abm({
 				and (minetest.get_heat(pos) < -5 or minetest.get_heat(pos) > 50 or minetest.get_humidity(pos) < 10))
 				or name == "default:snow" or name == "default:snowblock" or name == "default:ice"
 		then
-			minetest.set_node(pos, {name = "default:dirt"})
+			minetest.set_node(pos, {name = "default:dirt"}, 2)
 		end
 	end
 })
@@ -201,7 +201,7 @@ minetest.register_abm({
 				and nodedef.liquidtype == "none") or
 			(weather and minetest.get_heat(pos) > 3 and name ~= "default:snow" and name ~= "default:snowblock" and name ~= "default:ice"))
 		then
-			minetest.set_node(pos, {name = "default:dirt"})
+			minetest.set_node(pos, {name = "default:dirt"}, 2)
 		end
 	end
 })
@@ -225,7 +225,7 @@ minetest.register_abm({
 	chance = 10,
 	action = function(pos, node)
 		if (not weather or (minetest.get_heat(pos) > 40 or minetest.get_humidity(pos) < 20)) then return end
-		minetest.set_node(pos, {name = "default:dirt"})
+		minetest.set_node(pos, {name = "default:dirt"}, 2)
 	end
 })
 
@@ -1454,7 +1454,7 @@ minetest.register_node("default:snow", {
 	on_construct = function(pos)
 		pos.y = pos.y - 1
 		if minetest.get_node(pos).name == "default:dirt_with_grass" then
-			minetest.set_node(pos, {name="default:dirt_with_snow"})
+			minetest.set_node(pos, {name="default:dirt_with_snow"}, 2)
 		end
 	end,
 })
