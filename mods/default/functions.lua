@@ -131,6 +131,8 @@ minetest.register_on_punchnode(on_punchnode)
 -- Grow trees
 --
 
+local weather = minetest.setting_getbool("weather")
+
 minetest.register_abm({
 	nodenames = {"default:sapling"},
 	interval = 10,
