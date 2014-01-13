@@ -4,11 +4,16 @@ local weather = minetest.setting_getbool("weather")
 local flowing_sand_type = "flowing"
 local flowing_sand_leveled = 1
 local flowing_sand_paramtype2 = "leveled"
-if minetest.setting_getbool("flowing_sand_disable") then
+local flowing_sand_liquid_drop = 1
+if tonumber(minetest.setting_get("flowing_sand_disable")) == 1 then
 	flowing_sand_type = "none"
 	flowing_sand_leveled = 0
 	flowing_sand_paramtype2 = "none"
 end
+if tonumber(minetest.setting_get("flowing_sand_disable")) >= 1 then
+	flowing_sand_liquid_drop = 0
+end
+
 
 minetest.register_node("default:stone", {
 	description = "Stone",
@@ -139,7 +144,7 @@ minetest.register_node("default:dirt", {
 	description = "Dirt",
 	tiles = {"default_dirt.png"},
 	is_ground_content = true,
-	groups = {crumbly=3, soil=1, melt=55, liquid_drop=1, weight=2000},
+	groups = {crumbly=3, soil=1, melt=55, liquid_drop=flowing_sand_liquid_drop, weight=2000},
 	leveled = flowing_sand_leveled,
 	liquidtype = flowing_sand_type,
 	paramtype2 = flowing_sand_paramtype2,
@@ -213,7 +218,7 @@ minetest.register_node("default:sand", {
 	leveled = flowing_sand_leveled,
 	liquidtype = flowing_sand_type,
 	paramtype2 = flowing_sand_paramtype2,
-	groups = {crumbly=3, falling_node=1, sand=1, liquid_drop=1, weight=2000},
+	groups = {crumbly=3, falling_node=1, sand=1, liquid_drop=flowing_sand_liquid_drop, weight=2000},
 	sounds = default.node_sound_sand_defaults(),
 })
 
@@ -236,7 +241,7 @@ minetest.register_node("default:desert_sand", {
 	leveled = flowing_sand_leveled,
 	liquidtype = flowing_sand_type,
 	paramtype2 = flowing_sand_paramtype2,
-	groups = {crumbly=3, falling_node=1, sand=1, liquid_drop=1, weight=2000},
+	groups = {crumbly=3, falling_node=1, sand=1, liquid_drop=flowing_sand_liquid_drop, weight=2000},
 	sounds = default.node_sound_sand_defaults(),
 })
 
@@ -244,7 +249,7 @@ minetest.register_node("default:gravel", {
 	description = "Gravel",
 	tiles = {"default_gravel.png"},
 	is_ground_content = true,
-	groups = {crumbly=2, falling_node=1, liquid_drop=1, weight=2000},
+	groups = {crumbly=2, falling_node=1, liquid_drop=flowing_sand_liquid_drop, weight=2000},
 	leveled = flowing_sand_leveled,
 	liquidtype = flowing_sand_type,
 	paramtype2 = flowing_sand_paramtype2,
