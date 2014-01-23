@@ -1,45 +1,57 @@
-=== TNT-MOD for MINETEST-C55 ===
-by PilzAdam
+The main game for the Minetest game engine [minetest_game]
+==========================================================
 
-Introduction:
-This mod adds TNT to Minetest. TNT is a tool to help the player
-in mining.
+To build the wholeness of the Minetest project, insert this repository as
+  /games/minetest_game
+in the Minetest Engine.
 
-How to install:
-Unzip the archive an place it in minetest-base-directory/mods/minetest/
-if you have a windows client or a linux run-in-place client. If you have
-a linux system-wide instalation place it in ~/.minetest/mods/minetest/.
-If you want to install this mod only in one world create the folder
-worldmods/ in your worlddirectory.
-For further information or help see:
-http://wiki.minetest.com/wiki/Installing_Mods
+The Minetest Engine can be found in:
+  https://github.com/minetest/minetest/
 
-How to use the mod:
-Craft gunpowder by placing coal and gravel in the crafting area. The
-gunpowder can be used to craft TNT or as fuze for TNT. To craft TNT
-surround gunpowder with 4 wood in a + shape.
-There are different ways to blow up TNT:
-1. Hit it with a torch.
-2. Hit a gunpowder fuze that leads to a TNT block with a torch.
-3. Activate it with mesecons (fastest way)
-Be aware of the damage radius of 7 blocks!
+Compatibility
+--------------
+The minetest_game github master HEAD is generally compatible with the github
+master HEAD of minetest.
 
-License:
-WTFPL (see below)
+Additionally, when the minetest engine is tagged to be a certain version (eg.
+0.4.dev-20120326), minetest_game is tagged with the version too.
 
-See also:
-http://minetest.net/
+When stable releases are made, minetest_game is packaged and made available in
+  http://minetest.net/download.php
+and in case the repository has grown too much, it may be reset. In that sense,
+this is not a "real" git repository. (Package maintainers please note!)
 
-         DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-                    Version 2, December 2004
+License of source code
+----------------------
+Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+See README.txt in each mod directory for information about other authors.
 
- Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
+(at your option) any later version.
 
- Everyone is permitted to copy and distribute verbatim or modified
- copies of this license document, and changing it is allowed as long
- as the name is changed.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
 
-            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+You should have received a copy of the GNU Lesser General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-  0. You just DO WHAT THE FUCK YOU WANT TO.
+License of media (textures and sounds)
+--------------------------------------
+This games makes use of PixelBOX texture pack; PixelBOX is drawn by Gambit and
+is licensed under WTFPL. Refer to commit f205661d858eccb1cff759d9ce0412f2b6e309b0
+for file list.
+
+Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+See README.txt in each mod directory for information about other authors.
+
+Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
+http://creativecommons.org/licenses/by-sa/3.0/
+
+License of menu/header.png
+Copyright (C) 2013 BlockMen CC BY-3.0
+
