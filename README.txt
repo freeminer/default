@@ -1,23 +1,23 @@
-The main game for the Minetest game engine [minetest_game]
+The main game for the Freeminer game engine [default]
 ==========================================================
 
-To build the wholeness of the Minetest project, insert this repository as
-  /games/minetest_game
-in the Minetest Engine.
+To build the wholeness of the Freeminer project, insert this repository as
+  /games/default
+in the Freeminer Engine.
 
-The Minetest Engine can be found in:
-  https://github.com/minetest/minetest/
+The Freeminer Engine can be found in:
+  https://github.com/freeminer/freeminer/
 
 Compatibility
 --------------
-The minetest_game github master HEAD is generally compatible with the github
-master HEAD of minetest.
+The default github master HEAD is generally compatible with the github
+master HEAD of freeminer.
 
-Additionally, when the minetest engine is tagged to be a certain version (eg.
-0.4.dev-20120326), minetest_game is tagged with the version too.
+Additionally, when the freeminer engine is tagged to be a certain version (eg.
+0.4.dev-20120326), default is tagged with the version too.
 
 When stable releases are made, minetest_game is packaged and made available in
-  http://minetest.net/download.php
+  http://freeminer.org
 and in case the repository has grown too much, it may be reset. In that sense,
 this is not a "real" git repository. (Package maintainers please note!)
 
