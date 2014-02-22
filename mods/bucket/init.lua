@@ -80,21 +80,12 @@ function bucket.register_liquid(source, flowing, itemname, inventory_image, name
 					end
 					if math.floor(fullness/128) == 1 or
 						not minetest.setting_getbool("liquid_finite") then
-						minetest.add_node(pos, {name=source,
-								param2=fullness})
+						minetest.add_node(pos, {name=source, param2=fullness})
 						return
-					elseif node.name == flowing then
-						fullness = fullness + node.param2
-					elseif node.name == source then
-						fullness = LIQUID_MAX
-					end
-
-					if fullness >= LIQUID_MAX then
-						minetest.add_node(pos, {name=source,
-								param2=LIQUID_MAX})
+					elseif node.name == flowing or node.name == source then
+						minetest.add_node_level(pos, fullness, 1)
 					else
-						minetest.add_node(pos, {name=flowing,
-								param2=fullness})
+						minetest.add_node(pos, {name=flowing, param2=fullness})
 					end
 				end
 
