@@ -1,3 +1,10 @@
+-- loss probabilities array (one in X will be lost)
+local loss_prob = {}
+
+loss_prob["default:cobble"] = 3
+loss_prob["default:dirt"] = 4
+
+
 local eject_drops = function(pos, stack)
 	local obj = minetest.env:add_item(pos, stack)
 
@@ -10,6 +17,12 @@ local eject_drops = function(pos, stack)
 end
 
 local add_drop = function(drops, pos, item)
+	if loss_prob[item] ~= nil then
+		if math.random(1,loss_prob[item]) == 1 then
+			return
+		end
+	end
+
 	if drops[item] == nil then
 		drops[item] = ItemStack(item)
 	else
@@ -30,9 +43,6 @@ local destroy = function(drops, pos)
 		nodeupdate(pos)
 		if minetest.registered_nodes[nodename].groups.flammable ~= nil then
 			minetest.env:set_node(pos, {name="fire:basic_flame"})
-			return
-		end
-		if math.random(1,3) == 3 then
 			return
 		end
 		local drop = minetest.get_node_drops(nodename, "")
