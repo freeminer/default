@@ -1,4 +1,29 @@
-local destroy = function(pos)
+local eject_drops = function(pos, stack)
+	local obj = minetest.env:add_item(pos, stack)
+
+	if obj == nil then
+		return
+	end
+	obj:get_luaentity().collect = true
+	obj:setacceleration({x=0, y=-10, z=0})
+	obj:setvelocity({x=math.random(0,6)-3, y=10, z=math.random(0,6)-3})
+end
+
+local add_drop = function(drops, pos, item)
+	if drops[item] == nil then
+		drops[item] = ItemStack(item)
+	else
+		drops[item]:add_item(item)
+	end
+
+	if drops[item]:get_free_space() == 0 then
+		stack = drops[item]
+		eject_drops(pos, stack)
+		drops[item] = nil
+	end
+end
+
+local destroy = function(drops, pos)
 	local nodename = minetest.env:get_node(pos).name
 	if nodename ~= "air" then
 		minetest.env:remove_node(pos)
@@ -13,22 +38,10 @@ local destroy = function(pos)
 		local drop = minetest.get_node_drops(nodename, "")
 		for _,item in ipairs(drop) do
 			if type(item) == "string" then
-				local obj = minetest.env:add_item(pos, item)
-				if obj == nil then
-					return
-				end
-				obj:get_luaentity().collect = true
-				obj:setacceleration({x=0, y=-10, z=0})
-				obj:setvelocity({x=math.random(0,6)-3, y=10, z=math.random(0,6)-3})
+				add_drop(drops, pos, item)
 			else
 				for i=1,item:get_count() do
-					local obj = minetest.env:add_item(pos, item:get_name())
-					if obj == nil then
-						return
-					end
-					obj:get_luaentity().collect = true
-					obj:setacceleration({x=0, y=-10, z=0})
-					obj:setvelocity({x=math.random(0,6)-3, y=10, z=math.random(0,6)-3})
+					add_drop(drops, pos, item:get_name())
 				end
 			end
 		end
@@ -59,7 +72,8 @@ boom = function(pos, time)
 				}, vec)
 			end
 		end
-		
+
+		local drops = {}
 		for dx=-2,2 do
 			for dz=-2,2 do
 				for dy=2,-2,-1 do
@@ -75,10 +89,10 @@ boom = function(pos, time)
 						
 					else
 						if math.abs(dx)<2 and math.abs(dy)<2 and math.abs(dz)<2 then
-							destroy(pos)
+							destroy(drops, pos)
 						else
 							if math.random(1,5) <= 4 then
-								destroy(pos)
+								destroy(drops, pos)
 							end
 						end
 					end
@@ -88,6 +102,10 @@ boom = function(pos, time)
 					pos.z = pos.z-dz
 				end
 			end
+		end
+
+		for _,stack in pairs(drops) do
+			eject_drops(pos, stack)
 		end
 		
 		minetest.add_particlespawner(
