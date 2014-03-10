@@ -36,13 +36,15 @@ local add_drop = function(drops, pos, item)
 	end
 end
 
-local destroy = function(drops, pos)
+local destroy = function(drops, pos, last)
 	local nodename = minetest.env:get_node(pos).name
 	if nodename ~= "air" then
-		minetest.env:remove_node(pos)
-		nodeupdate(pos)
+		minetest.env:remove_node(pos, 1)
+		if last then
+			nodeupdate(pos)
+		end
 		if minetest.registered_nodes[nodename].groups.flammable ~= nil then
-			minetest.env:set_node(pos, {name="fire:basic_flame"})
+			minetest.env:set_node(pos, {name="fire:basic_flame"}, 2)
 			return
 		end
 		local drop = minetest.get_node_drops(nodename, "")
@@ -83,46 +85,69 @@ boom = function(pos, time)
 			end
 		end
 
+		local range = 2
 		local drops = {}
-		for dx=-2,2 do
-			for dz=-2,2 do
-				for dy=2,-2,-1 do
-					pos.x = pos.x+dx
-					pos.y = pos.y+dy
-					pos.z = pos.z+dz
+		local list = {}
+		local range = 2
+		local dr = 0
+		while dr<range do
+			dr=dr+1
+			for dx=-dr,dr,dr*2 do
+				for dy=-dr,dr,1 do
+					for dz=-dr,dr,1 do
+						table.insert(list, {x=dx, y=dy, z=dz})
+					end
+				end
+			end
+			for dy=-dr,dr,dr*2 do
+				for dx=-dr+1,dr-1,1 do
+					for dz=-dr,dr,1 do
+						table.insert(list, {x=dx, y=dy, z=dz})
+					end
+				end
+			end
+			for dz=-dr,dr,dr*2 do
+				for dx=-dr+1,dr-1,1 do
+					for dy=-dr+1,dr-1,1 do
+						table.insert(list, {x=dx, y=dy, z=dz})
+					end
+				end
+			end
+				for _,p in ipairs(list) do
+					local np = {x=pos.x+p.x, y=pos.y+p.y, z=pos.z+p.z}
 					
-					local node =  minetest.env:get_node(pos)
+					local node =  minetest.env:get_node(np)
 					if node.name == "tnt:tnt" or node.name == "tnt:tnt_burning" then
-						minetest.env:set_node(pos, {name="tnt:tnt_burning"})
-						boom({x=pos.x, y=pos.y, z=pos.z}, 0)
+						if range < 25 then
+							range = range + 1
+							minetest.env:remove_node(np)
+						else
+						minetest.env:set_node(np, {name="tnt:tnt_burning"})
+						boom(np, 1)
+						end
 					elseif node.name == "fire:basic_flame" or string.find(node.name, "default:water_") or string.find(node.name, "default:lava_") or node.name == "tnt:boom" then
 						
 					else
-						if math.abs(dx)<2 and math.abs(dy)<2 and math.abs(dz)<2 then
-							destroy(drops, pos)
+						if math.abs(p.x)<2 and math.abs(p.y)<2 and math.abs(p.z)<2 then
+							destroy(drops, np, dr == range)
 						else
 							if math.random(1,5) <= 4 then
-								destroy(drops, pos)
+								destroy(drops, np, dr == range)
 							end
 						end
 					end
-					
-					pos.x = pos.x-dx
-					pos.y = pos.y-dy
-					pos.z = pos.z-dz
 				end
-			end
 		end
 
 		for _,stack in pairs(drops) do
 			eject_drops(pos, stack)
 		end
-		
+		local rangep = range+1
 		minetest.add_particlespawner(
 			100, --amount
 			0.1, --time
-			{x=pos.x-3, y=pos.y-3, z=pos.z-3}, --minpos
-			{x=pos.x+3, y=pos.y+3, z=pos.z+3}, --maxpos
+			{x=pos.x-rangep, y=pos.y-rangep, z=pos.z-rangep}, --minpos
+			{x=pos.x+rangep, y=pos.y+rangep, z=pos.z+rangep}, --maxpos
 			{x=-0, y=-0, z=-0}, --minvel
 			{x=0, y=0, z=0}, --maxvel
 			{x=-0.5,y=5,z=-0.5}, --minacc
