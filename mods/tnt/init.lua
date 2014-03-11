@@ -119,7 +119,13 @@ boom = function(pos, time)
 					local node =  minetest.env:get_node(np)
 					if node.name == "tnt:tnt" or node.name == "tnt:tnt_burning" then
 						if range < 25 then
-							range = range + 1
+							if range <= 5 then
+								range = range + 1
+							elseif range <= 10 then
+								range = range + 0.5
+							else
+								range = range + 0.3
+							end
 							minetest.env:remove_node(np)
 						else
 						minetest.env:set_node(np, {name="tnt:tnt_burning"})
