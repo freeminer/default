@@ -377,7 +377,7 @@ minetest.register_node("default:junglegrass", {
 	walkable = false,
 	buildable_to = true,
 	is_ground_content = true,
-	groups = {snappy=3,flammable=2,flora=1,attached_node=1},
+	groups = {snappy=3,flammable=2,flora=1,attached_node=1, drop_by_liquid=1},
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
@@ -699,7 +699,7 @@ minetest.register_node("default:torch", {
 		wall_bottom = {-0.1, -0.5, -0.1, 0.1, -0.5+0.6, 0.1},
 		wall_side = {-0.5, -0.3, -0.1, -0.5+0.3, 0.3, 0.1},
 	},
-	groups = {choppy=2,dig_immediate=3,flammable=1,attached_node=1,hot=30,wield_light=LIGHT_MAX-1},
+	groups = {choppy=2,dig_immediate=3,flammable=1,attached_node=1,hot=30,wield_light=LIGHT_MAX-1, drop_by_liquid=1},
 	legacy_wallmounted = true,
 	sounds = default.node_sound_defaults(),
 })
@@ -1338,7 +1338,7 @@ minetest.register_node("default:dry_shrub", {
 	walkable = false,
 	is_ground_content = true,
 	buildable_to = true,
-	groups = {snappy=3,flammable=3,attached_node=1},
+	groups = {snappy=3,flammable=3,attached_node=1, drop_by_liquid=1},
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
@@ -1357,7 +1357,7 @@ minetest.register_node("default:grass_1", {
 	walkable = false,
 	is_ground_content = true,
 	buildable_to = true,
-	groups = {snappy=3,flammable=3,flora=1,attached_node=1},
+	groups = {snappy=3,flammable=3,flora=1,attached_node=1, drop_by_liquid=1},
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
@@ -1382,7 +1382,7 @@ minetest.register_node("default:grass_2", {
 	buildable_to = true,
 	is_ground_content = true,
 	drop = "default:grass_1",
-	groups = {snappy=3,flammable=3,flora=1,attached_node=1,not_in_creative_inventory=1},
+	groups = {snappy=3,flammable=3,flora=1,attached_node=1,not_in_creative_inventory=1, drop_by_liquid=1},
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
@@ -1400,7 +1400,7 @@ minetest.register_node("default:grass_3", {
 	buildable_to = true,
 	is_ground_content = true,
 	drop = "default:grass_1",
-	groups = {snappy=3,flammable=3,flora=1,attached_node=1,not_in_creative_inventory=1},
+	groups = {snappy=3,flammable=3,flora=1,attached_node=1,not_in_creative_inventory=1, drop_by_liquid=1},
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
@@ -1419,7 +1419,7 @@ minetest.register_node("default:grass_4", {
 	buildable_to = true,
 	is_ground_content = true,
 	drop = "default:grass_1",
-	groups = {snappy=3,flammable=3,flora=1,attached_node=1,not_in_creative_inventory=1},
+	groups = {snappy=3,flammable=3,flora=1,attached_node=1,not_in_creative_inventory=1, drop_by_liquid=1},
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
@@ -1438,7 +1438,7 @@ minetest.register_node("default:grass_5", {
 	buildable_to = true,
 	is_ground_content = true,
 	drop = "default:grass_1",
-	groups = {snappy=3,flammable=3,flora=1,attached_node=1,not_in_creative_inventory=1},
+	groups = {snappy=3,flammable=3,flora=1,attached_node=1,not_in_creative_inventory=1, drop_by_liquid=1},
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
