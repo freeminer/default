@@ -20,7 +20,7 @@ get_snow = function (p)
 	local humidity = minetest.get_humidity(p)
 	if humidity < 60 then return 0 end
 	--print('S h='..minetest.get_heat(p)..' h='..minetest.get_humidity(p))
-	return 100/humidity
+	return (humidity-60)/(100-60)
 end
 
 get_rain = function (p)
@@ -32,7 +32,7 @@ get_rain = function (p)
 	local humidity = minetest.get_humidity(p)
 	if humidity < 60 then return 0 end
 	--print('R h='..minetest.get_heat(p)..' h='..minetest.get_humidity(p))
-	return 100/humidity
+	return (humidity-60)/(100-60)
 end
 
 if minetest.setting_getbool("weather") then
