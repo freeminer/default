@@ -4,6 +4,7 @@ local loss_prob = {}
 loss_prob["default:cobble"] = 3
 loss_prob["default:dirt"] = 4
 
+local range_max = tonumber(minetest.setting_get("tnt_range_max") or 25)
 
 local eject_drops = function(pos, stack)
 	local obj = minetest.env:add_item(pos, stack)
@@ -118,7 +119,7 @@ boom = function(pos, time)
 					
 					local node =  minetest.env:get_node(np)
 					if node.name == "tnt:tnt" or node.name == "tnt:tnt_burning" then
-						if range < 25 then
+						if range < range_max then
 							if range <= 5 then
 								range = range + 1
 							elseif range <= 10 then
