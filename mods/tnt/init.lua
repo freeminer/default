@@ -4,7 +4,7 @@ local loss_prob = {}
 loss_prob["default:cobble"] = 3
 loss_prob["default:dirt"] = 4
 
-local range_max = tonumber(minetest.setting_get("tnt_range_max") or 25)
+local radius_max = tonumber(minetest.setting_get("tnt_radius_max") or 25)
 
 local eject_drops = function(pos, stack)
 	local obj = minetest.env:add_item(pos, stack)
@@ -37,15 +37,15 @@ local add_drop = function(drops, pos, item)
 	end
 end
 
-local destroy = function(drops, pos, last)
+local destroy = function(drops, pos, last, fast)
 	local nodename = minetest.env:get_node(pos).name
 	if nodename ~= "air" then
-		minetest.env:remove_node(pos, 1)
+		minetest.env:remove_node(pos, (fast and 1 or 0))
 		if last then
 			nodeupdate(pos)
 		end
 		if minetest.registered_nodes[nodename].groups.flammable ~= nil then
-			minetest.env:set_node(pos, {name="fire:basic_flame"}, 2)
+			minetest.env:set_node(pos, {name="fire:basic_flame"}, (fast and 2 or 0))
 			return
 		end
 		local drop = minetest.get_node_drops(nodename, "")
@@ -86,12 +86,13 @@ boom = function(pos, time)
 			end
 		end
 
-		local range = 2
+		local radius = 2
 		local drops = {}
 		local list = {}
-		local range = 2
 		local dr = 0
-		while dr<range do
+		local tnts = 1
+		local destroyed = 0
+		while dr<radius do
 			dr=dr+1
 			for dx=-dr,dr,dr*2 do
 				for dy=-dr,dr,1 do
@@ -118,16 +119,18 @@ boom = function(pos, time)
 					local np = {x=pos.x+p.x, y=pos.y+p.y, z=pos.z+p.z}
 					
 					local node =  minetest.env:get_node(np)
-					if node.name == "tnt:tnt" or node.name == "tnt:tnt_burning" then
-						if range < range_max then
-							if range <= 5 then
-								range = range + 1
-							elseif range <= 10 then
-								range = range + 0.5
+					if node.name == "air" then
+					elseif node.name == "tnt:tnt" or node.name == "tnt:tnt_burning" then
+						if radius < radius_max then
+							if radius <= 5 then
+								radius = radius + 1
+							elseif radius <= 10 then
+								radius = radius + 0.5
 							else
-								range = range + 0.3
+								radius = radius + 0.3
 							end
-							minetest.env:remove_node(np)
+							minetest.env:remove_node(np, 2)
+						tnts = tnts + 1
 						else
 						minetest.env:set_node(np, {name="tnt:tnt_burning"})
 						boom(np, 1)
@@ -136,25 +139,28 @@ boom = function(pos, time)
 						
 					else
 						if math.abs(p.x)<2 and math.abs(p.y)<2 and math.abs(p.z)<2 then
-							destroy(drops, np, dr == range)
+							destroy(drops, np, dr == radius, radius > 7)
+							destroyed = destroyed + 1
 						else
 							if math.random(1,5) <= 4 then
-								destroy(drops, np, dr == range)
+								destroy(drops, np, dr == radius, radius > 7)
+								destroyed = destroyed + 1
 							end
 						end
 					end
 				end
 		end
+		print("TNT exploded=" .. tnts .. " radius=" .. radius .. " destroyed="..destroyed)
 
 		for _,stack in pairs(drops) do
 			eject_drops(pos, stack)
 		end
-		local rangep = range+1
+		local radiusp = radius+1
 		minetest.add_particlespawner(
 			100, --amount
 			0.1, --time
-			{x=pos.x-rangep, y=pos.y-rangep, z=pos.z-rangep}, --minpos
-			{x=pos.x+rangep, y=pos.y+rangep, z=pos.z+rangep}, --maxpos
+			{x=pos.x-radiusp, y=pos.y-radiusp, z=pos.z-radiusp}, --minpos
+			{x=pos.x+radiusp, y=pos.y+radiusp, z=pos.z+radiusp}, --maxpos
 			{x=-0, y=-0, z=-0}, --minvel
 			{x=0, y=0, z=0}, --maxvel
 			{x=-0.5,y=5,z=-0.5}, --minacc
