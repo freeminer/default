@@ -72,19 +72,6 @@ boom = function(pos, time)
 			minetest.env:remove_node(pos)
 		end, {x=pos.x, y=pos.y, z=pos.z})
 		
-		local objects = minetest.env:get_objects_inside_radius(pos, 7)
-		for _,obj in ipairs(objects) do
-			if obj:is_player() or (obj:get_luaentity() and obj:get_luaentity().name ~= "__builtin:item") then
-				local obj_p = obj:getpos()
-				local vec = {x=obj_p.x-pos.x, y=obj_p.y-pos.y, z=obj_p.z-pos.z}
-				local dist = (vec.x^2+vec.y^2+vec.z^2)^0.5
-				local damage = (80*0.5^dist)*2
-				obj:punch(obj, 1.0, {
-					full_punch_interval=1.0,
-					damage_groups={fleshy=damage},
-				}, vec)
-			end
-		end
 
 		local radius = 2
 		local drops = {}
@@ -135,7 +122,11 @@ boom = function(pos, time)
 						minetest.env:set_node(np, {name="tnt:tnt_burning"})
 						boom(np, 1)
 						end
-					elseif node.name == "fire:basic_flame" or string.find(node.name, "default:water_") or string.find(node.name, "default:lava_") or node.name == "tnt:boom" then
+					elseif node.name == "fire:basic_flame"
+						--or string.find(node.name, "default:water_") 
+						--or string.find(node.name, "default:lava_") 
+						or node.name == "tnt:boom"
+						then
 						
 					else
 						if math.abs(p.x)<2 and math.abs(p.y)<2 and math.abs(p.z)<2 then
@@ -150,6 +141,30 @@ boom = function(pos, time)
 					end
 				end
 		end
+
+		local objects = minetest.env:get_objects_inside_radius(pos, radius*2)
+		for _,obj in ipairs(objects) do
+			--if obj:is_player() or (obj:get_luaentity() and obj:get_luaentity().name ~= "__builtin:item") then
+				local p = obj:getpos()
+				local v = obj:getvelocity()
+				local vec = {x=p.x-pos.x, y=p.y-pos.y, z=p.z-pos.z}
+				local dist = (vec.x^2+vec.y^2+vec.z^2)^0.5
+				local damage = ((radius*20)/dist)
+				--print("DMG dist="..dist.." damage="..damage)
+				if obj:is_player() or (obj:get_luaentity() and obj:get_luaentity().name ~= "__builtin:item") then
+				obj:punch(obj, 1.0, {
+					full_punch_interval=1.0,
+					damage_groups={fleshy=damage},
+				}, vec)
+				end
+				if v ~= nil then
+					--obj:setvelocity({x=(p.x - pos.x) + (radius / 4) + v.x, y=(p.y - pos.y) + (radius / 2) + v.y, z=(p.z - pos.z) + (radius / 4) + v.z})
+					obj:setvelocity({x=(p.x - pos.x) + (radius / 2) + v.x, y=(p.y - pos.y) + radius + v.y,       z=(p.z - pos.z) + (radius / 2) + v.z})
+				end
+			--end
+		end
+
+
 		print("TNT exploded=" .. tnts .. " radius=" .. radius .. " destroyed="..destroyed)
 
 		for _,stack in pairs(drops) do
