@@ -9,7 +9,7 @@ minetest.register_abm({
     interval = 10,
     chance = 2,
     action = function(pos,node)
-        minetest.env:set_node(pos,{name = "default:water_source", param2=128})
+        minetest.set_node(pos,{name = "default:water_source", param2=128})
     end
 })
 
@@ -23,6 +23,6 @@ minetest.register_abm({
     interval = 10,
     chance = 2,
     action = function(pos,node)
-        minetest.env:set_node(pos,{name = "default:lava_source", param2=128})
+        minetest.set_node(pos,{name = "default:lava_source", param2=128})
     end
 })

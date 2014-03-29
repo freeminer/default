@@ -46,11 +46,11 @@ minetest.register_node("flowers:moonflower_open", {
 
 set_moonflower = function (pos)
 	-- choose the appropriate form of the moon flower
-	if (minetest.env:get_node_light(pos, 0.5) == 15)
-	and ((minetest.env:get_timeofday() < OPEN_TIME_START) or (minetest.env:get_timeofday() > OPEN_TIME_END)) then
-		minetest.env:add_node(pos, { name = "flowers:moonflower_open" })
+	if (minetest.get_node_light(pos, 0.5) == 15)
+	and ((minetest.get_timeofday() < OPEN_TIME_START) or (minetest.get_timeofday() > OPEN_TIME_END)) then
+		minetest.add_node(pos, { name = "flowers:moonflower_open" })
 	else
-		minetest.env:add_node(pos, { name = "flowers:moonflower_closed" })
+		minetest.add_node(pos, { name = "flowers:moonflower_closed" })
 	end
 end
 
@@ -73,9 +73,9 @@ for attempts = 0, SPAWN_ATTEMPTS do
 	-- now scan upward until we find a suitable spot on the Y axis, if none is found this attempt is failed
 	for coords_y = minp.y, maxp.y do
 		local pos_here = { x = coords_x, y = coords_y, z = coords_z }
-		local node_here = minetest.env:get_node(pos_here)
+		local node_here = minetest.get_node(pos_here)
 		local pos_top = { x = coords_x, y = coords_y + 1, z = coords_z }
-		local node_top = minetest.env:get_node(pos_top)
+		local node_top = minetest.get_node(pos_top)
 
 		if (node_here.name == "default:dirt_with_grass") and (node_top.name == "air") then
 			if (math.random() <= SPAWN_PROBABILITY) then

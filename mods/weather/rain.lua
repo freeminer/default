@@ -51,7 +51,7 @@ minetest.register_abm({
 			and minetest.registered_nodes[node.name].drawtype ~= "liquid"
 			and minetest.registered_nodes[node.name].drawtype ~= "allfaces_optional" then  return end
 		local np = addvectors(pos, {x=0, y=1, z=0})
-		if minetest.env:get_node_light(np, 0.5) == 15 then
+		if minetest.get_node_light(np, 0.5) == 15 then
 			if minetest.get_node(pos).name == "default:water_flowing" then
 				minetest.add_node_level(pos, 1)
 			elseif minetest.get_node(np).name == "air" then
@@ -72,7 +72,7 @@ minetest.register_abm({
 		-- todo! chance must depend on humidity and temperature
 		if get_rain(pos) > 0 or minetest.get_humidity(pos) > 90 then return end
 		local np = addvectors(pos, {x=0, y=1, z=0})
-		--if minetest.env:get_node_light(np, 0.5) == 15 then
+		--if minetest.get_node_light(np, 0.5) == 15 then
 		if minetest.get_node(np).name == "air" then
 			minetest.add_node_level(pos, -1)
 		end

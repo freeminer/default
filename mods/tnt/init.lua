@@ -7,7 +7,7 @@ loss_prob["default:dirt"] = 4
 local radius_max = tonumber(minetest.setting_get("tnt_radius_max") or 25)
 
 local eject_drops = function(pos, stack)
-	local obj = minetest.env:add_item(pos, stack)
+	local obj = minetest.add_item(pos, stack)
 
 	if obj == nil then
 		return
@@ -38,14 +38,14 @@ local add_drop = function(drops, pos, item)
 end
 
 local destroy = function(drops, pos, last, fast)
-	local nodename = minetest.env:get_node(pos).name
+	local nodename = minetest.get_node(pos).name
 	if nodename ~= "air" then
-		minetest.env:remove_node(pos, (fast and 1 or 0))
+		minetest.remove_node(pos, (fast and 1 or 0))
 		if last then
 			nodeupdate(pos)
 		end
 		if minetest.registered_nodes[nodename].groups.flammable ~= nil then
-			minetest.env:set_node(pos, {name="fire:basic_flame"}, (fast and 2 or 0))
+			minetest.set_node(pos, {name="fire:basic_flame"}, (fast and 2 or 0))
 			return
 		end
 		local drop = minetest.get_node_drops(nodename, "")
@@ -63,13 +63,13 @@ end
 
 boom = function(pos, time)
 	minetest.after(time, function(pos)
-		if minetest.env:get_node(pos).name ~= "tnt:tnt_burning" then
+		if minetest.get_node(pos).name ~= "tnt:tnt_burning" then
 			return
 		end
 		minetest.sound_play("tnt_explode", {pos=pos, gain=1.5, max_hear_distance=2*64})
-		minetest.env:set_node(pos, {name="tnt:boom"})
+		minetest.set_node(pos, {name="tnt:boom"})
 		minetest.after(0.5, function(pos)
-			minetest.env:remove_node(pos)
+			minetest.remove_node(pos)
 		end, {x=pos.x, y=pos.y, z=pos.z})
 		
 
@@ -105,7 +105,7 @@ boom = function(pos, time)
 				for _,p in ipairs(list) do
 					local np = {x=pos.x+p.x, y=pos.y+p.y, z=pos.z+p.z}
 					
-					local node =  minetest.env:get_node(np)
+					local node =  minetest.get_node(np)
 					if node.name == "air" then
 					elseif node.name == "tnt:tnt" or node.name == "tnt:tnt_burning" then
 						if radius < radius_max then
@@ -116,10 +116,10 @@ boom = function(pos, time)
 							else
 								radius = radius + 0.3
 							end
-							minetest.env:remove_node(np, 2)
+							minetest.remove_node(np, 2)
 						tnts = tnts + 1
 						else
-						minetest.env:set_node(np, {name="tnt:tnt_burning"})
+						minetest.set_node(np, {name="tnt:tnt_burning"})
 						boom(np, 1)
 						end
 					elseif node.name == "fire:basic_flame"
@@ -142,7 +142,7 @@ boom = function(pos, time)
 				end
 		end
 
-		local objects = minetest.env:get_objects_inside_radius(pos, radius*2)
+		local objects = minetest.get_objects_inside_radius(pos, radius*2)
 		for _,obj in ipairs(objects) do
 			--if obj:is_player() or (obj:get_luaentity() and obj:get_luaentity().name ~= "__builtin:item") then
 				local p = obj:getpos()
@@ -199,7 +199,7 @@ minetest.register_node("tnt:tnt", {
 	on_punch = function(pos, node, puncher)
 		if puncher:get_wielded_item():get_name() == "default:torch" then
 			minetest.sound_play("tnt_ignite", {pos=pos})
-			minetest.env:set_node(pos, {name="tnt:tnt_burning"})
+			minetest.set_node(pos, {name="tnt:tnt_burning"})
 			boom(pos, 4)
 		end
 	end,
@@ -207,7 +207,7 @@ minetest.register_node("tnt:tnt", {
 	mesecons = {
 		effector = {
 			action_on = function(pos, node)
-				minetest.env:set_node(pos, {name="tnt:tnt_burning"})
+				minetest.set_node(pos, {name="tnt:tnt_burning"})
 				boom(pos, 0)
 			end
 		},
@@ -231,24 +231,24 @@ minetest.register_node("tnt:boom", {
 })
 
 burn = function(pos)
-	if minetest.env:get_node(pos).name == "tnt:tnt" then
+	if minetest.get_node(pos).name == "tnt:tnt" then
 		minetest.sound_play("tnt_ignite", {pos=pos})
-		minetest.env:set_node(pos, {name="tnt:tnt_burning"})
+		minetest.set_node(pos, {name="tnt:tnt_burning"})
 		boom(pos, 1)
 		return
 	end
-	if minetest.env:get_node(pos).name ~= "tnt:gunpowder" then
+	if minetest.get_node(pos).name ~= "tnt:gunpowder" then
 		return
 	end
 	minetest.sound_play("tnt_gunpowder_burning", {pos=pos, gain=2})
-	minetest.env:set_node(pos, {name="tnt:gunpowder_burning"})
+	minetest.set_node(pos, {name="tnt:gunpowder_burning"})
 	
 	minetest.after(1, function(pos)
-		if minetest.env:get_node(pos).name ~= "tnt:gunpowder_burning" then
+		if minetest.get_node(pos).name ~= "tnt:gunpowder_burning" then
 			return
 		end
 		minetest.after(0.5, function(pos)
-			minetest.env:remove_node(pos)
+			minetest.remove_node(pos)
 		end, {x=pos.x, y=pos.y, z=pos.z})
 		for dx=-1,1 do
 			for dz=-1,1 do
@@ -322,7 +322,7 @@ minetest.register_abm({
 	chance = 10,
 	action = function(pos, node)
 		if node.name == "tnt:tnt" then
-			minetest.env:set_node(pos, {name="tnt:tnt_burning"})
+			minetest.set_node(pos, {name="tnt:tnt_burning"})
 			boom({x=pos.x, y=pos.y, z=pos.z}, 0)
 		else
 			burn(pos)
