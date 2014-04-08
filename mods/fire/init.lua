@@ -163,7 +163,7 @@ minetest.register_abm({
 			return
 		end
 		--check if fire is permenant or not
-		if minetest.env:get_node(p0).param1 == 1 then return end
+		if minetest.env:get_node(p0).param2 == 127 then return end
 		-- Make the following things rarer
 		if math.random(1,3) == 1 then
 			return
