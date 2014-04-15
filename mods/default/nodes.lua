@@ -325,10 +325,10 @@ minetest.register_node("default:junglewood", {
 minetest.register_node("default:jungleleaves", {
 	description = "Jungle Leaves",
 	drawtype = "allfaces_optional",
+	waving = 1,
 	visual_scale = 1.3,
 	tiles = {"default_jungleleaves.png"},
 	paramtype = "light",
-	waving = 1,
 	is_ground_content = false,
 	groups = {snappy=3, leafdecay=3, flammable=2, leaves=1},
 	drop = {
@@ -369,6 +369,7 @@ minetest.register_node("default:junglesapling", {
 minetest.register_node("default:junglegrass", {
 	description = "Jungle Grass",
 	drawtype = "plantlike",
+	waving = 1,
 	visual_scale = 1.3,
 	tiles = {"default_junglegrass.png"},
 	inventory_image = "default_junglegrass.png",
@@ -388,10 +389,10 @@ minetest.register_node("default:junglegrass", {
 minetest.register_node("default:leaves", {
 	description = "Leaves",
 	drawtype = "allfaces_optional",
+	waving = 1,
 	visual_scale = 1.3,
 	tiles = {"default_leaves.png"},
 	paramtype = "light",
-	waving = 1,
 	is_ground_content = false,
 	groups = {snappy=3, leafdecay=3, flammable=2, leaves=1},
 	drop = {
@@ -419,7 +420,10 @@ minetest.register_node("default:cactus", {
 	is_ground_content = true,
 	groups = {snappy=1,choppy=3,flammable=2},
 	sounds = default.node_sound_wood_defaults(),
-	on_place = minetest.rotate_node
+	on_place = minetest.rotate_node,
+	after_dig_node = function(pos, node, metadata, digger)
+		default.dig_up(pos, node, digger)
+	end,
 })
 
 minetest.register_node("default:papyrus", {
@@ -437,6 +441,9 @@ minetest.register_node("default:papyrus", {
 	},
 	groups = {snappy=3,flammable=2},
 	sounds = default.node_sound_leaves_defaults(),
+	after_dig_node = function(pos, node, metadata, digger)
+		default.dig_up(pos, node, digger)
+	end,
 })
 
 minetest.register_node("default:bookshelf", {
@@ -747,16 +754,26 @@ minetest.register_node("default:sign_wall", {
 
 default.chest_formspec = 
 	"size[8,9]"..
-	"list[current_name;main;0,0;8,4;]"..
-	"list[current_player;main;0,5;8,4;]"
+	gui_bg..
+	gui_bg_img..
+	gui_slots..
+	"list[current_name;main;0,0.3;8,4;]"..
+	"list[current_player;main;0,4.85;8,1;]"..
+	"list[current_player;main;0,6.08;8,3;8]"..
+	default.get_hotbar_bg(0,4.85)
 
 function default.get_locked_chest_formspec(pos)
 	local spos = pos.x .. "," .. pos.y .. "," ..pos.z
 	local formspec =
 		"size[8,9]"..
-		"list[nodemeta:".. spos .. ";main;0,0;8,4;]"..
-		"list[current_player;main;0,5;8,4;]"
-	return formspec
+		gui_bg..
+		gui_bg_img..
+		gui_slots..
+		"list[nodemeta:".. spos .. ";main;0,0.3;8,4;]"..
+		"list[current_player;main;0,4.85;8,1;]"..
+		"list[current_player;main;0,6.08;8,3;8]"..
+		default.get_hotbar_bg(0,4.85)
+ return formspec
 end
 
 
@@ -886,25 +903,54 @@ minetest.register_node("default:chest_locked", {
 	end,
 })
 
+function default.furnace_active(pos, percent, item_percent)
+    local formspec = 
+	"size[8,8.5]"..
+	gui_bg..
+	gui_bg_img..
+	gui_slots..
+	"list[current_name;src;2.75,0.5;1,1;]"..
+	"list[current_name;fuel;2.75,2.5;1,1;]"..
+	"image[2.75,1.5;1,1;default_furnace_fire_bg.png^[lowpart:"..
+	(100-percent)..":default_furnace_fire_fg.png]"..
+        "image[3.75,1.5;1,1;gui_furnace_arrow_bg.png^[lowpart:"..
+        (item_percent*100)..":gui_furnace_arrow_fg.png^[transformR270]"..
+	"list[current_name;dst;4.75,0.96;2,2;]"..
+	"list[current_player;main;0,4.25;8,1;]"..
+	"list[current_player;main;0,5.5;8,3;8]"..
+	default.get_hotbar_bg(0,4.25)
+    return formspec
+  end
+
 function default.get_furnace_active_formspec(pos, percent)
-	local formspec =
-		"size[8,9]"..
-		"image[2,2;1,1;default_furnace_fire_bg.png^[lowpart:"..
-		(100-percent)..":default_furnace_fire_fg.png]"..
-		"list[current_name;fuel;2,3;1,1;]"..
-		"list[current_name;src;2,1;1,1;]"..
-		"list[current_name;dst;5,1;2,2;]"..
-		"list[current_player;main;0,5;8,4;]"
-	return formspec
+	local meta = minetest.get_meta(pos)local inv = meta:get_inventory()
+	local srclist = inv:get_list("src")
+	local cooked = nil
+	local aftercooked = nil
+	if srclist then
+		cooked, aftercooked = minetest.get_craft_result({method = "cooking", width = 1, items = srclist})
+	end
+	local item_percent = 0
+	if cooked then
+		item_percent = meta:get_float("src_time")/cooked.time
+	end
+       
+        return default.furnace_active(pos, percent, item_percent)
 end
 
 default.furnace_inactive_formspec =
-	"size[8,9]"..
-	"image[2,2;1,1;default_furnace_fire_bg.png]"..
-	"list[current_name;fuel;2,3;1,1;]"..
-	"list[current_name;src;2,1;1,1;]"..
-	"list[current_name;dst;5,1;2,2;]"..
-	"list[current_player;main;0,5;8,4;]"
+	"size[8,8.5]"..
+	gui_bg..
+	gui_bg_img..
+	gui_slots..
+	"list[current_name;src;2.75,0.5;1,1;]"..
+	"list[current_name;fuel;2.75,2.5;1,1;]"..
+	"image[2.75,1.5;1,1;default_furnace_fire_bg.png]"..
+	"image[3.75,1.5;1,1;gui_furnace_arrow_bg.png^[transformR270]"..
+	"list[current_name;dst;4.75,0.96;2,2;]"..
+	"list[current_player;main;0,4.25;8,1;]"..
+	"list[current_player;main;0,5.5;8,3;8]"..
+	default.get_hotbar_bg(0,4.25)
 
 minetest.register_node("default:furnace", {
 	description = "Furnace",
@@ -1187,6 +1233,14 @@ minetest.register_node("default:desert_cobble", {
 	sounds = default.node_sound_stone_defaults(),
 })
 
+minetest.register_node("default:desert_cobble", {
+	description = "Desert Cobblestone",
+	tiles = {"default_desert_cobble.png"},
+	is_ground_content = true,
+	groups = {cracky=3, stone=2},
+	sounds = default.node_sound_stone_defaults(),
+})
+
 minetest.register_node("default:mossycobble", {
 	description = "Mossy Cobblestone",
 	tiles = {"default_mossycobble.png"},
@@ -1338,12 +1392,12 @@ minetest.register_node("default:apple", {
 minetest.register_node("default:dry_shrub", {
 	description = "Dry Shrub",
 	drawtype = "plantlike",
+	waving = 1,
 	visual_scale = 1.0,
 	tiles = {"default_dry_shrub.png"},
 	inventory_image = "default_dry_shrub.png",
 	wield_image = "default_dry_shrub.png",
 	paramtype = "light",
-	waving = 1,
 	walkable = false,
 	is_ground_content = true,
 	buildable_to = true,
@@ -1358,6 +1412,7 @@ minetest.register_node("default:dry_shrub", {
 minetest.register_node("default:grass_1", {
 	description = "Grass",
 	drawtype = "plantlike",
+	waving = 1,
 	tiles = {"default_grass_1.png"},
 	-- use a bigger inventory image
 	inventory_image = "default_grass_3.png",
@@ -1383,6 +1438,7 @@ minetest.register_node("default:grass_1", {
 minetest.register_node("default:grass_2", {
 	description = "Grass",
 	drawtype = "plantlike",
+	waving = 1,
 	tiles = {"default_grass_2.png"},
 	inventory_image = "default_grass_2.png",
 	wield_image = "default_grass_2.png",
@@ -1401,6 +1457,7 @@ minetest.register_node("default:grass_2", {
 minetest.register_node("default:grass_3", {
 	description = "Grass",
 	drawtype = "plantlike",
+	waving = 1,
 	tiles = {"default_grass_3.png"},
 	inventory_image = "default_grass_3.png",
 	wield_image = "default_grass_3.png",
@@ -1420,6 +1477,7 @@ minetest.register_node("default:grass_3", {
 minetest.register_node("default:grass_4", {
 	description = "Grass",
 	drawtype = "plantlike",
+	waving = 1,
 	tiles = {"default_grass_4.png"},
 	inventory_image = "default_grass_4.png",
 	wield_image = "default_grass_4.png",
@@ -1439,6 +1497,7 @@ minetest.register_node("default:grass_4", {
 minetest.register_node("default:grass_5", {
 	description = "Grass",
 	drawtype = "plantlike",
+	waving = 1,
 	tiles = {"default_grass_5.png"},
 	inventory_image = "default_grass_5.png",
 	wield_image = "default_grass_5.png",

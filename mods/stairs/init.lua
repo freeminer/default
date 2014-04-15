@@ -232,8 +232,24 @@ stairs.register_stair_and_slab("stone", "default:stone",
 stairs.register_stair_and_slab("cobble", "default:cobble",
 		{cracky=3, melt=2900},
 		{"default_cobble.png"},
-		"Cobble Stair",
-		"Cobble Slab",
+		"Cobblestone Stair",
+		"Cobblestone Slab",
+		default.node_sound_stone_defaults(),
+		"default:lava_flowing")
+
+stairs.register_stair_and_slab("desert_stone", "default:desert_stone",
+		{cracky=3},
+		{"default_desert_stone.png"},
+		"Desertstone Stair",
+		"Desertstone Slab",
+		default.node_sound_stone_defaults(),
+		"default:lava_flowing")
+
+stairs.register_stair_and_slab("desert_cobble", "default:desert_cobble",
+		{cracky=3},
+		{"default_desert_cobble.png"},
+		"Desert Cobblestone Stair",
+		"Desert Cobblestone Slab",
 		default.node_sound_stone_defaults(),
 		"default:lava_flowing")
 
@@ -242,7 +258,8 @@ stairs.register_stair_and_slab("brick", "default:brick",
 		{"default_brick.png"},
 		"Brick Stair",
 		"Brick Slab",
-		default.node_sound_stone_defaults())
+		default.node_sound_stone_defaults(),
+		"default:lava_flowing")
 
 stairs.register_stair_and_slab("sandstone", "default:sandstone",
 		{crumbly=2,cracky=2,melt=3200},

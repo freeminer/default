@@ -14,9 +14,9 @@ The default github master HEAD is generally compatible with the github
 master HEAD of freeminer.
 
 Additionally, when the freeminer engine is tagged to be a certain version (eg.
-0.4.dev-20120326), default is tagged with the version too.
+0.4.1), default is tagged with the version too.
 
-When stable releases are made, minetest_game is packaged and made available in
+When stable releases are made, default is packaged and made available in
   http://freeminer.org
 and in case the repository has grown too much, it may be reset. In that sense,
 this is not a "real" git repository. (Package maintainers please note!)
