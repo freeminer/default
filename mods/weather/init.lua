@@ -36,7 +36,7 @@ get_rain = function (p)
 end
 
 if minetest.setting_getbool("weather") then
-	if minetest.setting_getbool("weather") and minetest.setting_getbool("liquid_finite") then
+	if minetest.setting_getbool("weather") and minetest.setting_getbool("liquid_real") then
 		dofile(minetest.get_modpath("weather").."/rain.lua")
 	end
 	dofile(minetest.get_modpath("weather").."/snow.lua")

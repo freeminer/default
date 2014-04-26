@@ -1,7 +1,7 @@
 -- Minetest 0.4 mod: bucket
 -- See README.txt for licensing and other information.
 
-local LIQUID_MAX = 8  --The number of water levels when liquid_finite is enabled
+local LIQUID_MAX = 8  --The number of water levels when liquid_real is enabled
 
 minetest.register_alias("bucket", "bucket:bucket_empty")
 minetest.register_alias("bucket_water", "bucket:bucket_water")
@@ -79,7 +79,7 @@ function bucket.register_liquid(source, flowing, itemname, inventory_image, name
 						return
 					end
 					if math.floor(fullness/128) == 1 or
-						not minetest.setting_getbool("liquid_finite") then
+						not minetest.setting_getbool("liquid_real") then
 						minetest.add_node(pos, {name=source, param2=fullness})
 						return
 					elseif node.name == flowing or node.name == source then
@@ -132,7 +132,7 @@ minetest.register_craftitem("bucket:bucket_empty", {
 		if liquiddef ~= nil and liquiddef.itemname ~= nil and
 			(node.name == liquiddef.source or
 			(node.name == liquiddef.flowing and
-				minetest.setting_getbool("liquid_finite"))) then
+				minetest.setting_getbool("liquid_real"))) then
 			if check_protection(pointed_thing.under,
 					user:get_player_name(),
 					"take ".. node.name) then
