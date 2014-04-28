@@ -1,5 +1,18 @@
+local flowing_sand_type = "flowing"
+local flowing_sand_leveled = 1
+local flowing_sand_paramtype2 = "leveled"
+local flowing_sand_liquid_drop = 1
+if tonumber(minetest.setting_get("flowing_sand_disable") or 0) == 1 then
+	flowing_sand_type = "none"
+	flowing_sand_leveled = 0
+	flowing_sand_paramtype2 = "none"
+end
+if tonumber(minetest.setting_get("flowing_sand_disable") or 0) >= 1 then
+	flowing_sand_liquid_drop = 0
+end
+
 minetest.override_item("default:dirt", {
-	groups = {crumbly=3,soil=1},
+	groups = {crumbly=3,soil=1, melt=55, liquid_drop=flowing_sand_liquid_drop, weight=2000},
 	soil = {
 		base = "default:dirt",
 		dry = "farming:soil",
@@ -8,7 +21,7 @@ minetest.override_item("default:dirt", {
 })
 
 minetest.override_item("default:dirt_with_grass", {
-	groups = {crumbly=3,soil=1},
+	groups = {crumbly=3,soil=1, melt=55, liquid_drop=flowing_sand_liquid_drop, weight=2000},
 	soil = {
 		base = "default:dirt_with_grass",
 		dry = "farming:soil",
@@ -20,8 +33,11 @@ minetest.register_node("farming:soil", {
 	description = "Soil",
 	tiles = {"farming_soil.png", "default_dirt.png"},
 	drop = "default:dirt",
+	leveled = flowing_sand_leveled,
+	liquidtype = flowing_sand_type,
+	paramtype2 = flowing_sand_paramtype2,
 	is_ground_content = true,
-	groups = {crumbly=3, not_in_creative_inventory=1, soil=2, grassland = 1},
+	groups = {crumbly=3, not_in_creative_inventory=1, soil=2, grassland = 1, melt=55, liquid_drop=flowing_sand_liquid_drop, weight=2000},
 	sounds = default.node_sound_dirt_defaults(),
 	soil = {
 		base = "default:dirt",
@@ -35,7 +51,10 @@ minetest.register_node("farming:soil_wet", {
 	tiles = {"farming_soil_wet.png", "farming_soil_wet_side.png"},
 	drop = "default:dirt",
 	is_ground_content = true,
-	groups = {crumbly=3, not_in_creative_inventory=1, soil=3, wet = 1, grassland = 1},
+	leveled = flowing_sand_leveled,
+	liquidtype = flowing_sand_type,
+	paramtype2 = flowing_sand_paramtype2,
+	groups = {crumbly=3, not_in_creative_inventory=1, soil=3, wet = 1, grassland = 1, melt=55, liquid_drop=flowing_sand_liquid_drop, weight=2000},
 	sounds = default.node_sound_dirt_defaults(),
 	soil = {
 		base = "default:dirt",
@@ -45,7 +64,7 @@ minetest.register_node("farming:soil_wet", {
 })
 
 minetest.override_item("default:desert_sand", {
-	groups = {crumbly=3, falling_node=1, sand=1, soil = 1},
+	groups = {crumbly=3, falling_node=1, sand=1, soil = 1, liquid_drop=flowing_sand_liquid_drop, weight=2000},
 	soil = {
 		base = "default:desert_sand",
 		dry = "farming:desert_sand_soil",
@@ -56,7 +75,10 @@ minetest.register_node("farming:desert_sand_soil", {
 	description = "Desert Sand",
 	tiles = {"farming_desert_sand_soil.png", "default_desert_sand.png"},
 	is_ground_content = true,
-	groups = {crumbly=3, not_in_creative_inventory = 1, falling_node=1, sand=1, soil = 2, desert = 1},
+	leveled = flowing_sand_leveled,
+	liquidtype = flowing_sand_type,
+	paramtype2 = flowing_sand_paramtype2,
+	groups = {crumbly=3, not_in_creative_inventory = 1, falling_node=1, sand=1, soil = 2, desert = 1, liquid_drop=flowing_sand_liquid_drop, weight=2000},
 	sounds = default.node_sound_sand_defaults(),
 	soil = {
 		base = "default:desert_sand",
@@ -70,7 +92,10 @@ minetest.register_node("farming:desert_sand_soil_wet", {
 	drop = "default:desert_sand",
 	tiles = {"farming_desert_sand_soil_wet.png", "farming_desert_sand_soil_wet_side.png"},
 	is_ground_content = true,
-	groups = {crumbly=3, falling_node=1, sand=1, not_in_creative_inventory=1, soil=3, wet = 1, desert = 1},
+	leveled = flowing_sand_leveled,
+	liquidtype = flowing_sand_type,
+	paramtype2 = flowing_sand_paramtype2,
+	groups = {crumbly=3, falling_node=1, sand=1, not_in_creative_inventory=1, soil=3, wet = 1, desert = 1, liquid_drop=flowing_sand_liquid_drop, weight=2000},
 	sounds = default.node_sound_sand_defaults(),
 	soil = {
 		base = "default:desert_sand",

@@ -1,4 +1,5 @@
 local weather = minetest.setting_getbool("weather")
+
 -- Wear out hoes, place soil
 -- TODO Ignore group:flower
 farming.hoe_on_use = function(itemstack, user, pointed_thing, uses)
