@@ -114,6 +114,11 @@ minetest.register_on_dieplayer(function(player)
 	local param2 = minetest.dir_to_facedir(player:get_look_dir())
 	local player_name = player:get_player_name()
 	local player_inv = player:get_inventory()
+
+	if minetest.check_player_privs(player_name, {interact=false}) and
+	not minetest.is_singleplayer() then
+	   return
+	end
 	
 	local nn = minetest.get_node(pos).name
 	if minetest.registered_nodes[nn].can_dig and
