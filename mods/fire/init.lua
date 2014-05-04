@@ -10,7 +10,7 @@ minetest.register_node("fire:basic_flame", {
 	inventory_image = "fire_basic_flame.png",
 	light_source = 14,
 	waving = 1,
-	groups = {igniter=2,dig_immediate=3,hot=200},
+	groups = {igniter=2,dig_immediate=3,hot=200,wield_light=13, drop_by_liquid=1},
 	drop = '',
 	walkable = false,
 	buildable_to = true,
@@ -162,6 +162,8 @@ minetest.register_abm({
 			fire.on_flame_remove_at(p0)
 			return
 		end
+		--check if fire is permenant or not
+		if minetest.env:get_node(p0).param2 == 128 then return end
 		-- Make the following things rarer
 		if math.random(1,3) == 1 then
 			return

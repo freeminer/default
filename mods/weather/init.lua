@@ -18,9 +18,9 @@ get_snow = function (p)
 	local heat = minetest.get_heat(p)
 	if heat >= 0 then return 0 end
 	local humidity = minetest.get_humidity(p)
-	if humidity < 65 then return 0 end
+	if humidity < 60 then return 0 end
 	--print('S h='..minetest.get_heat(p)..' h='..minetest.get_humidity(p))
-	return 100/humidity
+	return (humidity-60)/(100-60)
 end
 
 get_rain = function (p)
@@ -28,14 +28,15 @@ get_rain = function (p)
 	if p.y > cloud_height then return 0 end
 	local heat = minetest.get_heat(p)
 	if heat <= 0 then return 0 end
+	if heat > 50 then return 0 end
 	local humidity = minetest.get_humidity(p)
-	if humidity < 65 then return 0 end
+	if humidity < 60 then return 0 end
 	--print('R h='..minetest.get_heat(p)..' h='..minetest.get_humidity(p))
-	return 100/humidity
+	return (humidity-60)/(100-60)
 end
 
 if minetest.setting_getbool("weather") then
-	if minetest.setting_getbool("weather") and minetest.setting_getbool("liquid_finite") then
+	if minetest.setting_getbool("weather") and minetest.setting_getbool("liquid_real") then
 		dofile(minetest.get_modpath("weather").."/rain.lua")
 	end
 	dofile(minetest.get_modpath("weather").."/snow.lua")

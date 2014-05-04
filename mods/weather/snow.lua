@@ -3,10 +3,10 @@ minetest.register_globalstep(function(dtime)
 	for _, player in ipairs(minetest.get_connected_players()) do
 		local ppos = player:getpos()
 		local strength = get_snow(ppos)
---print("p he=".. minetest.get_heat(ppos).." hu=".. minetest.get_humidity(ppos) .. " s=" .. strength)
-		if strength > 0 then
+		if strength > 0 and minetest.get_node(ppos).name == "air" then
+--print("snow he=".. minetest.get_heat(ppos).." hu=".. minetest.get_humidity(ppos) .. " s=" .. strength)
 		-- Make sure player is not in a cave/house...
-		if minetest.env:get_node_light(ppos, 0.5) ~= 15 then return end
+		if minetest.get_node_light(ppos, 0.5) ~= 15 then return end
 
 		local minp = addvectors(ppos, {x=-9, y=7, z=-9})
 		local maxp = addvectors(ppos, {x= 9, y=7, z= 9})
@@ -17,7 +17,7 @@ minetest.register_globalstep(function(dtime)
 		local vel = {x=0, y=   -0.5, z=0}
 		local acc = {x=0, y=   -0.5, z=0}
 
-		minetest.add_particlespawner(5, 0.5,
+		minetest.add_particlespawner(5*strength, 0.5,
 			minp, maxp,
 			vel, vel,
 			acc, acc,
@@ -25,7 +25,7 @@ minetest.register_globalstep(function(dtime)
 			25, 25,
 			false, "weather_snow.png", player:get_player_name())
 
-		minetest.add_particlespawner(4, 0.5,
+		minetest.add_particlespawner(4*strength, 0.5,
 			minp_deep, maxp_deep,
 			vel, vel,
 			acc, acc,
@@ -58,18 +58,18 @@ minetest.register_abm({
 			and minetest.registered_nodes[node.name].drawtype ~= "nodebox"
 			and minetest.registered_nodes[node.name].drawtype ~= "allfaces_optional" then return end
 		local np = addvectors(pos, {x=0, y=1, z=0})
-		if minetest.env:get_node_light(np, 0.5) ~= 15 then return end
+		if minetest.get_node_light(np, 0.5) ~= 15 then return end
 		local addsnow = 1
-		if minetest.env:get_node(pos).name == "default:snow" then
-			if minetest.env:add_node_level(pos, 4) > 0 then
-				minetest.env:add_node(pos, {name="default:ice"})
+		if minetest.get_node(pos).name == "default:snow" then
+			if minetest.add_node_level(pos, 4) > 0 then
+				minetest.set_node(pos, {name="default:ice"})
 			else
 				addsnow = 0
 			end
 		end
-		if addsnow > 0 and minetest.env:get_node(np).name == "air" then
-			minetest.env:add_node(np, {name="snow"})
-			minetest.env:add_node_level(np)
+		if addsnow > 0 and minetest.get_node(np).name == "air" then
+			minetest.set_node(np, {name="snow"})
+			minetest.add_node_level(np)
 		end
 	end
 })

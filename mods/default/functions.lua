@@ -131,6 +131,8 @@ minetest.register_on_punchnode(on_punchnode)
 -- Grow trees
 --
 
+local weather = minetest.setting_getbool("weather")
+
 minetest.register_abm({
 	nodenames = {"default:sapling"},
 	interval = 10,
@@ -267,6 +269,19 @@ minetest.register_abm({
 		end
 	end,
 })
+
+--
+-- dig upwards
+--
+
+function default.dig_up(pos, node, digger)
+	if digger == nil then return end
+	local np = {x = pos.x, y = pos.y + 1, z = pos.z}
+	local nn = minetest.get_node(np)
+	if nn.name == node.name then
+		minetest.node_dig(np, nn, digger)
+	end
+end
 
 --
 -- Leafdecay
