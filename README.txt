@@ -1,5 +1,4 @@
 The main game for the Freeminer game engine [default]
-==========================================================
 
 To build the wholeness of the Freeminer project, insert this repository as
   /games/default
