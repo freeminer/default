@@ -14,7 +14,7 @@ minetest.register_biome({
 	
 	height_min     = 3,
 	height_max     = 40,
-	heat_point     = 40.0,
+	heat_point     = 5.0,
 	humidity_point = 40.0,
 })
 
@@ -23,7 +23,7 @@ minetest.register_biome({
 	
 	height_min     = 3,
 	height_max     = 3000,
-	heat_point     = 40.0,
+	heat_point     = 5.0,
 	humidity_point = 55.0,
 })
 
@@ -32,7 +32,7 @@ minetest.register_biome({
 	
 	height_min     = 3,
 	height_max     = 2500,
-	heat_point     = 60.0,
+	heat_point     = 25.0,
 	humidity_point = 70.0,
 })
 
@@ -41,7 +41,7 @@ minetest.register_biome({
 	
 	height_min     = 3,
 	height_max     = 1500,
-	heat_point     = 20.0,
+	heat_point     = -15.0,
 	humidity_point = 55.0,
 })
 
@@ -50,7 +50,7 @@ minetest.register_biome({
 	
 	height_min     = 200,
 	height_max     = 31000,
-	heat_point     = 40.0,
+	heat_point     = 5.0,
 	humidity_point = 40.0,
 })
 
@@ -64,7 +64,7 @@ minetest.register_biome({
 	
 	height_min     = -31000,
 	height_max     = 2,
-	heat_point     = 40.0,
+	heat_point     = 5.0,
 	humidity_point = 40.0,
 })
 
@@ -73,7 +73,7 @@ minetest.register_biome({
 	
 	height_min     = -31000,
 	height_max     = 2,
-	heat_point     = 20.0,
+	heat_point     = -15.0,
 	humidity_point = 40.0,
 })
 
@@ -86,7 +86,7 @@ minetest.register_biome({
 	
 	height_min     = 3,
 	height_max     = 300,
-	heat_point     = 90.0,
+	heat_point     = 55.0,
 	humidity_point = 0.0,
 })
 
@@ -102,7 +102,7 @@ minetest.register_biome({
 
 	height_min     = -31000,
 	height_max     = 0,
-	heat_point     = 40.0,
+	heat_point     = 5.0,
 	humidity_point = 40.0
 })
 
@@ -118,7 +118,7 @@ minetest.register_biome({
 
 	height_min     = -31000,
 	height_max     = 0,
-	heat_point     = -10.0,
+	heat_point     = -15.0,
 	humidity_point = 60.0
 })
 
@@ -132,7 +132,7 @@ minetest.register_biome({
 
 	height_min     = 1,
 	height_max     = 5,
-	heat_point     = 50.0,
+	heat_point     = 15.0,
 	humidity_point = 10.0
 })
 
@@ -170,7 +170,7 @@ minetest.register_biome({
 
 	height_min     = 1,
 	height_max     = 40,
-	heat_point     = 40.0,
+	heat_point     = 5.0,
 	humidity_point = 50.0
 })
 
@@ -179,7 +179,7 @@ minetest.register_biome({
 
 	height_min     = 21,
 	height_max     = 400,
-	heat_point     = 40.0,
+	heat_point     = 5.0,
 	humidity_point = 50.0
 })
 
@@ -200,7 +200,7 @@ minetest.register_biome({
 
 	height_min     = 41,
 	height_max     = 5000,
-	heat_point     = 40.0,
+	heat_point     = 5.0,
 	humidity_point = 50.0
 })
 
@@ -214,7 +214,7 @@ minetest.register_biome({
 
 	height_min     = 3,
 	height_max     = 35,
-	heat_point     = 90.0,
+	heat_point     = 55.0,
 	humidity_point = 0.0
 })
 
