@@ -1,15 +1,15 @@
 
 
 -- TODO: remake schematics/*.mts files and remove aliases:
-minetest.register_alias("base:jungletree", "default:jungletree")
-minetest.register_alias("base:leaves", "default:leaves")
-minetest.register_alias("base:dirt", "default:dirt")
-minetest.register_alias("base:tree", "default:tree")
-minetest.register_alias("base:sand", "default:sand")
-minetest.register_alias("base:stone", "default:stone")
+core.register_alias("base:jungletree", "default:jungletree")
+core.register_alias("base:leaves", "default:leaves")
+core.register_alias("base:dirt", "default:dirt")
+core.register_alias("base:tree", "default:tree")
+core.register_alias("base:sand", "default:sand")
+core.register_alias("base:stone", "default:stone")
 
 
-minetest.register_biome({
+core.register_biome({
 	name           = "default_normal",
 	
 	height_min     = 3,
@@ -18,7 +18,7 @@ minetest.register_biome({
 	humidity_point = 40.0,
 })
 
-minetest.register_biome({
+core.register_biome({
 	name           = "default_forest",
 	
 	height_min     = 3,
@@ -27,7 +27,7 @@ minetest.register_biome({
 	humidity_point = 55.0,
 })
 
-minetest.register_biome({
+core.register_biome({
 	name           = "default_jungle",
 	
 	height_min     = 3,
@@ -36,7 +36,7 @@ minetest.register_biome({
 	humidity_point = 70.0,
 })
 
-minetest.register_biome({
+core.register_biome({
 	name           = "default_firforest",
 	
 	height_min     = 3,
@@ -45,7 +45,7 @@ minetest.register_biome({
 	humidity_point = 55.0,
 })
 
-minetest.register_biome({
+core.register_biome({
 	name           = "default_highland",
 	
 	height_min     = 200,
@@ -54,7 +54,7 @@ minetest.register_biome({
 	humidity_point = 40.0,
 })
 
-minetest.register_biome({
+core.register_biome({
 	name           = "default_ocean_sand",
 	
 	node_top       = "base:sand",
@@ -68,7 +68,7 @@ minetest.register_biome({
 	humidity_point = 40.0,
 })
 
-minetest.register_biome({
+core.register_biome({
 	name           = "default_ocean_dirt",
 	
 	height_min     = -31000,
@@ -77,7 +77,7 @@ minetest.register_biome({
 	humidity_point = 40.0,
 })
 
-minetest.register_biome({
+core.register_biome({
 	name           = "default_desert",
 	
 	node_top       = "base:sand",
@@ -92,7 +92,7 @@ minetest.register_biome({
 
 
 
-minetest.register_biome({
+core.register_biome({
 	name           = "Ocean",
 
 	node_top       = "default:sand",
@@ -106,7 +106,7 @@ minetest.register_biome({
 	humidity_point = 40.0
 })
 
-minetest.register_biome({
+core.register_biome({
 	name           = "Gravel Ocean",
 
 	node_top       = "default:gravel",
@@ -122,7 +122,7 @@ minetest.register_biome({
 	humidity_point = 60.0
 })
 
-minetest.register_biome({
+core.register_biome({
 	name           = "Beach",
 
 	node_top       = "default:sand",
@@ -136,7 +136,7 @@ minetest.register_biome({
 	humidity_point = 10.0
 })
 
-minetest.register_biome({
+core.register_biome({
 	name           = "Gravel Beach",
 
 	node_top       = "default:gravel",
@@ -153,7 +153,7 @@ minetest.register_biome({
 	humidity_point = 60.0
 })
 
-minetest.register_biome({
+core.register_biome({
 	name           = "Snow Plains",
 
 	node_dust      = "default:snow",
@@ -165,7 +165,7 @@ minetest.register_biome({
 	humidity_point = 50.0
 })
 
-minetest.register_biome({
+core.register_biome({
 	name           = "Plains",
 
 	height_min     = 1,
@@ -174,7 +174,7 @@ minetest.register_biome({
 	humidity_point = 50.0
 })
 
-minetest.register_biome({
+core.register_biome({
 	name           = "Hills",
 
 	height_min     = 21,
@@ -183,7 +183,7 @@ minetest.register_biome({
 	humidity_point = 50.0
 })
 
-minetest.register_biome({
+core.register_biome({
 	name           = "Snow Hills",
 
 	node_dust      = "default:snow",
@@ -195,7 +195,7 @@ minetest.register_biome({
 	humidity_point = 50.0
 })
 
-minetest.register_biome({
+core.register_biome({
 	name           = "Extreme Hills",
 
 	height_min     = 41,
@@ -204,7 +204,7 @@ minetest.register_biome({
 	humidity_point = 50.0
 })
 
-minetest.register_biome({
+core.register_biome({
 	name           = "Desert",
 
 	node_top       = "default:desert_sand",
@@ -221,7 +221,7 @@ minetest.register_biome({
 
 --trees
 --[[ TODO
-minetest.register_decoration({
+core.register_decoration({
 	deco_type = "schematic",
 	place_on  = "default:dirt_with_grass",
 	sidelen   = 8,
@@ -238,48 +238,48 @@ minetest.register_decoration({
 })
 ]]
 
-minetest.register_decoration({
+core.register_decoration({
 	deco_type = "schematic",
 	place_on = "default:dirt_with_grass",
 	sidelen = 16,
 	fill_ratio = 0.005,
 	biomes = {"default_normal"},
-	schematic = minetest.get_modpath("default").."/schematics/base_tree.mts",
+	schematic = core.get_modpath("default").."/schematics/base_tree.mts",
 	flags = "place_center_x, place_center_z",
 })
 
-minetest.register_decoration({
+core.register_decoration({
 	deco_type = "schematic",
 	place_on = "default:dirt_with_grass",
 	sidelen = 8,
 	fill_ratio = 0.1,
 	biomes = {"default_forest"},
-	schematic = minetest.get_modpath("default").."/schematics/base_tree.mts",
+	schematic = core.get_modpath("default").."/schematics/base_tree.mts",
 	flags = "place_center_x, place_center_z",
 })
 
-minetest.register_decoration({
+core.register_decoration({
 	deco_type = "schematic",
 	place_on = "default:dirt_with_grass",
 	sidelen = 8,
 	fill_ratio = 0.2,
 	biomes = {"default_jungle"},
-	schematic = minetest.get_modpath("default").."/schematics/base_jungletree.mts",
+	schematic = core.get_modpath("default").."/schematics/base_jungletree.mts",
 	flags = "place_center_x, place_center_z",
 })
 
-minetest.register_decoration({
+core.register_decoration({
 	deco_type = "schematic",
 	place_on = "default:dirt_with_grass",
 	sidelen = 16,
 	fill_ratio = 0.02,
 	biomes = {"default_firforest"},
-	schematic = minetest.get_modpath("default").."/schematics/base_fir.mts",
+	schematic = core.get_modpath("default").."/schematics/base_fir.mts",
 	flags = "place_center_x, place_center_z",
 })
 
 --papyrus
-minetest.register_decoration({
+core.register_decoration({
 	deco_type  = "simple",
 	place_on   = "default:dirt_with_grass",
 	sidelen    = 8,
@@ -299,7 +299,7 @@ minetest.register_decoration({
 })
 
 --cactuses
-minetest.register_decoration({
+core.register_decoration({
 	deco_type  = "simple",
 	place_on   = "default:desert_sand",
 	sidelen    = 4,
@@ -317,7 +317,7 @@ minetest.register_decoration({
 })
 
 --grass
-minetest.register_decoration({
+core.register_decoration({
 	deco_type  = "simple",
 	place_on   = "default:dirt_with_grass",
 	sidelen    = 4,
@@ -340,7 +340,7 @@ minetest.register_decoration({
 })
 
 --desert shrubs
-minetest.register_decoration({
+core.register_decoration({
 	deco_type  = "simple",
 	place_on   = "default:desert_sand",
 	sidelen     = 4,
