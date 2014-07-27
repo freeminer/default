@@ -72,7 +72,8 @@ minetest.override_item("default:desert_sand", {
 	}
 })
 minetest.register_node("farming:desert_sand_soil", {
-	description = "Desert Sand",
+	description = "Desert Sand Soil",
+	drop = "default:desert_sand",
 	tiles = {"farming_desert_sand_soil.png", "default_desert_sand.png"},
 	is_ground_content = true,
 	leveled = flowing_sand_leveled,
@@ -88,7 +89,7 @@ minetest.register_node("farming:desert_sand_soil", {
 })
 
 minetest.register_node("farming:desert_sand_soil_wet", {
-	description = "Desert Sand",
+	description = "Wet Desert Sand Soil",
 	drop = "default:desert_sand",
 	tiles = {"farming_desert_sand_soil_wet.png", "farming_desert_sand_soil_wet_side.png"},
 	is_ground_content = true,

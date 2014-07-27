@@ -90,7 +90,7 @@ function doors.register_door(name, def)
 			elseif p2 == 3 then
 				pt3.z = pt3.z-1
 			end
-			if not string.find(minetest.get_node(pt3).name, name.."_b_") then
+			if minetest.get_item_group(minetest.get_node(pt3).name, "door") == 0 then
 				minetest.set_node(pt, {name=name.."_b_1", param2=p2})
 				minetest.set_node(pt2, {name=name.."_t_1", param2=p2})
 			else
@@ -429,6 +429,7 @@ minetest.register_node("doors:trapdoor_open", {
 	pointable = true,
 	stack_max = 0,
 	groups = {snappy=1,choppy=2,oddly_breakable_by_hand=2,flammable=2,door=1},
+	climbable = true,
 	sounds = default.node_sound_wood_defaults(),
 	drop = "doors:trapdoor",
 	node_box = {
