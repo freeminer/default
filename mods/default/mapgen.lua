@@ -219,7 +219,7 @@ minetest.register_ore({
 		clust_scarcity = 40*40*40,
 		clust_num_ores = 8,
 		clust_size     = 3,
-		height_min     = 100,
+		height_min     = 0,
 		height_max     = 31000,
 	})
 
@@ -233,6 +233,18 @@ minetest.register_ore({
 		clust_size     = 2,
 		height_min     = 10000,
 		height_max     = 31000,
+	})
+
+	minetest.register_ore({
+		ore_type       = "scatter",
+		ore            = "default:lava_source",
+		ore_param2     = 128,
+		wherein        = "default:stone",
+		clust_scarcity = 120*120*120,
+		clust_num_ores = 25,
+		clust_size     = 5,
+		height_min     = -100,
+		height_max     = 10000,
 	})
 
 	minetest.register_ore({
@@ -256,7 +268,7 @@ minetest.register_ore({
 		clust_num_ores = 8,
 		clust_size     = 3,
 		height_min     = -10000,
-		height_max     = -10,
+		height_max     = 7,
 	})
 
 	minetest.register_ore({
