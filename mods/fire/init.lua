@@ -1,4 +1,5 @@
 -- minetest/fire/init.lua
+local weather = minetest.setting_getbool("weather")
 
 minetest.register_node("fire:basic_flame", {
 	description = "Fire",
@@ -97,6 +98,11 @@ end
 
 function fire.flame_should_extinguish(pos)
 	if minetest.setting_getbool("disable_fire") then return true end
+	if weather then
+		if math.random(55, minetest.get_humidity(pos)) >= 60 then
+			return 1
+		end
+	end
 	--return minetest.find_node_near(pos, 1, {"group:puts_out_fire"})
 	local p0 = {x=pos.x-2, y=pos.y, z=pos.z-2}
 	local p1 = {x=pos.x+2, y=pos.y, z=pos.z+2}
@@ -194,7 +200,7 @@ minetest.register_abm({
 })
 
 -- too hot
-if minetest.setting_getbool("weather") then
+if weather then
 minetest.register_abm({
 	nodenames = {"group:flammable"},
 	interval = 5,
