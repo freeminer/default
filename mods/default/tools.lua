@@ -80,6 +80,7 @@ minetest.register_tool("default:pick_mese", {
 		},
 		damage_groups = {fleshy=5},
 	},
+	groups = {wield_light=5},
 })
 minetest.register_tool("default:pick_diamond", {
 	description = "Diamond Pickaxe",
@@ -162,6 +163,7 @@ minetest.register_tool("default:shovel_mese", {
 		},
 		damage_groups = {fleshy=4},
 	},
+	groups = {wield_light=5},
 })
 minetest.register_tool("default:shovel_diamond", {
 	description = "Diamond Shovel",
@@ -240,6 +242,7 @@ minetest.register_tool("default:axe_mese", {
 		},
 		damage_groups = {fleshy=6},
 	},
+	groups = {wield_light=5},
 })
 minetest.register_tool("default:axe_diamond", {
 	description = "Diamond Axe",
@@ -317,6 +320,7 @@ minetest.register_tool("default:sword_mese", {
 		},
 		damage_groups = {fleshy=7},
 	}
+	groups = {wield_light=5},
 })
 minetest.register_tool("default:sword_diamond", {
 	description = "Diamond Sword",
