@@ -319,7 +319,7 @@ minetest.register_tool("default:sword_mese", {
 			snappy={times={[1]=2.0, [2]=1.00, [3]=0.35}, uses=30, maxlevel=3},
 		},
 		damage_groups = {fleshy=7},
-	}
+	},
 	groups = {wield_light=5},
 })
 minetest.register_tool("default:sword_diamond", {
