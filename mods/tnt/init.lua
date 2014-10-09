@@ -48,6 +48,10 @@ local function destroy(drops, pos, last, fast)
 		if last then
 			nodeupdate(pos)
 		end
+		if not minetest.registered_nodes[nodename] or not minetest.registered_nodes[nodename].groups then
+			-- broken map and unknown nodes
+			return
+		end
 		if minetest.registered_nodes[nodename].groups.flammable ~= nil then
 			minetest.set_node(pos, {name="fire:basic_flame"}, (fast and 2 or 0))
 			return
