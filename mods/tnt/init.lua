@@ -4,7 +4,7 @@ local loss_prob = {}
 loss_prob["default:cobble"] = 3
 loss_prob["default:dirt"] = 4
 
-local radius_max = tonumber(minetest.setting_get("tnt_radius_max") or 25)
+local radius_max = tonumber(minetest.setting_get("tnt_radius_max") or 200)
 
 local eject_drops = function(pos, stack)
 	local obj = minetest.add_item(pos, stack)
@@ -87,6 +87,8 @@ boom = function(pos, time)
 		local dr = 0
 		local tnts = 1
 		local destroyed = 0
+		local end_ms = os.clock() + 3
+
 		while dr<radius do
 			dr=dr+1
 			for dx=-dr,dr,dr*2 do
@@ -148,6 +150,7 @@ boom = function(pos, time)
 						end
 					end
 				end
+			if os.clock() > end_ms then break end
 		end
 
 		local objects = minetest.get_objects_inside_radius(pos, radius*2)
@@ -173,7 +176,7 @@ boom = function(pos, time)
 		end
 
 
-		print("TNT exploded=" .. tnts .. " radius=" .. radius .. " destroyed="..destroyed)
+		print("tnt:tnt : exploded=" .. tnts .. " radius=" .. radius .. " destroyed="..destroyed)
 
 		for _,stack in pairs(drops) do
 			eject_drops(pos, stack)
