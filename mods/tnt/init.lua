@@ -69,9 +69,9 @@ local function destroy(drops, pos, last, fast)
 	end
 end
 
-boom = function(pos, time)
+boom = function(pos, time, force)
 	minetest.after(time, function(pos)
-		if minetest.get_node(pos).name ~= "tnt:tnt_burning" then
+		if not force and minetest.get_node(pos).name ~= "tnt:tnt_burning" then
 			return
 		end
 		minetest.sound_play("tnt_explode", {pos=pos, gain=1.5, max_hear_distance=2*64})
@@ -176,7 +176,7 @@ boom = function(pos, time)
 		end
 
 
-		print("tnt:tnt : exploded=" .. tnts .. " radius=" .. radius .. " destroyed="..destroyed)
+		print("tnt:tnt : exploded=" .. tnts .. " radius=".. dr .." radius_want=" .. radius .. " destroyed="..destroyed)
 
 		for _,stack in pairs(drops) do
 			eject_drops(pos, stack)
@@ -212,6 +212,16 @@ minetest.register_node("tnt:tnt", {
 			minetest.sound_play("tnt_ignite", {pos=pos})
 			minetest.set_node(pos, {name="tnt:tnt_burning"})
 			boom(pos, 4)
+		elseif math.random(1, 200) <= 1 then
+			boom(pos, 0.1, 1)
+		end
+	end,
+
+	on_dig = function(pos, node, puncher)
+		if math.random(1,10) <= 1 then
+			boom(pos, 0.1, 1)
+		else
+			return core.node_dig(pos, node, puncher)
 		end
 	end,
 	
