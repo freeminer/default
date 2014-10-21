@@ -88,8 +88,9 @@ boom = function(pos, time, force)
 		local tnts = 1
 		local destroyed = 0
 		local end_ms = os.clock() + 3
-
+		local last = nil;
 		while dr<radius do
+			if os.clock() > end_ms then last=1 end
 			dr=dr+1
 			for dx=-dr,dr,dr*2 do
 				for dy=-dr,dr,1 do
@@ -118,13 +119,15 @@ boom = function(pos, time, force)
 					local node =  minetest.get_node(np)
 					if node.name == "air" then
 					elseif node.name == "tnt:tnt" or node.name == "tnt:tnt_burning" then
-						if radius < radius_max then
+						if radius < radius_max and not last and dr < radius then
 							if radius <= 5 then
 								radius = radius + 1
 							elseif radius <= 10 then
 								radius = radius + 0.5
-							else
+							elseif radius <= 20 then
 								radius = radius + 0.3
+							else
+								radius = radius + 0.2
 							end
 							minetest.remove_node(np, 2)
 						tnts = tnts + 1
@@ -150,7 +153,7 @@ boom = function(pos, time, force)
 						end
 					end
 				end
-			if os.clock() > end_ms then break end
+			if last then break end
 		end
 
 		local objects = minetest.get_objects_inside_radius(pos, radius*2)
