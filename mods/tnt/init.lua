@@ -87,11 +87,12 @@ boom = function(pos, time, force)
 		local dr = 0
 		local tnts = 1
 		local destroyed = 0
+		local melted = 0
 		local end_ms = os.clock() + 3
 		local last = nil;
 		while dr<radius do
-			if os.clock() > end_ms then last=1 end
 			dr=dr+1
+			if os.clock() > end_ms or dr>=radius then last=1 end
 			for dx=-dr,dr,dr*2 do
 				for dy=-dr,dr,1 do
 					for dz=-dr,dr,1 do
@@ -141,6 +142,8 @@ boom = function(pos, time, force)
 						or node.name == "tnt:boom"
 						then
 						
+					elseif last and math.random(1,15) <= 2 then
+						melted = melted + freeminer.freeze_melt(np, 1)
 					else
 						if math.abs(p.x)<2 and math.abs(p.y)<2 and math.abs(p.z)<2 then
 							destroy(drops, np, dr == radius, radius > 7)
@@ -179,7 +182,7 @@ boom = function(pos, time, force)
 		end
 
 
-		print("tnt:tnt : exploded=" .. tnts .. " radius=".. dr .." radius_want=" .. radius .. " destroyed="..destroyed)
+		core.log("error", "tnt:tnt : exploded=" .. tnts .. " radius=".. dr .." radius_want=" .. radius .. " destroyed="..destroyed .. " melted="..melted)
 
 		for _,stack in pairs(drops) do
 			eject_drops(pos, stack)
