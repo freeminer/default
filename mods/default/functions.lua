@@ -131,33 +131,28 @@ minetest.register_on_punchnode(on_punchnode)
 -- Lavacooling
 --
 
-default.cool_lava_source = function(pos)
-	minetest.set_node(pos, {name="default:obsidian"})
-	minetest.sound_play("default_cool_lava", {pos = pos,  gain = 0.25})
-end
-
-default.cool_lava_flowing = function(pos)
-	minetest.set_node(pos, {name="default:stone"})
-	minetest.sound_play("default_cool_lava", {pos = pos,  gain = 0.25})
-end
-
 minetest.register_abm({
-	nodenames = {"default:lava_flowing"},
+	nodenames = {"default:lava_source", "default:lava_flowing"},
 	neighbors = {"group:water"},
 	interval = 1,
 	chance = 1,
 	action = function(pos, node, active_object_count, active_object_count_wider)
-		default.cool_lava_flowing(pos, node, active_object_count, active_object_count_wider)
+		freeminer.freeze_melt(pos, -1);
+		minetest.sound_play("default_cool_lava", {pos = pos,  gain = 0.25})
 	end,
 })
 
 minetest.register_abm({
-	nodenames = {"default:lava_source"},
-	neighbors = {"group:water"},
-	interval = 1,
-	chance = 1,
+	nodenames = {"default:lava_source", "default:lava_flowing"},
+	interval = 100,
+	chance = 10,
 	action = function(pos, node, active_object_count, active_object_count_wider)
-		default.cool_lava_source(pos, node, active_object_count, active_object_count_wider)
+		-- bad place: to not freeze lava in caves
+		if pos.y < -100 then return end
+		-- skip springs
+		if node.param2 >= 128 then return end
+		if core.get_node_light({x=pos.x,y=pos.y+1, z=pos.z}) < LIGHT_MAX then return end
+		freeminer.freeze_melt(pos, -1);
 	end,
 })
 
