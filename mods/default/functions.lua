@@ -148,7 +148,7 @@ minetest.register_abm({
 	chance = 10,
 	action = function(pos, node, active_object_count, active_object_count_wider)
 		-- bad place: to not freeze lava in caves
-		if pos.y < -100 then return end
+		if not pos.y or pos.y < -100 then return end
 		-- skip springs
 		if node.param2 >= 128 then return end
 		if core.get_node_light({x=pos.x,y=pos.y+1, z=pos.z}) < LIGHT_MAX then return end
