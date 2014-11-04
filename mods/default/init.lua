@@ -8,6 +8,8 @@ WATER_VISC = 1
 LAVA_VISC = 7
 LIGHT_MAX = 14
 
+MAP_GENERATION_LIMIT=31000
+
 -- Definitions made by this mod that other mods can use too
 default = {}
 

@@ -569,3 +569,33 @@ minetest.register_on_generated(function(minp, maxp, seed)
 	generate_nyancats(seed, minp, maxp)
 end)
 
+
+
+local mg_indev = {
+	layers= {
+		{ name = "default:stone",              thickness  = 20, },
+		{ name = "default:stone_with_coal",    height_max = -1000, },
+		{ name = "default:water_source",       height_min = -3000, height_max = -50, },
+		{ name = "default:stone",              height_min = -3000, height_max = -50, }, -- stone after water
+		{ name = "default:dirt",               height_min = -500,  height_max = 50, },
+		{ name = "default:desert_stone",       thickness  = 3, },
+		{ name = "default:stone_with_iron",    height_max = -2000, },
+		{ name = "default:gravel",             height_max = -1, },
+		{ name = "default:stone_with_copper",  height_max = -3000, },
+		{ name = "default:stone",              height_max = -1, },
+		{ name = "default:stone_with_gold",    height_max = -5000, },
+		{ name = "default:lava_source",        height_max = -3000, },
+		{ name = "default:stone_with_diamond", height_max = -7000, },
+		{ name = "default:obsidian",           height_max = -5000, },
+		{ name = "default:stone",              thickness  = 20, },
+		{ name = "default:stone_with_mese",    height_max = -10000, },
+		{ name = "default:air",                thickness  = 20, height_max = -1000, height_min = -20000, }, --huge caves
+		{ name = "default:lava_source",        height_max = -20000, thickness  = 20,},
+		{ name = "default:mese",               height_max = -15000, },
+		{ name = "default:air" },
+	}
+}
+
+if minetest.setting_get("mg_indev") == "" then
+	core.setting_set("mg_indev", core.write_json(mg_indev)) 
+end
