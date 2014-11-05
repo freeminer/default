@@ -151,7 +151,8 @@ minetest.register_abm({
 		if not pos.y or pos.y < -100 then return end
 		-- skip springs
 		if node.param2 >= 128 then return end
-		if core.get_node_light({x=pos.x,y=pos.y+1, z=pos.z}) < LIGHT_MAX then return end
+		local light = core.get_node_light({x=pos.x,y=pos.y+1, z=pos.z})
+		if not light or light < LIGHT_MAX then return end
 		freeminer.freeze_melt(pos, -1);
 	end,
 })
