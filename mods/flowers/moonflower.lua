@@ -22,6 +22,7 @@ minetest.register_node("flowers:moonflower_closed", {
 		type = "fixed",
 		fixed = { -0.15, -0.5, -0.15, 0.15, 0.2, 0.15 },
 	},
+	visual_scale = 0.6,
 })
 
 minetest.register_node("flowers:moonflower_open", {
@@ -42,6 +43,7 @@ minetest.register_node("flowers:moonflower_open", {
 		type = "fixed",
 		fixed = { -0.15, -0.5, -0.15, 0.15, 0.2, 0.15 },
 	},
+	visual_scale = 0.6,
 })
 
 set_moonflower = function (pos)

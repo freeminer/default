@@ -5,6 +5,7 @@ loss_prob["default:cobble"] = 3
 loss_prob["default:dirt"] = 4
 
 local radius_max = tonumber(minetest.setting_get("tnt_radius_max") or 200)
+local time_max = tonumber(minetest.setting_get("tnt_time_max") or 3)
 
 local eject_drops = function(pos, stack)
 	local obj = minetest.add_item(pos, stack)
@@ -88,7 +89,7 @@ boom = function(pos, time, force)
 		local tnts = 1
 		local destroyed = 0
 		local melted = 0
-		local end_ms = os.clock() + 3
+		local end_ms = os.clock() + time_max
 		local last = nil;
 		while dr<radius do
 			dr=dr+1
