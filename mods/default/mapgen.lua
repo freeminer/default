@@ -571,7 +571,7 @@ end)
 
 
 
-local mg_indev = {
+local mg_params = {
 	layers= {
 		{ name = "default:stone",              thickness  = 20, },
 		{ name = "default:stone_with_coal",    height_max = -1000, },
@@ -596,6 +596,6 @@ local mg_indev = {
 	}
 }
 
-if minetest.setting_get("mg_indev") == "" then
-	core.setting_set("mg_indev", core.write_json(mg_indev)) 
+if core.setting_get("mg_params") == "" then
+	core.setting_set("mg_params", core.write_json(mg_params))
 end
