@@ -134,8 +134,8 @@ minetest.register_on_punchnode(on_punchnode)
 minetest.register_abm({
 	nodenames = {"default:lava_source", "default:lava_flowing"},
 	neighbors = {"group:water"},
-	interval = 1,
-	chance = 1,
+	interval = 10,
+	chance = 3,
 	action = function(pos, node, active_object_count, active_object_count_wider)
 		freeminer.freeze_melt(pos, -1);
 		minetest.sound_play("default_cool_lava", {pos = pos,  gain = 0.25})
@@ -255,8 +255,8 @@ minetest.register_abm({
 	nodenames = {"group:leafdecay"},
 	neighbors = {"air", "group:liquid"},
 	-- A low interval and a high inverse chance spreads the load
-	interval = 2,
-	chance = 5,
+	interval = 10,
+	chance = 3,
 
 	action = function(p0, node, _, _)
 		--print("leafdecay ABM at "..p0.x..", "..p0.y..", "..p0.z..")")

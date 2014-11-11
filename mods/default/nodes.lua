@@ -155,8 +155,8 @@ minetest.register_node("default:dirt", {
 
 minetest.register_abm({
 	nodenames = {"default:dirt"},
-	interval = 2,
-	chance = 100,
+	interval = 10,
+	chance = 30,
 	action = function(pos, node)
 		local above = {x=pos.x, y=pos.y+1, z=pos.z}
 		local name = minetest.get_node(above).name
@@ -177,8 +177,8 @@ minetest.register_abm({
 
 minetest.register_abm({
 	nodenames = {"default:dirt_with_grass"},
-	interval = 2,
-	chance = 20,
+	interval = 10,
+	chance = 10,
 	action = function(pos, node)
 		local above = {x=pos.x, y=pos.y+1, z=pos.z}
 		local name = minetest.get_node(above).name
@@ -196,8 +196,8 @@ minetest.register_abm({
 
 minetest.register_abm({
 	nodenames = {"default:dirt_with_snow"},
-	interval = 2,
-	chance = 200,
+	interval = 10,
+	chance = 100,
 	action = function(pos, node)
 		local above = {x=pos.x, y=pos.y+1, z=pos.z}
 		local name = minetest.get_node(above).name
@@ -227,7 +227,7 @@ minetest.register_node("default:sand", {
 minetest.register_abm({
 	nodenames = {"default:sand", "default:desert_sand"},
 	neighbors = {"default:water_flowing"},
-	interval = 10,
+	interval = 20,
 	neighbors_range = 3,
 	chance = 10,
 	action = function(pos, node)
