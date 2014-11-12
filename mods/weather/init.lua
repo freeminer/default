@@ -18,9 +18,9 @@ get_snow = function (p)
 	local heat = freeminer.get_heat(p)
 	if heat >= 0 then return 0 end
 	local humidity = freeminer.get_humidity(p)
-	if humidity < 60 then return 0 end
+	if humidity < 75 then return 0 end
 	--print('S h='..freeminer.get_heat(p)..' h='..freeminer.get_humidity(p))
-	return (humidity-60)/(100-60)
+	return (humidity-75)/(100-75)
 end
 
 get_rain = function (p)
@@ -30,9 +30,9 @@ get_rain = function (p)
 	if heat <= 0 then return 0 end
 	if heat > 50 then return 0 end
 	local humidity = freeminer.get_humidity(p)
-	if humidity < 60 then return 0 end
+	if humidity < 80 then return 0 end
 	--print('R h='..freeminer.get_heat(p)..' h='..freeminer.get_humidity(p))
-	return (humidity-60)/(100-60)
+	return (humidity-80)/(100-80)
 end
 
 if core.setting_getbool("weather") then
