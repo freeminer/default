@@ -144,7 +144,7 @@ boom = function(pos, time, force)
 						then
 						
 					elseif last and radius > 10 and math.random(1,15) <= 1 then
-						melted = melted + freeminer.freeze_melt(np, 1)
+						melted = melted + core.freeze_melt(np, 1)
 					else
 						if math.abs(p.x)<2 and math.abs(p.y)<2 and math.abs(p.z)<2 then
 							destroy(drops, np, dr == radius, radius > 7)

@@ -277,10 +277,10 @@ farming.register_plant = function(name, def)
 				return
 			end
 			if weather and (
-				minetest.get_heat(pos) < def.heat_min or
-				minetest.get_heat(pos) > def.heat_max or
-				minetest.get_humidity(pos) > def.humidity_max or
-				minetest.get_humidity(pos) < def.humidity_min
+				core.get_heat(pos) < def.heat_min or
+				core.get_heat(pos) > def.heat_max or
+				core.get_humidity(pos) > def.humidity_max or
+				core.get_humidity(pos) < def.humidity_min
 			) then return end
 
 			-- grow

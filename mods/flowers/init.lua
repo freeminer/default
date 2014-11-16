@@ -144,7 +144,7 @@ minetest.register_abm({
 			return
 		end
 
-		if minetest.setting_getbool("weather") and minetest.get_heat(pos) < 5 then
+		if minetest.setting_getbool("weather") and core.get_heat(pos) < 5 then
 			return
 		end
 		

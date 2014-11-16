@@ -137,7 +137,7 @@ minetest.register_abm({
 	interval = 10,
 	chance = 3,
 	action = function(pos, node, active_object_count, active_object_count_wider)
-		freeminer.freeze_melt(pos, -1);
+		core.freeze_melt(pos, -1);
 		minetest.sound_play("default_cool_lava", {pos = pos,  gain = 0.25})
 	end,
 })
@@ -153,7 +153,7 @@ minetest.register_abm({
 		if node.param2 >= 128 then return end
 		local light = core.get_node_light({x=pos.x,y=pos.y+1, z=pos.z})
 		if not light or light < LIGHT_MAX then return end
-		freeminer.freeze_melt(pos, -1);
+		core.freeze_melt(pos, -1);
 	end,
 })
 

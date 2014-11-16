@@ -163,11 +163,11 @@ minetest.register_abm({
 		local nodedef = minetest.registered_nodes[name]
 		if (name == "ignore" or not nodedef) then return end
 		if ( not ((nodedef.sunlight_propagates or nodedef.paramtype == "light") and nodedef.liquidtype == "none")) then return end
-		if (weather and minetest.get_heat(pos) < -10) or name == "default:snow" or
+		if (weather and core.get_heat(pos) < -10) or name == "default:snow" or
 			name == "default:snowblock" or name == "default:ice"
 		then
 			minetest.set_node(pos, {name = "default:dirt_with_snow"}, 2)
-		elseif (not weather or (minetest.get_heat(pos) > 5 and minetest.get_humidity(pos) > 22)) and nodedef and
+		elseif (not weather or (core.get_heat(pos) > 5 and core.get_humidity(pos) > 22)) and nodedef and
 			(minetest.get_node_light(above) or 0) >= 13
 		then
 			minetest.set_node(pos, {name = "default:dirt_with_grass"}, 2)
@@ -186,7 +186,7 @@ minetest.register_abm({
 		if (name == "ignore" or not nodedef) then return end
 		if ( not ((nodedef.sunlight_propagates or nodedef.paramtype == "light")
 				and nodedef.liquidtype == "none")) or (weather
-				and (minetest.get_heat(pos) < -5 or minetest.get_heat(pos) > 50 or minetest.get_humidity(pos) < 10))
+				and (core.get_heat(pos) < -5 or core.get_heat(pos) > 50 or core.get_humidity(pos) < 10))
 				or name == "default:snow" or name == "default:snowblock" or name == "default:ice"
 		then
 			minetest.set_node(pos, {name = "default:dirt"}, 2)
@@ -205,7 +205,7 @@ minetest.register_abm({
 		if (name == "ignore" or not nodedef) then return end
 		if (not ((nodedef.sunlight_propagates or nodedef.paramtype == "light")
 				and nodedef.liquidtype == "none") or
-			(weather and minetest.get_heat(pos) > 3 and name ~= "default:snow" and name ~= "default:snowblock" and name ~= "default:ice"))
+			(weather and core.get_heat(pos) > 3 and name ~= "default:snow" and name ~= "default:snowblock" and name ~= "default:ice"))
 		then
 			minetest.set_node(pos, {name = "default:dirt"}, 2)
 		end
@@ -231,7 +231,7 @@ minetest.register_abm({
 	neighbors_range = 3,
 	chance = 10,
 	action = function(pos, node)
-		if (not weather or (minetest.get_heat(pos) > 40 or minetest.get_humidity(pos) < 20)) then return end
+		if (not weather or (core.get_heat(pos) > 40 or core.get_humidity(pos) < 20)) then return end
 		minetest.set_node(pos, {name = "default:dirt"}, 2)
 	end
 })

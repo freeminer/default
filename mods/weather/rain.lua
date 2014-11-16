@@ -4,7 +4,7 @@ core.register_globalstep(function(dtime)
 		local ppos = player:getpos()
 		local strength = get_rain(ppos)
 		if strength > 0 and core.get_node(ppos).name == "air" then
---print("rain he=".. freeminer.get_heat(ppos).." hu=".. core.get_humidity(ppos) .. " s=" .. strength)
+--print("rain he=".. core.get_heat(ppos).." hu=".. core.get_humidity(ppos) .. " s=" .. strength)
 		-- Make sure player is not in a cave/house...
 		if core.get_node_light(ppos, 0.5) ~= 15 then return end
 

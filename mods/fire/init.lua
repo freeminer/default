@@ -99,7 +99,7 @@ end
 function fire.flame_should_extinguish(pos)
 	if minetest.setting_getbool("disable_fire") then return true end
 	if weather then
-		if math.random(55, minetest.get_humidity(pos)) >= 60 then
+		if math.random(55, core.get_humidity(pos)) >= 60 then
 			return 1
 		end
 	end
@@ -207,7 +207,7 @@ minetest.register_abm({
 	chance = 5,
 	action = function(p0, node, _, _)
 		-- If there is water or stuff like that around flame, don't ignite
-		if minetest.get_heat(p0) < 500 then return end
+		if core.get_heat(p0) < 500 then return end
 		if fire.flame_should_extinguish(p0) then
 			return
 		end
