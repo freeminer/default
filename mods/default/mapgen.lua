@@ -571,12 +571,12 @@ end)
 
 
 local mg_params = {
-	layer_default_thickness = 3,
-	layer_thickness_multiplier = 5,
+	layer_default_thickness = 1,
+	layer_thickness_multiplier = 1,
 	layers= {
 		{ name = "default:stone",              thickness  = 25, },
 		{ name = "default:stone_with_coal",    height_max = -1000, },
-		{ name = "default:water_source",       height_min = -3000, height_max = -70, },
+		{ name = "default:water_source",       height_min = -3000, height_max = -70, thickness  = 3},
 		{ name = "default:stone",              height_min = -3000, height_max = -70, }, -- stone after water
 		{ name = "default:dirt",               height_min = -500,  height_max = 50, },
 		{ name = "default:desert_stone",       thickness  = 3, },
@@ -587,13 +587,13 @@ local mg_params = {
 		{ name = "default:stone_with_gold",    height_max = -5000, },
 		{ name = "default:lava_source",        height_max = -3000, },
 		{ name = "default:stone_with_diamond", height_max = -7000, },
-		{ name = "default:obsidian",           height_max = -5000, },
+		{ name = "default:obsidian",           height_max = -5000, thickness  = 5 },
 		{ name = "default:stone",              thickness  = 20, },
 		{ name = "default:stone_with_mese",    height_max = -10000, },
 		{ name = "default:air",                thickness  = 20, height_max = -1000, height_min = -20000, }, --huge caves
-		{ name = "default:lava_source",        height_max = -20000, thickness  = 20,},
+		{ name = "default:lava_source",        height_max = -20000, thickness  = 15,},
 		{ name = "default:mese",               height_max = -15000, },
-		{ name = "default:air" },
+		{ name = "default:air",                thickness  = 2 },
 	}
 }
 
