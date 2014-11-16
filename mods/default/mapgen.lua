@@ -570,13 +570,14 @@ minetest.register_on_generated(function(minp, maxp, seed)
 end)
 
 
-
 local mg_params = {
+	layer_default_thickness = 3,
+	layer_thickness_multiplier = 5,
 	layers= {
-		{ name = "default:stone",              thickness  = 20, },
+		{ name = "default:stone",              thickness  = 25, },
 		{ name = "default:stone_with_coal",    height_max = -1000, },
-		{ name = "default:water_source",       height_min = -3000, height_max = -50, },
-		{ name = "default:stone",              height_min = -3000, height_max = -50, }, -- stone after water
+		{ name = "default:water_source",       height_min = -3000, height_max = -70, },
+		{ name = "default:stone",              height_min = -3000, height_max = -70, }, -- stone after water
 		{ name = "default:dirt",               height_min = -500,  height_max = 50, },
 		{ name = "default:desert_stone",       thickness  = 3, },
 		{ name = "default:stone_with_iron",    height_max = -2000, },
