@@ -555,10 +555,10 @@ local mg_params = {
 		{ name = "default:obsidian",           height_max = -5000, thickness  = 5 },
 		{ name = "default:stone",              thickness  = 20, },
 		{ name = "default:stone_with_mese",    height_max = -10000, },
-		{ name = "default:air",                thickness  = 20, height_max = -1000, height_min = -20000, }, --huge caves
+		{ name = "air",                        thickness  = 20, height_max = -500, height_min = -20000, }, --caves
 		{ name = "default:lava_source",        height_max = -20000, thickness  = 15,},
 		{ name = "default:mese",               height_max = -15000, },
-		{ name = "default:air",                thickness  = 2 },
+		{ name = "air",                        thickness  = 2 },
 	}
 }
 
