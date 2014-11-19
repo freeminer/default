@@ -4,7 +4,7 @@ local loss_prob = {}
 loss_prob["default:cobble"] = 3
 loss_prob["default:dirt"] = 4
 
-local radius_max = tonumber(core.setting_get("tnt_radius_max") or 200)
+local radius_max = tonumber(core.setting_get("tnt_radius_max") or 25)
 local time_max = tonumber(core.setting_get("tnt_time_max") or 3)
 
 local eject_drops = function(pos, stack)
@@ -76,9 +76,9 @@ boom = function(pos, time, force)
 			return
 		end
 		core.sound_play("tnt_explode", {pos=pos, gain=1.5, max_hear_distance=2*64})
-		core.set_node(pos, {name="tnt:boom"})
+		core.set_node(pos, {name="tnt:boom"}, 2)
 		core.after(0.5, function(pos)
-			core.remove_node(pos)
+			core.remove_node(pos, 2)
 		end, {x=pos.x, y=pos.y, z=pos.z})
 		
 
@@ -134,7 +134,7 @@ boom = function(pos, time, force)
 							core.remove_node(np, 2)
 						tnts = tnts + 1
 						else
-						core.set_node(np, {name="tnt:tnt_burning"})
+						core.set_node(np, {name="tnt:tnt_burning"}, 2)
 						boom(np, 1)
 						end
 					elseif node.name == "fire:basic_flame"

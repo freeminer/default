@@ -99,7 +99,8 @@ end
 function fire.flame_should_extinguish(pos)
 	if minetest.setting_getbool("disable_fire") then return true end
 	if weather then
-		if math.random(55, core.get_humidity(pos)) >= 60 then
+		local humidity = core.get_humidity(pos)
+		if humidity > 55 and math.random(55, humidity) >= 60 then
 			return 1
 		end
 	end
