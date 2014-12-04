@@ -366,7 +366,7 @@ minetest.register_node("default:junglesapling", {
 		type = "fixed",
 		fixed = {-0.3, -0.5, -0.3, 0.3, 0.35, 0.3}
 	},
-	groups = {snappy=2,dig_immediate=3,flammable=2,attached_node=1},
+	groups = {snappy=2,dig_immediate=3,flammable=2,attached_node=1,sapling=1},
 	sounds = default.node_sound_leaves_defaults(),
 })
 
@@ -467,19 +467,19 @@ minetest.register_node("default:bookshelf", {
 	groups = {choppy=3,oddly_breakable_by_hand=2,flammable=3},
 	sounds = default.node_sound_wood_defaults(),
 	on_construct = function(pos)
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 		meta:set_string("formspec", default.bookshelf_formspec)
 		local inv = meta:get_inventory()
 		inv:set_size("books", 8*2)
 	end,
 	can_dig = function(pos,player)
-		local meta = minetest.env:get_meta(pos);
+		local meta = minetest.get_meta(pos);
 		local inv = meta:get_inventory()
 		return inv:is_empty("books")
 	end,
 
 	allow_metadata_inventory_put = function(pos, listname, index, stack, player)
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 		local inv = meta:get_inventory()
 		if listname == "books" then
 			if stack:get_name() == "default:book" then
@@ -491,7 +491,7 @@ minetest.register_node("default:bookshelf", {
 	end,
 
 	allow_metadata_inventory_move = function(pos, from_list, from_index, to_list, to_index, count, player)
-		local meta = minetest.env:get_meta(pos)
+		local meta = minetest.get_meta(pos)
 		local inv = meta:get_inventory()
 		local stack = inv:get_stack(from_list, from_index)
 		local to_stack = inv:get_stack(to_list, to_index)
@@ -1428,7 +1428,7 @@ minetest.register_node("default:sapling", {
 		type = "fixed",
 		fixed = {-0.3, -0.5, -0.3, 0.3, 0.35, 0.3}
 	},
-	groups = {snappy=2,dig_immediate=3,flammable=2,attached_node=1},
+	groups = {snappy=2,dig_immediate=3,flammable=2,attached_node=1,sapling=1},
 	sounds = default.node_sound_leaves_defaults(),
 })
 
@@ -1577,3 +1577,60 @@ minetest.register_node("default:snowblock", {
 		dug = {name="default_snow_footstep", gain=0.75},
 	}),
 })
+
+minetest.register_node("default:pine_needles",{
+	description = "Pine Needles",
+	drawtype = "allfaces_optional",
+	visual_scale = 1.3,
+	tiles = {"default_pine_needles.png"},
+	waving = 1,
+	paramtype = "light",
+	groups = {snappy=3,leafdecay=3,leaves=1},
+	drop = {
+		max_items = 1,
+		items = {
+			{
+				-- player will get sapling with 1/20 chance
+				items = {"default:pine_sapling"},
+				rarity = 20,
+			},
+			{
+				-- player will get leaves only if he get no saplings,
+				-- this is because max_items is 1
+				items = {"default:pine_needles"},
+			}
+		}
+	},
+	sounds = default.node_sound_leaves_defaults(),
+})
+
+minetest.register_node("default:pine_sapling", {
+	description = "Pine Sapling",
+	drawtype = "plantlike",
+	visual_scale = 1.0,
+	tiles = {"default_pine_sapling.png"},
+	inventory_image = "default_pine_sapling.png",
+	wield_image = "default_pine_sapling.png",
+	paramtype = "light",
+	walkable = false,
+	groups = {snappy=2,dig_immediate=3,flammable=2,attached_node=1,sapling=1},
+	sounds = default.node_sound_defaults(),
+})
+
+minetest.register_node("default:pinetree", {
+	description = "Pine Tree",
+	tiles = {"default_pinetree_top.png", "default_pinetree_top.png", "default_pinetree.png"},
+	paramtype2 = "facedir",
+	is_ground_content = false,
+	groups = {tree=1,choppy=2,oddly_breakable_by_hand=1,flammable=2},
+	sounds = default.node_sound_wood_defaults(),
+	on_place = minetest.rotate_node
+})
+
+minetest.register_node("default:pinewood", {
+	description = "Pinewood Planks",
+	tiles = {"default_pinewood.png"},
+	groups = {choppy=2,oddly_breakable_by_hand=2,flammable=3,wood=1},
+	sounds = default.node_sound_wood_defaults(),
+})
+
