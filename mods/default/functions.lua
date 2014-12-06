@@ -229,17 +229,6 @@ end
 -- Leafdecay
 --
 
--- To enable leaf decay for a node, add it to the "leafdecay" group.
---
--- The rating of the group determines how far from a node in the group "tree"
--- the node can be without decaying.
---
--- If param2 of the node is ~= 0, the node will always be preserved. Thus, if
--- the player places a node of that kind, you will want to set param2=1 or so.
---
--- If the node is in the leafdecay_drop group then the it will always be dropped
--- as an item
-
 default.leafdecay_trunk_cache = {}
 default.leafdecay_enable_cache = true
 -- Spread the load of finding trunks
@@ -250,6 +239,12 @@ minetest.register_globalstep(function(dtime)
 	default.leafdecay_trunk_find_allow_accumulator =
 			math.floor(dtime * finds_per_second)
 end)
+
+default.after_place_leaves = function(pos, placer, itemstack, pointed_thing)
+	local node = minetest.get_node(pos)
+	node.param2 = 1
+	minetest.set_node(pos, node)
+end
 
 minetest.register_abm({
 	nodenames = {"group:leafdecay"},
