@@ -31,7 +31,7 @@ minetest.override_item("default:dirt_with_grass", {
 
 minetest.register_node("farming:soil", {
 	description = "Soil",
-	tiles = {"farming_soil.png", "default_dirt.png"},
+	tiles = {"default_dirt.png^farming_soil.png", "default_dirt.png"},
 	drop = "default:dirt",
 	leveled = flowing_sand_leveled,
 	liquidtype = flowing_sand_type,
@@ -48,7 +48,7 @@ minetest.register_node("farming:soil", {
 
 minetest.register_node("farming:soil_wet", {
 	description = "Wet Soil",
-	tiles = {"farming_soil_wet.png", "farming_soil_wet_side.png"},
+	tiles = {"default_dirt.png^farming_soil_wet.png", "default_dirt.png^farming_soil_wet_side.png"},
 	drop = "default:dirt",
 	is_ground_content = true,
 	leveled = flowing_sand_leveled,
