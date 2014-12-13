@@ -81,7 +81,7 @@ minetest.register_node("default:stone_with_gold", {
 	drop = "default:gold_lump",
 	sounds = default.node_sound_stone_defaults(),
 })
-	
+
 minetest.register_node("default:stone_with_diamond", {
 	description = "Diamond Ore",
 	tiles = {"default_stone.png^default_mineral_diamond.png"},
@@ -133,7 +133,7 @@ minetest.register_node("default:dirt_with_snow", {
 	description = "Dirt with Snow",
 	tiles = {"default_snow.png", "default_dirt.png", "default_dirt.png^default_snow_side.png"},
 	is_ground_content = true,
-	groups = {crumbly=3, slippery=70},
+	groups = {crumbly=3,soil=1, slippery=70},
 	drop = 'default:dirt',
 	sounds = default.node_sound_dirt_defaults({
 		footstep = {name="default_snow_footstep", gain=0.25},
@@ -784,8 +784,8 @@ minetest.register_node("default:torch", {
 
 minetest.register_node("default:sign_wall", {
 	description = "Sign",
-	drawtype = "signlike",
-	tiles = {"default_sign_wall.png"},
+	drawtype = "nodebox",
+	tiles = {"default_sign.png"},
 	inventory_image = "default_sign_wall.png",
 	wield_image = "default_sign_wall.png",
 	paramtype = "light",
@@ -793,11 +793,11 @@ minetest.register_node("default:sign_wall", {
 	sunlight_propagates = true,
 	is_ground_content = false,
 	walkable = false,
-	selection_box = {
+	node_box = {
 		type = "wallmounted",
-		--wall_top = <default>
-		--wall_bottom = <default>
-		--wall_side = <default>
+		wall_top    = {-0.4375, 0.4375, -0.3125, 0.4375, 0.5, 0.3125},
+		wall_bottom = {-0.4375, -0.5, -0.3125, 0.4375, -0.4375, 0.3125},
+		wall_side   = {-0.5, -0.3125, -0.4375, -0.4375, 0.3125, 0.4375},
 	},
 	groups = {choppy=2,dig_immediate=2,attached_node=1},
 	legacy_wallmounted = true,
@@ -823,7 +823,7 @@ minetest.register_node("default:sign_wall", {
 	end,
 })
 
-default.chest_formspec = 
+default.chest_formspec =
 	"size[8,9]"..
 	default.gui_bg..
 	default.gui_bg_img..
@@ -1061,6 +1061,13 @@ minetest.register_node("default:obsidian", {
 	melt = "default:lava_source",
 })
 
+minetest.register_node("default:obsidianbrick", {
+	description = "Obsidian Brick",
+	tiles = {"default_obsidian_brick.png"},
+	sounds = default.node_sound_stone_defaults(),
+	groups = {cracky=1,level=2},
+})
+
 minetest.register_node("default:nyancat", {
 	description = "Nyan Cat",
 	tiles = {"default_nc_side.png", "default_nc_side.png", "default_nc_side.png",
@@ -1220,7 +1227,7 @@ minetest.register_node("default:snow", {
 			{-0.5, -0.5, -0.5,  0.5, -0.5+2/16, 0.5},
 		},
 	},
-	groups = {crumbly=3,falling_node=1, melt=1, float=1, slippery=80},
+	groups = {crumbly=3,falling_node=1, melt=1, float=1, slippery=75},
 	sounds = default.node_sound_dirt_defaults({
 		footstep = {name="default_snow_footstep", gain=0.25},
 		dug = {name="default_snow_footstep", gain=0.75},
