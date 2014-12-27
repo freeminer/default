@@ -1,4 +1,4 @@
-Minetest 0.4 mod: default
+Freeminer mod: default
 ==========================
 
 License of source code:
@@ -80,7 +80,6 @@ Jordach (CC BY-SA 3.0):
 PilzAdam (WTFPL):
   default_jungleleaves.png
   default_junglesapling.png
-  default_junglewood.png
   default_obsidian_glass.png
   default_obsidian_shard.png
   default_gold_lump.png
@@ -149,6 +148,11 @@ Neuromancer (CC BY-SA 3.0):
 Philipbenr (CC BY-SA 3.0):
   default_grass.png
   default_grass_side.png
+
+donat-b (CC BY-SA 3.0):
+ BlockMen's default_wood.png derivatives:
+  default_junglewood.png
+  default_wood.png
 
 Glass breaking sounds (CC BY 3.0):
   1: http://www.freesound.org/people/cmusounddesign/sounds/71947/
