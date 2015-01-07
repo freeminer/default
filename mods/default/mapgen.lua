@@ -547,7 +547,7 @@ local mg_params = {
 		{ name = "default:stone_with_iron",    height_max = -2000, },
 		{ name = "default:gravel",             height_max = -1, },
 		{ name = "default:stone_with_copper",  height_max = -3000, },
-		{ name = "default:stone",              height_max = -1, },
+		{ name = "default:clay",               thickness  = 4, },
 		{ name = "default:stone_with_gold",    height_max = -5000, },
 		{ name = "default:lava_source",        height_max = -3000, },
 		{ name = "default:stone_with_diamond", height_max = -7000, },
