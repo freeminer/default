@@ -127,7 +127,7 @@ minetest.register_abm({
 		-- skip springs
 		if node.param2 >= 128 then return end
 		local light = core.get_node_light({x=pos.x,y=pos.y+1, z=pos.z})
-		if not light or light < LIGHT_MAX then return end
+		if not light or light < default.LIGHT_MAX then return end
 		core.freeze_melt(pos, -1);
 	end,
 })

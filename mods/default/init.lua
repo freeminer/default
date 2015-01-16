@@ -1,17 +1,14 @@
 -- Minetest 0.4 mod: default
 -- See README.txt for licensing and other information.
 
--- The API documentation in here was moved into doc/lua_api.txt
-
-WATER_ALPHA = 160
-WATER_VISC = 1
-LAVA_VISC = 7
-LIGHT_MAX = 14
+-- The API documentation in here was moved into game_api.txt
 
 MAP_GENERATION_LIMIT=31000
 
 -- Definitions made by this mod that other mods can use too
 default = {}
+
+default.LIGHT_MAX = 14
 
 -- GUI related stuff
 default.gui_bg = "bgcolor[#080808BB;true]"
@@ -49,3 +46,9 @@ dofile(minetest.get_modpath("default").."/player.lua")
 dofile(minetest.get_modpath("default").."/trees.lua")
 dofile(minetest.get_modpath("default").."/biomes.lua")
 dofile(minetest.get_modpath("default").."/aliases.lua")
+
+-- Legacy:
+WATER_ALPHA = minetest.registered_nodes["default:water_source"].alpha
+WATER_VISC = minetest.registered_nodes["default:water_source"].liquid_viscosity
+LAVA_VISC = minetest.registered_nodes["default:lava_source"].liquid_viscosity
+LIGHT_MAX = default.LIGHT_MAX
