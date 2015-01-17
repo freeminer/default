@@ -6,7 +6,7 @@ minetest.register_node("spring:water",{
 
 minetest.register_abm({
     nodenames = {"spring:water"},
-    interval = 10,
+    interval = 2,
     chance = 2,
     action = function(pos,node)
         minetest.set_node(pos,{name = "default:water_source", param2=128})
@@ -20,7 +20,7 @@ minetest.register_node("spring:lava",{
 
 minetest.register_abm({
     nodenames = {"spring:lava"},
-    interval = 10,
+    interval = 2,
     chance = 2,
     action = function(pos,node)
         minetest.set_node(pos,{name = "default:lava_source", param2=128})
