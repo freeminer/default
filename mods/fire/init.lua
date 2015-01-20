@@ -1,5 +1,4 @@
 -- minetest/fire/init.lua
-local weather = minetest.setting_getbool("weather")
 
 fire = {}
 
@@ -97,7 +96,7 @@ end
 
 function fire.flame_should_extinguish(pos)
 	if minetest.setting_getbool("disable_fire") then return true end
-	if weather then
+	if default.weather then
 		local humidity = core.get_humidity(pos)
 		if humidity > 55 and math.random(55, humidity) >= 60 then
 			return 1
@@ -195,7 +194,7 @@ minetest.register_abm({
 })
 
 -- too hot
-if weather then
+if default.weather then
 minetest.register_abm({
 	nodenames = {"group:flammable"},
 	interval = 5,

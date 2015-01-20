@@ -27,7 +27,7 @@ minetest.register_abm({
 		if not can_grow(pos) then
 			return
 		end
-		if weather and core.get_heat(pos) < 5 then return end
+		if default.weather and core.get_heat(pos) < 5 then return end
 
 		minetest.log("action", "A sapling grows into a tree at "..
 				minetest.pos_to_string(pos))
@@ -43,7 +43,7 @@ minetest.register_abm({
 		if not can_grow(pos) then
 			return
 		end
-		if weather and core.get_heat(pos) < 15 then return end
+		if default.weather and core.get_heat(pos) < 15 then return end
 
 		minetest.log("action", "A jungle sapling grows into a tree at "..
 				minetest.pos_to_string(pos))

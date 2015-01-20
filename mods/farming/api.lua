@@ -1,4 +1,3 @@
-local weather = minetest.setting_getbool("weather")
 
 -- Wear out hoes, place soil
 -- TODO Ignore group:flower
@@ -276,7 +275,7 @@ farming.register_plant = function(name, def)
 			if not ll or ll < def.minlight or ll > def.maxlight then
 				return
 			end
-			if weather and (
+			if default.weather and (
 				core.get_heat(pos) < def.heat_min or
 				core.get_heat(pos) > def.heat_max or
 				core.get_humidity(pos) > def.humidity_max or

@@ -35,8 +35,8 @@ get_rain = function (p)
 	return (humidity-80)/(100-80)
 end
 
-if core.setting_getbool("weather") then
-	if core.setting_getbool("weather") and core.setting_getbool("liquid_real") then
+if default.weather then
+	if default.weather and core.setting_getbool("liquid_real") then
 		dofile(core.get_modpath("weather").."/rain.lua")
 	end
 	dofile(core.get_modpath("weather").."/snow.lua")

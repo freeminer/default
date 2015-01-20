@@ -8,6 +8,8 @@ MAP_GENERATION_LIMIT=31000
 -- Definitions made by this mod that other mods can use too
 default = {}
 
+default.weather = core.setting_getbool("weather")
+
 default.LIGHT_MAX = 14
 
 -- GUI related stuff
