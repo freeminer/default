@@ -285,8 +285,9 @@ minetest.register_node("default:clay", {
 	description = "Clay",
 	tiles = {"default_clay.png"},
 	is_ground_content = true,
-	groups = {crumbly=3},
-	drop = 'default:clay_lump 4',
+	groups = {crumbly=3, melt=1500},
+	drop = "default:clay",
+	melt = "default:stone",
 	sounds = default.node_sound_dirt_defaults(),
 })
 
