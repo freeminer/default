@@ -357,6 +357,7 @@ core.register_abm({
 	end
 })
 
+if default.weather then
 core.register_abm({
 	nodenames = {"default:sand", "default:desert_sand"},
 	neighbors = {"default:water_flowing"},
@@ -364,7 +365,20 @@ core.register_abm({
 	neighbors_range = 3,
 	chance = 10,
 	action = function(pos, node)
-		if (not default.weather or (core.get_heat(pos) > 40 or core.get_humidity(pos) < 20)) then return end
+		if ((core.get_heat(pos) > 40 or core.get_humidity(pos) < 20)) then return end
 		core.set_node(pos, {name = "default:dirt"}, 2)
 	end
 })
+
+core.register_abm({
+	nodenames = {"default:cobble"},
+	neighbors = {"default:water_flowing"},
+	interval = 20,
+	neighbors_range = 2,
+	chance = 50,
+	action = function(pos, node)
+		if ((core.get_heat(pos) < 5 or core.get_heat(pos) > 40 or core.get_humidity(pos) < 20)) then return end
+		core.set_node(pos, {name = "default:mossycobble", param1 = node.param1, param2 = node.param2, }, 2)
+	end
+})
+end
