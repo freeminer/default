@@ -171,7 +171,7 @@ minetest.register_node("default:mossycobble", {
 	description = "Mossy Cobblestone",
 	tiles = {"default_mossycobble.png"},
 	is_ground_content = true,
-	groups = {cracky=3, melt=3000},
+	groups = {cracky=3, stone=1, melt=3000},
 	sounds = default.node_sound_stone_defaults(),
 	melt = "default:lava_source",
 })
