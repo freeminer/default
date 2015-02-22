@@ -132,7 +132,7 @@ local function may_replace(pos, player)
 		return false
 	end
 
-	if not minetest.check_player_privs(player_name, {interact=true}) and not minetest.is_singleplayer() then
+	if not core.check_player_privs(player:get_player_name(), {interact=true}) and not core.is_singleplayer() then
 		return false
 	end
 
