@@ -397,7 +397,7 @@ minetest.register_node("default:snow", {
 	paramtype2 = "leveled",
 	melt = "default:water_flowing",
 })
-minetest.register_alias("snow", "default:snow")
+
 
 minetest.register_node("default:snowblock", {
 	description = "Snow Block",
@@ -735,7 +735,7 @@ minetest.register_node("default:mese", {
 	groups = {cracky=1,level=2},
 	sounds = default.node_sound_stone_defaults(),
 })
-minetest.register_alias("default:mese_block", "default:mese")
+
 
 
 
