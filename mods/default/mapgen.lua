@@ -544,24 +544,24 @@ local mg_params = {
 	layer_thickness_multiplier = 1,
 	layers= {
 		{ name = "default:stone",              thickness  = 25, },
-		{ name = "default:stone_with_coal",    height_max = -1000, },
-		{ name = "default:water_source",       height_min = -3000, height_max = -70, thickness  = 3},
-		{ name = "default:stone",              height_min = -3000, height_max = -70, }, -- stone after water
-		{ name = "default:dirt",               height_min = -500,  height_max = 50, },
+		{ name = "default:stone_with_coal",    y_max = -1000, },
+		{ name = "default:water_source",       y_min = -3000, y_max = -70, thickness  = 3},
+		{ name = "default:stone",              y_min = -3000, y_max = -70, }, -- stone after water
+		{ name = "default:dirt",               y_min = -500,  y_max = 50, },
 		{ name = "default:desert_stone",       thickness  = 3, },
-		{ name = "default:stone_with_iron",    height_max = -2000, },
-		{ name = "default:gravel",             height_max = -1, },
-		{ name = "default:stone_with_copper",  height_max = -3000, },
+		{ name = "default:stone_with_iron",    y_max = -2000, },
+		{ name = "default:gravel",             y_max = -1, },
+		{ name = "default:stone_with_copper",  y_max = -3000, },
 		{ name = "default:clay",               thickness  = 4, },
-		{ name = "default:stone_with_gold",    height_max = -5000, },
-		{ name = "default:lava_source",        height_max = -3000, },
-		{ name = "default:stone_with_diamond", height_max = -7000, },
-		{ name = "default:obsidian",           height_max = -5000, thickness  = 5 },
+		{ name = "default:stone_with_gold",    y_max = -5000, },
+		{ name = "default:lava_source",        y_max = -3000, },
+		{ name = "default:stone_with_diamond", y_max = -7000, },
+		{ name = "default:obsidian",           y_max = -5000, thickness  = 5 },
 		{ name = "default:stone",              thickness  = 20, },
-		{ name = "default:stone_with_mese",    height_max = -10000, },
-		{ name = "air",                        thickness  = 20, height_max = -500, height_min = -20000, }, --caves
-		{ name = "default:lava_source",        height_max = -20000, thickness  = 15,},
-		{ name = "default:mese",               height_max = -15000, },
+		{ name = "default:stone_with_mese",    y_max = -10000, },
+		{ name = "air",                        thickness  = 20, y_max = -500, y_min = -20000, }, --caves
+		{ name = "default:lava_source",        y_max = -20000, thickness  = 15,},
+		{ name = "default:mese",               y_max = -15000, },
 		{ name = "air",                        thickness  = 2 },
 	}
 }
