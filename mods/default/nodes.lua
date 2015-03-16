@@ -249,7 +249,7 @@ minetest.register_node("default:obsidianbrick", {
 -- Soft / Non-Stone
 --
 
-local flowing_sand_type = "flowing"
+local flowing_sand_type = "source"
 local flowing_sand_leveled = 1
 local flowing_sand_paramtype2 = "leveled"
 local flowing_sand_liquid_drop = 1
