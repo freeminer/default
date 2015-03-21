@@ -23,7 +23,7 @@ core.register_abm({
     interval = 2,
     chance = 2,
     action = function(pos,node)
-        core.set_node(pos,{name = "default:water_source", param2=63+128})
+        core.set_node(pos,{name = "default:water_source", param2=128+31})
     end
 })
 
@@ -65,7 +65,7 @@ core.register_abm({
     interval = 2,
     chance = 2,
     action = function(pos,node)
-        core.set_node(pos,{name = "default:dirt", param2=128+63})
+        core.set_node(pos,{name = "default:dirt", param2=128+31})
     end
 })
 
