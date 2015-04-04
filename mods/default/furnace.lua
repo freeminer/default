@@ -287,6 +287,7 @@ core.register_abm({
 		end
 		for i = 1, math.min(1200, gt-meta:get_int("game_time")) do
 			default.furnace_step(pos, node, meta)
+			if node.name == "default:furnace" then break end
 		end
 		swap_node(pos, node.name)
 		meta:set_int("game_time", gt)
