@@ -29,7 +29,7 @@ end
 -- Enable in mapgen v6 only
 
 local mg_params = minetest.get_mapgen_params()
-if mg_params.mgname == "v6" then
+if mg_params.mgname == "v6" or mg_params.mgname == "indev" then
 	flowers.register_mgv6_decorations()
 end
 
