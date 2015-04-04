@@ -30,7 +30,7 @@ minetest.register_alias("mapgen_stair_cobble", "stairs:stair_cobble")
 minetest.register_alias("mapgen_ice", "default:ice")
 
 --
--- Ore generation
+-- Register ores
 --
 
 local coal_params = {offset = 0, scale = 1, spread = {x = 100, y = 100, z = 100}, seed = 42, octaves = 3, persist = 0.7}
@@ -239,7 +239,7 @@ function default.register_ores()
 		wherein          = {"default:sand"},
 		clust_scarcity   = 24*24*24,
 		clust_size       = 7,
-		y_min            = -10,
+		y_min            = -15,
 		y_max            = 0,
 		noise_threshhold = 0,
 		noise_params     = {
@@ -350,10 +350,67 @@ function default.register_ores()
 --end
 
 
+	minetest.register_ore({ 
+		ore_type         = "blob",
+		ore              = "default:sand",
+		wherein          = {"default:stone"},
+		clust_scarcity   = 24*24*24,
+		clust_size       = 7,
+		y_min            = -63,
+		y_max            = 4,
+		noise_threshhold = 0,
+		noise_params     = {
+			offset=0.35,
+			scale=0.2,
+			spread={x=5, y=5, z=5},
+			seed=2316,
+			octaves=1,
+			persist=0.5
+		},
+	})
+
+	minetest.register_ore({
+		ore_type         = "blob",
+		ore              = "default:dirt",
+		wherein          = {"default:stone"},
+		clust_scarcity   = 24*24*24,
+		clust_size       = 7,
+		y_min            = -63,
+		y_max            = 31000,
+		noise_threshhold = 0,
+		noise_params     = {
+			offset=0.35,
+			scale=0.2,
+			spread={x=5, y=5, z=5},
+			seed=17676,
+			octaves=1,
+			persist=0.5
+		},
+	})
+
+	minetest.register_ore({
+		ore_type         = "blob",
+		ore              = "default:gravel",
+		wherein          = {"default:stone"},
+		clust_scarcity   = 24*24*24,
+		clust_size       = 7,
+		y_min            = -31000,
+		y_max            = 31000,
+		noise_threshhold = 0,
+		noise_params     = {
+			offset=0.35,
+			scale=0.2,
+			spread={x=5, y=5, z=5},
+			seed=766,
+			octaves=1,
+			persist=0.5
+		},
+	})
 end
 
 
-function default.generate_ore(name, wherein, minp, maxp, seed, chunks_per_volume, chunk_size, ore_per_chunk, height_min, height_max)
+function default.generate_ore(name, wherein, minp, maxp, seed,
+		chunks_per_volume, chunk_size, ore_per_chunk, height_min, height_max)
 	minetest.log('action', "WARNING: default.generate_ore is deprecated")
 
 	if maxp.y < height_min or minp.y > height_max then
@@ -400,7 +457,6 @@ end
 --
 
 function default.mgv6_ongen(minp, maxp, seed)
-
 	function default.make_papyrus(pos, size)
 		for y=0,size-1 do
 			local p = {x=pos.x, y=pos.y+y, z=pos.z}
@@ -535,7 +591,6 @@ function default.mgv6_ongen(minp, maxp, seed)
 		end
 		end
 	end
-
 end
 
 
@@ -634,29 +689,45 @@ function default.register_biomes()
 	minetest.clear_registered_biomes()
 
 	minetest.register_biome({
-		name = "grassland",
+		name = "default:grassland",
+		--node_dust = "",
 		node_top = "default:dirt_with_grass",
-		node_shore_top = "default:sand",
 		depth_top = 1,
 		node_filler = "default:dirt",
-		node_shore_filler = "default:sand",
-		depth_filler = 2,
-		height_shore = 3,
-		node_underwater = "default:sand",
+		depth_filler = 1,
 		--node_stone = "",
 		--node_water_top = "",
 		--depth_water_top = ,
 		--node_water = "",
-		--node_dust = "",
-		y_min = -31000,
+		y_min = 5,
 		y_max = 31000,
 		heat_point = 50,
 		humidity_point = 50,
 	})
 
-	--
-	-- Register decorations
-	--
+	minetest.register_biome({
+		name = "default:grassland_ocean",
+		--node_dust = "",
+		node_top = "default:sand",
+		depth_top = 1,
+		node_filler = "default:sand",
+		depth_filler = 2,
+		--node_stone = "",
+		--node_water_top = "",
+		--depth_water_top = ,
+		--node_water = "",
+		y_min = -31000,
+		y_max = 4,
+		heat_point = 50,
+		humidity_point = 50,
+	})
+end
+	
+--
+-- Register decorations
+--
+
+function default.register_decorations()
 
 	-- Flowers
 
@@ -667,17 +738,17 @@ function default.register_biomes()
 		noise_params = {
 			offset = -0.02,
 			scale = 0.03,
-			spread = {x=100, y=100, z=100},
+			spread = {x=200, y=200, z=200},
 			seed = 436,
 			octaves = 3,
 			persist = 0.6
 		},
-		biomes = {"grassland"},
+		biomes = {"default:grassland"},
 		y_min = -31000,
 		y_max = 31000,
 		decoration = "flowers:rose",
 	})
-
+	
 	minetest.register_decoration({
 		deco_type = "simple",
 		place_on = {"default:dirt_with_grass"},
@@ -685,17 +756,17 @@ function default.register_biomes()
 		noise_params = {
 			offset = -0.02,
 			scale = 0.03,
-			spread = {x=100, y=100, z=100},
+			spread = {x=200, y=200, z=200},
 			seed = 19822,
 			octaves = 3,
 			persist = 0.6
 		},
-		biomes = {"grassland"},
-		y_min = -31000,
+		biomes = {"default:grassland"},
+		y_min = 33,
 		y_max = 31000,
 		decoration = "flowers:tulip",
 	})
-
+	
 	minetest.register_decoration({
 		deco_type = "simple",
 		place_on = {"default:dirt_with_grass"},
@@ -703,17 +774,17 @@ function default.register_biomes()
 		noise_params = {
 			offset = -0.02,
 			scale = 0.03,
-			spread = {x=100, y=100, z=100},
+			spread = {x=200, y=200, z=200},
 			seed = 1220999,
 			octaves = 3,
 			persist = 0.6
 		},
-		biomes = {"grassland"},
+		biomes = {"default:grassland"},
 		y_min = -31000,
 		y_max = 31000,
 		decoration = "flowers:dandelion_yellow",
 	})
-
+	
 	minetest.register_decoration({
 		deco_type = "simple",
 		place_on = {"default:dirt_with_grass"},
@@ -721,17 +792,17 @@ function default.register_biomes()
 		noise_params = {
 			offset = -0.02,
 			scale = 0.03,
-			spread = {x=100, y=100, z=100},
+			spread = {x=200, y=200, z=200},
 			seed = 36662,
 			octaves = 3,
 			persist = 0.6
 		},
-		biomes = {"grassland"},
+		biomes = {"default:grassland"},
 		y_min = -31000,
 		y_max = 31000,
 		decoration = "flowers:geranium",
 	})
-
+	
 	minetest.register_decoration({
 		deco_type = "simple",
 		place_on = {"default:dirt_with_grass"},
@@ -739,17 +810,17 @@ function default.register_biomes()
 		noise_params = {
 			offset = -0.02,
 			scale = 0.03,
-			spread = {x=100, y=100, z=100},
+			spread = {x=200, y=200, z=200},
 			seed = 1133,
 			octaves = 3,
 			persist = 0.6
 		},
-		biomes = {"grassland"},
+		biomes = {"default:grassland"},
 		y_min = -31000,
 		y_max = 31000,
 		decoration = "flowers:viola",
 	})
-
+	
 	minetest.register_decoration({
 		deco_type = "simple",
 		place_on = {"default:dirt_with_grass"},
@@ -757,12 +828,12 @@ function default.register_biomes()
 		noise_params = {
 			offset = -0.02,
 			scale = 0.03,
-			spread = {x=100, y=100, z=100},
+			spread = {x=200, y=200, z=200},
 			seed = 73133,
 			octaves = 3,
 			persist = 0.6
 		},
-		biomes = {"grassland"},
+		biomes = {"default:grassland"},
 		y_min = -31000,
 		y_max = 31000,
 		decoration = "flowers:dandelion_white",
@@ -776,36 +847,36 @@ function default.register_biomes()
 		sidelen = 16,
 		noise_params = {
 			offset = 0.04,
-			scale = 0.08,
-			spread = {x=100, y=100, z=100},
+			scale = 0.04,
+			spread = {x=200, y=200, z=200},
 			seed = 66440,
 			octaves = 3,
 			persist = 0.6
 		},
-		biomes = {"grassland"},
+		biomes = {"default:grassland"},
 		y_min = -31000,
 		y_max = 31000,
 		decoration = "default:grass_1",
 	})
-
+	
 	minetest.register_decoration({
 		deco_type = "simple",
 		place_on = {"default:dirt_with_grass"},
 		sidelen = 16,
 		noise_params = {
 			offset = 0.02,
-			scale = 0.08,
-			spread = {x=100, y=100, z=100},
+			scale = 0.06,
+			spread = {x=200, y=200, z=200},
 			seed = 66440,
 			octaves = 3,
 			persist = 0.6
 		},
-		biomes = {"grassland"},
+		biomes = {"default:grassland"},
 		y_min = -31000,
 		y_max = 31000,
 		decoration = "default:grass_2",
 	})
-
+	
 	minetest.register_decoration({
 		deco_type = "simple",
 		place_on = {"default:dirt_with_grass"},
@@ -813,48 +884,48 @@ function default.register_biomes()
 		noise_params = {
 			offset = 0,
 			scale = 0.08,
-			spread = {x=100, y=100, z=100},
+			spread = {x=200, y=200, z=200},
 			seed = 66440,
 			octaves = 3,
 			persist = 0.6
 		},
-		biomes = {"grassland"},
+		biomes = {"default:grassland"},
 		y_min = -31000,
 		y_max = 31000,
 		decoration = "default:grass_3",
 	})
-
+	
 	minetest.register_decoration({
 		deco_type = "simple",
 		place_on = {"default:dirt_with_grass"},
 		sidelen = 16,
 		noise_params = {
 			offset = -0.02,
-			scale = 0.08,
-			spread = {x=100, y=100, z=100},
+			scale = 0.10,
+			spread = {x=200, y=200, z=200},
 			seed = 66440,
 			octaves = 3,
 			persist = 0.6
 		},
-		biomes = {"grassland"},
+		biomes = {"default:grassland"},
 		y_min = -31000,
 		y_max = 31000,
 		decoration = "default:grass_4",
 	})
-
+	
 	minetest.register_decoration({
 		deco_type = "simple",
 		place_on = {"default:dirt_with_grass"},
 		sidelen = 16,
 		noise_params = {
 			offset = -0.04,
-			scale = 0.08,
-			spread = {x=100, y=100, z=100},
+			scale = 0.12,
+			spread = {x=200, y=200, z=200},
 			seed = 66440,
 			octaves = 3,
 			persist = 0.6
 		},
-		biomes = {"grassland"},
+		biomes = {"default:grassland"},
 		y_min = -31000,
 		y_max = 31000,
 		decoration = "default:grass_5",
@@ -862,83 +933,20 @@ function default.register_biomes()
 end
 
 --
--- Register blob ore
---
-
-function default.register_blobs()
-	minetest.register_ore({ 
-		ore_type         = "blob",
-		ore              = "default:sand",
-		wherein          = {"default:stone"},
-		clust_scarcity   = 24*24*24,
-		clust_size       = 7,
-		y_min            = -63,
-		y_max            = 4,
-		noise_threshhold = 0,
-		noise_params     = {
-			offset=0.35,
-			scale=0.2,
-			spread={x=5, y=5, z=5},
-			seed=2316,
-			octaves=1,
-			persist=0.5
-		},
-	})
-
-	minetest.register_ore({
-		ore_type         = "blob",
-		ore              = "default:dirt",
-		wherein          = {"default:stone"},
-		clust_scarcity   = 24*24*24,
-		clust_size       = 7,
-		y_min            = -63,
-		y_max            = 31000,
-		noise_threshhold = 0,
-		noise_params     = {
-			offset=0.35,
-			scale=0.2,
-			spread={x=5, y=5, z=5},
-			seed=17676,
-			octaves=1,
-			persist=0.5
-		},
-	})
-
-	minetest.register_ore({
-		ore_type         = "blob",
-		ore              = "default:gravel",
-		wherein          = {"default:stone"},
-		clust_scarcity   = 24*24*24,
-		clust_size       = 7,
-		y_min            = -31000,
-		y_max            = 31000,
-		noise_threshhold = 0,
-		noise_params     = {
-			offset=0.35,
-			scale=0.2,
-			spread={x=5, y=5, z=5},
-			seed=766,
-			octaves=1,
-			persist=0.5
-		},
-	})
-end
-
---
--- Detect mapgen and select suitable biome code
+-- Detect mapgen to select functions
 --
 
 local mg_params = minetest.get_mapgen_params()
 if mg_params.mgname == "v5" then
 	default.register_biomes()
-	default.register_blobs()
+	default.register_decorations()
 	default.register_ores()
 elseif mg_params.mgname == "v6" or mg_params.mgname == "indev" then
 	minetest.register_on_generated(default.mgv6_ongen)
 	default.register_ores()
 elseif mg_params.mgname == "v7" or mg_params.mgname == "math" then
 	default.register_biomes()
-	default.register_blobs()
+	default.register_decorations()
 	default.register_ores()
 end
 
