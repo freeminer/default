@@ -188,22 +188,22 @@ boom = function(pos, time, force)
 			eject_drops(pos, stack)
 		end
 		local radiusp = radius+1
-		core.add_particlespawner(
-			100, --amount
-			0.1, --time
-			{x=pos.x-radiusp, y=pos.y-radiusp, z=pos.z-radiusp}, --minpos
-			{x=pos.x+radiusp, y=pos.y+radiusp, z=pos.z+radiusp}, --maxpos
-			{x=-0, y=-0, z=-0}, --minvel
-			{x=0, y=0, z=0}, --maxvel
-			{x=-0.5,y=5,z=-0.5}, --minacc
-			{x=0.5,y=5,z=0.5}, --maxacc
-			0.1, --minexptime
-			1, --maxexptime
-			8, --minsize
-			15, --maxsize
-			false, --collisiondetection
-			"tnt_smoke.png" --texture
-		)
+		core.add_particlespawner({
+			amount=100,
+			time=0.1,
+			minpos={x=pos.x-radiusp, y=pos.y-radiusp, z=pos.z-radiusp},
+			maxpos={x=pos.x+radiusp, y=pos.y+radiusp, z=pos.z+radiusp},
+			minvel={x=-0, y=-0, z=-0},
+			maxvel={x=0, y=0, z=0},
+			minacc={x=-0.5,y=5,z=-0.5},
+			maxacc={x=0.5,y=5,z=0.5},
+			minexptime=0.1,
+			minexptime=1,
+			minsize=8,
+			maxsize=15,
+			collisiondetection=false,
+			texture="tnt_smoke.png"
+		})
 	end, pos)
 end
 
