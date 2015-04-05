@@ -30,7 +30,7 @@ get_rain = function (p)
 	if heat <= 0 then return 0 end
 	if heat > 50 then return 0 end
 	local humidity = core.get_humidity(p)
-	if humidity < 80 then return 0 end
+	if humidity < 85 then return 0 end
 	--print('R h='..core.get_heat(p)..' h='..core.get_humidity(p))
 	return (humidity-80)/(100-80)
 end

@@ -15,7 +15,7 @@ core.register_globalstep(function(dtime)
 		local acc = {x=0, y=-9.81, z=0}
 
 		core.add_particlespawner({
-			amount=20*strength, time=0.5,
+			amount=10*strength, time=0.5,
 			minpos=minp, maxpos=maxp,
 			minvel=vel, maxvel=vel,
 			minacc=acc, maxacc=acc,
@@ -33,7 +33,7 @@ end)
 core.register_abm({
 	nodenames = {"group:crumbly", "group:snappy", "group:cracky", "group:choppy", "group:water"},
 	neighbors = {"air"},
-	interval = 10.0,
+	interval = 15.0,
 	chance = 80,
 	action = function (pos, node, active_object_count, active_object_count_wider)
 		-- todo! chance must depend on rain value

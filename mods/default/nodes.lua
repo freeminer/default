@@ -729,7 +729,7 @@ minetest.register_node("default:stone_with_mese", {
 	groups = {cracky = 1},
 	drop = "default:mese_crystal",
 	sounds = default.node_sound_stone_defaults(),
-	light_source = 1,
+	light_source = 3,
 })
 
 minetest.register_node("default:mese", {
@@ -739,7 +739,7 @@ minetest.register_node("default:mese", {
 	is_ground_content = true,
 	groups = {cracky = 1, level = 2},
 	sounds = default.node_sound_stone_defaults(),
-	light_source = 3,
+	light_source = 5,
 })
 
 
@@ -954,7 +954,7 @@ minetest.register_node("default:water_source", {
 	liquid_alternative_source = "default:water_source",
 	liquid_viscosity = 1,
 	post_effect_color = {a=64, r=100, g=100, b=200},
-	groups = {water=3, liquid=3, puts_out_fire=1, freeze=-1, melt=105, liquid_drop=1, weight=1000, pressure=64},
+	groups = {water=3, liquid=3, puts_out_fire=1, freeze=-1, melt=105, liquid_drop=1, weight=1000, pressure=32},
 	leveled = 8,
 	paramtype2 = "leveled",
 	freeze = "default:ice",
@@ -1054,7 +1054,7 @@ minetest.register_node("default:lava_source", {
 	liquid_renewable = false,
 	damage_per_second = 4 * 2,
 	post_effect_color = {a=192, r=255, g=64, b=0},
-	groups = {lava=3, liquid=2, hot=1200, igniter=1, wield_light=5, liquid_drop=1, weight=2000, pressure=64},
+	groups = {lava=3, liquid=2, hot=1200, igniter=1, wield_light=5, liquid_drop=1, weight=2000, pressure=32},
 	paramtype2 = "leveled",
 	leveled = 4,
 	freeze = "default:obsidian",
@@ -1523,7 +1523,7 @@ minetest.register_node("default:meselamp", {
 	paramtype = "light",
 	sunlight_propagates = true,
 	is_ground_content = false,
-	groups = {cracky = 3, oddly_breakable_by_hand = 3},
+	groups = {cracky = 3, oddly_breakable_by_hand = 3, wield_light=default.LIGHT_MAX},
 	sounds = default.node_sound_glass_defaults(),
 	light_source = 12,
 })
