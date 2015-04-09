@@ -280,7 +280,7 @@ minetest.register_abm({
 --
 
 minetest.register_abm({
-	nodenames = {"default:dirt"},
+	nodenames = {"default:dirt", "default:dirt_dry"},
 	interval = 10,
 	chance = 30,
 	action = function(pos, node)
@@ -315,7 +315,12 @@ minetest.register_abm({
 				and (core.get_heat(pos) < -5 or core.get_heat(pos) > 50 or core.get_humidity(pos) < 10))
 				or name == "default:snow" or name == "default:snowblock" or name == "default:ice"
 		then
-			core.set_node(pos, {name = "default:dirt"}, 2)
+			if core.get_humidity(pos) > 50 then
+				core.set_node(pos, {name = "default:dirt"}, 2)
+			else
+				-- dirt_dry_with grass here
+				core.set_node(pos, {name = "default:dirt_dry"}, 2)
+			end
 		end
 	end
 })
@@ -333,14 +338,18 @@ core.register_abm({
 				and nodedef.liquidtype == "none") or
 			(default.weather and core.get_heat(pos) > 3 and name ~= "default:snow" and name ~= "default:snowblock" and name ~= "default:ice"))
 		then
-			core.set_node(pos, {name = "default:dirt"}, 2)
+			if core.get_humidity(pos) > 50 then
+				core.set_node(pos, {name = "default:dirt"}, 2)
+			else
+				core.set_node(pos, {name = "default:dirt_dry"}, 2)
+			end
 		end
 	end
 })
 
 if default.weather then
 core.register_abm({
-	nodenames = {"default:sand", "default:desert_sand"},
+	nodenames = {"default:sand", "default:desert_sand", "default:dirt_dry"},
 	neighbors = {"default:water_flowing"},
 	interval = 20,
 	neighbors_range = 3,

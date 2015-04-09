@@ -269,12 +269,12 @@ minetest.register_node("default:dirt", {
 	description = "Dirt",
 	tiles = {"default_dirt.png"},
 	is_ground_content = true,
-	groups = {crumbly=3, soil=1, melt=55, liquid_drop=flowing_sand_liquid_drop, weight=2000},
+	groups = {crumbly=3, soil=1, melt=40, liquid_drop=flowing_sand_liquid_drop, weight=2000},
 	leveled = flowing_sand_leveled,
 	liquidtype = flowing_sand_type,
 	paramtype2 = flowing_sand_paramtype2,
 	drowning = 1,
-	melt = "default:sand",
+	melt = "default:dirt_dry",
 	sounds = default.node_sound_dirt_defaults(),
 })
 
@@ -309,6 +309,16 @@ minetest.register_node("default:dirt_with_snow", {
 	sounds = default.node_sound_dirt_defaults({
 		footstep = {name="default_snow_footstep", gain=0.25},
 	}),
+})
+
+minetest.register_node("default:dirt_dry", {
+	description = "Dry dirt",
+	tiles = {"default_dirt_dry.png"},
+	is_ground_content = true,
+	groups = {crumbly=3, soil=1, melt=65, liquid_drop=flowing_sand_liquid_drop, weight=1800},
+	drowning = 1,
+	melt = "default:sand",
+	sounds = default.node_sound_dirt_defaults(),
 })
 
 
