@@ -321,6 +321,18 @@ minetest.register_node("default:dirt_dry", {
 	sounds = default.node_sound_dirt_defaults(),
 })
 
+minetest.register_node("default:dirt_dry_grass", {
+	description = "Dry dirt with Grass",
+	tiles = {"default_grass_dry.png", "default_dirt_dry.png", "default_dirt_dry.png^default_grass_dry_side.png"},
+	is_ground_content = true,
+	groups = {crumbly=3, soil=1, not_in_creative_inventory=1, melt=50},
+	drop = 'default:dirt_dry',
+	sounds = default.node_sound_dirt_defaults({
+		footstep = {name="default_grass_footstep", gain=0.25},
+	}),
+	melt = "default:dirt_dry",
+})
+
 
 
 minetest.register_node("default:sand", {
