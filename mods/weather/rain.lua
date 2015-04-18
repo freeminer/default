@@ -39,20 +39,21 @@ core.register_abm({
 		-- todo! chance must depend on rain value
 		local amount = get_rain(pos)
 		if amount == 0 then return end
+		amount = amount * 4
+		if amount < 1 then amount = 1 end
 		if core.registered_nodes[node.name].drawtype ~= "normal"
 			and core.registered_nodes[node.name].drawtype ~= "nodebox"
 			and core.registered_nodes[node.name].drawtype ~= "flowingliquid"
 			and core.registered_nodes[node.name].drawtype ~= "liquid"
 			and core.registered_nodes[node.name].drawtype ~= "allfaces_optional" then  return end
 		local np = addvectors(pos, {x=0, y=1, z=0})
-		if core.get_node_light(np, 0.5) == 15 then
+		if core.get_node_light(np, 0.5) ~= 15 then return end
 			if core.get_node(pos).name == "default:water_flowing" then
-				core.add_node_level(pos, 1)
+				core.add_node_level(pos, 4*amount)
 			elseif core.get_node(np).name == "air" then
 				core.set_node(np, {name="water_flowing"})
-				core.add_node_level(np)
+				core.set_node_level(np, amount)
 			end
-		end
 	end
 })
 
@@ -64,11 +65,14 @@ core.register_abm({
 	chance = 10,
 	action = function (pos, node, active_object_count, active_object_count_wider)
 		-- todo! chance must depend on humidity and temperature
-		if get_rain(pos) > 0 or core.get_humidity(pos) > 90 then return end
+		local humidity = core.get_humidity(pos)
+		if get_rain(pos) > 0 or humidity > 90 then return end
 		local np = addvectors(pos, {x=0, y=1, z=0})
 		--if core.get_node_light(np, 0.5) == 15 then
 		if core.get_node(np).name == "air" then
-			core.add_node_level(pos, -1)
+		local amount = ((100-humidity)/20)
+		if amount < 1 then amount = 1 end
+			core.add_node_level(pos, -amount)
 		end
 	end
 })
