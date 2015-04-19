@@ -1081,6 +1081,14 @@ minetest.register_node("default:river_water_source", {
 	liquid_range = 2,
 	post_effect_color = {a=64, r=100, g=100, b=200},
 	groups = {water=3, liquid=3, puts_out_fire=1},
+
+
+	groups = {water=3, liquid=3, puts_out_fire=1, freeze=-1, melt=105, liquid_drop=1, weight=995, pressure=32},
+	leveled = 4,
+	paramtype2 = "leveled",
+	freeze = "default:ice",
+	melt = "air",
+
 })
 
 minetest.register_node("default:river_water_flowing", {
@@ -1128,6 +1136,12 @@ minetest.register_node("default:river_water_flowing", {
 	liquid_range = 2,
 	post_effect_color = {a=64, r=100, g=100, b=200},
 	groups = {water=3, liquid=3, puts_out_fire=1, not_in_creative_inventory=1},
+
+	groups = {water=3, liquid=3, puts_out_fire=1, not_in_creative_inventory=1, freeze=-5, melt=100, liquid_drop=1, weight=999},
+	leveled = 4,
+	paramtype2 = "leveled",
+	freeze = "default:snow",
+	melt = "air",
 })
 
 
