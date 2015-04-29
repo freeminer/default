@@ -83,6 +83,7 @@ function default.node_sound_glass_defaults(table)
 	return table
 end
 
+
 --
 -- Lavacooling
 --
@@ -90,7 +91,7 @@ end
 minetest.register_abm({
 	nodenames = {"default:lava_source", "default:lava_flowing"},
 	neighbors = {"group:water"},
-	interval = 10,
+	interval = 3,
 	chance = 3,
 	action = function(pos, node, active_object_count, active_object_count_wider)
 		core.freeze_melt(pos, -1);
@@ -113,32 +114,68 @@ minetest.register_abm({
 	end,
 })
 
+
 --
 -- Papyrus and cactus growing
 --
 
+function default.grow_cactus(pos, node)
+	if node.param2 ~= 0 then
+		return
+	end
+	pos.y = pos.y-1
+	if minetest.get_item_group(minetest.get_node(pos).name, "sand") == 0 then
+		return
+	end
+	pos.y = pos.y+1
+	local height = 0
+	while node.name == "default:cactus" and height < 4 and node.param2 == 0 do
+		height = height+1
+		pos.y = pos.y+1
+		node = minetest.get_node(pos)
+	end
+	if height == 4
+	or node.name ~= "air" then
+		return
+	end
+	minetest.set_node(pos, {name="default:cactus"})
+	return true
+end
+
+function default.grow_papyrus(pos, node)
+	pos.y = pos.y-1
+	local name = minetest.get_node(pos).name
+	if name ~= "default:dirt_with_grass"
+	and name ~= "default:dirt" then
+		return
+	end
+	if not minetest.find_node_near(pos, 3, {"group:water"}) then
+		return
+	end
+	pos.y = pos.y+1
+	local height = 0
+	while node.name == "default:papyrus" and height < 4 do
+		height = height+1
+		pos.y = pos.y+1
+		node = minetest.get_node(pos)
+	end
+	if height == 4
+	or node.name ~= "air" then
+		return
+	end
+	minetest.set_node(pos, {name="default:papyrus"})
+	return true
+end
+
+-- wrapping the functions in abm action is necessary to make overriding them possible
 minetest.register_abm({
 	nodenames = {"default:cactus"},
 	neighbors = {"group:sand", "default:dirt_dry", "default:dirt_dry_grass"},
 	interval = 50,
 	chance = 20,
-	action = function(pos, node)
-		pos.y = pos.y-1
-		local name = minetest.get_node(pos).name
-		if minetest.get_item_group(name, "sand") ~= 0 then
-			pos.y = pos.y+1
-			local height = 0
-			while minetest.get_node(pos).name == "default:cactus" and height < 4 do
-				height = height+1
-				pos.y = pos.y+1
-			end
-			if height < 4 then
-				if minetest.get_node(pos).name == "air" then
-					minetest.set_node(pos, {name="default:cactus"})
-				end
-			end
-		end
-	end,
+	action = function(...)
+		default.grow_cactus(...)
+	end
 })
 
 minetest.register_abm({
@@ -146,27 +183,11 @@ minetest.register_abm({
 	neighbors = {"default:dirt", "default:dirt_with_grass"},
 	interval = 50,
 	chance = 20,
-	action = function(pos, node)
-		pos.y = pos.y-1
-		local name = minetest.get_node(pos).name
-		if name == "default:dirt" or name == "default:dirt_with_grass" then
-			if minetest.find_node_near(pos, 3, {"group:water"}) == nil then
-				return
-			end
-			pos.y = pos.y+1
-			local height = 0
-			while minetest.get_node(pos).name == "default:papyrus" and height < 4 do
-				height = height+1
-				pos.y = pos.y+1
-			end
-			if height < 4 then
-				if minetest.get_node(pos).name == "air" then
-					minetest.set_node(pos, {name="default:papyrus"})
-				end
-			end
-		end
-	end,
+	action = function(...)
+		default.grow_papyrus(...)
+	end
 })
+
 
 --
 -- dig upwards
@@ -180,6 +201,7 @@ function default.dig_up(pos, node, digger)
 		minetest.node_dig(np, nn, digger)
 	end
 end
+
 
 --
 -- Leafdecay
