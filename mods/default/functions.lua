@@ -342,9 +342,44 @@ minetest.register_abm({
 			elseif name == "default:dirt_dry_grass" then
 				core.set_node(pos, {name = "default:dirt_dry"}, 2)
 			end
+		elseif name == "air" and (default.weather and core.get_heat(pos) > 5 and core.get_heat(pos) < 40 and core.get_humidity(pos) > 20) 
+			and math.random(1, 50) == 1 and (core.get_node_light(above) or 0) >= 13 then
+			core.set_node(above, {name = "default:grass_1"}, 2)
 		end
 	end
 })
+
+minetest.register_abm({
+	nodenames = {"default:grass_1", "default:grass_2", "default:grass_3", "default:grass_4", "default:grass_5"},
+	neighbors = {"default:dirt_with_grass", "default:dirt"},
+	interval = 20,
+	chance = 30,
+	action = function(pos, node)
+		local humidity = core.get_humidity(pos)
+		local heat = core.get_heat(pos)
+		if heat < 5 or heat > 40 or (core.get_node_light(pos) or 0) < 12 then return end
+		local rnd = math.random(1, 110-humidity)
+		local node = core.get_node(pos)
+		local name = node.name
+		if name == "default:grass_5" then
+				if rnd >= 2 then return end
+				if     humidity > 75 and heat > 25 then node.name = "default:junglesapling" 
+				elseif humidity > 40 then node.name = "default:sapling"
+				elseif humidity > 30 and heat < 10 then node.name = "default:pine_sapling"
+				else return end
+				core.set_node(pos, node, 2)
+		else
+			for i=1,4 do
+				if rnd >= i+5 then return end
+				if name == "default:grass_"..i then
+					node.name = "default:grass_"..(i+1)
+					core.set_node(pos, node, 2)
+				end
+			end
+		end
+	end
+})
+
 
 core.register_abm({
 	nodenames = {"default:dirt_with_snow"},
