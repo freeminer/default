@@ -13,9 +13,10 @@ minetest.register_alias("mapgen_gravel", "default:gravel")
 minetest.register_alias("mapgen_desert_stone", "default:desert_stone")
 minetest.register_alias("mapgen_desert_sand", "default:desert_sand")
 minetest.register_alias("mapgen_dirt_with_snow", "default:dirt_with_snow")
-minetest.register_alias("mapgen_snow", "default:snow")
 minetest.register_alias("mapgen_snowblock", "default:snowblock")
+minetest.register_alias("mapgen_snow", "default:snow")
 minetest.register_alias("mapgen_ice", "default:ice")
+minetest.register_alias("mapgen_sandstone", "default:sandstone")
 
 minetest.register_alias("mapgen_tree", "default:tree")
 minetest.register_alias("mapgen_leaves", "default:leaves")
@@ -29,6 +30,8 @@ minetest.register_alias("mapgen_pine_needles", "default:pine_needles")
 minetest.register_alias("mapgen_cobble", "default:cobble")
 minetest.register_alias("mapgen_stair_cobble", "stairs:stair_cobble")
 minetest.register_alias("mapgen_mossycobble", "default:mossycobble")
+minetest.register_alias("mapgen_sandstonebrick", "default:sandstonebrick")
+minetest.register_alias("mapgen_stair_sandstonebrick", "stairs:stair_sandstonebrick")
 
 
 --freeminer:
@@ -808,14 +811,10 @@ end
 -- the use of minetest.generate_ores or minetest.generate_decorations
 
 local mg_params = minetest.get_mapgen_params()
-if mg_params.mgname == "v5" then
-	default.register_ores()
-	default.register_biomes()
-	default.register_decorations()
-elseif mg_params.mgname == "v6"  or mg_params.mgname == "indev" then
+if mg_params.mgname == "v6"  or mg_params.mgname == "indev" then
 	default.register_ores()
 	default.register_mgv6_decorations()
-elseif mg_params.mgname == "v7" or mg_params.mgname == "math"  then
+elseif mg_params.mgname ~= "singlenode" then
 	default.register_ores()
 	default.register_biomes()
 	default.register_decorations()

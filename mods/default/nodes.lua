@@ -1438,6 +1438,7 @@ minetest.register_node("default:chest_locked", {
 			)
 		end
 	end,
+	on_blast = function() end,
 })
 
 
@@ -1662,7 +1663,7 @@ minetest.register_node("default:meselamp", {
 	is_ground_content = false,
 	groups = {cracky = 3, oddly_breakable_by_hand = 3, wield_light=default.LIGHT_MAX},
 	sounds = default.node_sound_glass_defaults(),
-	light_source = 12,
+	light_source = default.LIGHT_MAX,
 })
 
 --
