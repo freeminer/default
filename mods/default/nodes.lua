@@ -480,6 +480,7 @@ minetest.register_node("default:sapling", {
 	inventory_image = "default_sapling.png",
 	wield_image = "default_sapling.png",
 	paramtype = "light",
+	sunlight_propagates = true,
 	walkable = false,
 	is_ground_content = true,
 	selection_box = {
@@ -534,7 +535,7 @@ minetest.register_node("default:apple", {
 		fixed = {-0.2, -0.5, -0.2, 0.2, 0, 0.2}
 	},
 	groups = {fleshy=3,dig_immediate=3,flammable=2,leafdecay=3,leafdecay_drop=1},
-	on_use = minetest.item_eat(1),
+	on_use = minetest.item_eat(2),
 	sounds = default.node_sound_leaves_defaults(),
 
 	after_place_node = function(pos, placer, itemstack)
@@ -601,6 +602,7 @@ minetest.register_node("default:junglesapling", {
 	inventory_image = "default_junglesapling.png",
 	wield_image = "default_junglesapling.png",
 	paramtype = "light",
+	sunlight_propagates = true,
 	walkable = false,
 	selection_box = {
 		type = "fixed",
@@ -831,6 +833,7 @@ minetest.register_node("default:papyrus", {
 	inventory_image = "default_papyrus.png",
 	wield_image = "default_papyrus.png",
 	paramtype = "light",
+	sunlight_propagates = true,
 	walkable = false,
 	is_ground_content = true,
 	selection_box = {
@@ -854,6 +857,7 @@ minetest.register_node("default:dry_shrub", {
 	inventory_image = "default_dry_shrub.png",
 	wield_image = "default_dry_shrub.png",
 	paramtype = "light",
+	sunlight_propagates = true,
 	walkable = false,
 	is_ground_content = true,
 	buildable_to = true,
@@ -874,6 +878,7 @@ minetest.register_node("default:junglegrass", {
 	inventory_image = "default_junglegrass.png",
 	wield_image = "default_junglegrass.png",
 	paramtype = "light",
+	sunlight_propagates = true,
 	walkable = false,
 	buildable_to = true,
 	is_ground_content = true,
@@ -894,6 +899,7 @@ minetest.register_node("default:grass_1", {
 	inventory_image = "default_grass_3.png",
 	wield_image = "default_grass_3.png",
 	paramtype = "light",
+	sunlight_propagates = true,
 	walkable = false,
 	is_ground_content = true,
 	buildable_to = true,
@@ -921,6 +927,7 @@ for i=2,5 do
 		inventory_image = "default_grass_"..i..".png",
 		wield_image = "default_grass_"..i..".png",
 		paramtype = "light",
+		sunlight_propagates = true,
 		walkable = false,
 		buildable_to = true,
 		is_ground_content = true,
@@ -1566,6 +1573,7 @@ minetest.register_node("default:ladder", {
 	wield_image = "default_ladder.png",
 	paramtype = "light",
 	paramtype2 = "wallmounted",
+	sunlight_propagates = true,
 	walkable = false,
 	climbable = true,
 	is_ground_content = false,
@@ -1588,6 +1596,7 @@ minetest.register_node("default:fence_wood", {
 	inventory_image = fence_texture,
 	wield_image = fence_texture,
 	paramtype = "light",
+	sunlight_propagates = true,
 	is_ground_content = false,
 	selection_box = {
 		type = "fixed",
@@ -1632,6 +1641,7 @@ minetest.register_node("default:rail", {
 	inventory_image = "default_rail.png",
 	wield_image = "default_rail.png",
 	paramtype = "light",
+	sunlight_propagates = true,
 	walkable = false,
 	is_ground_content = false,
 	selection_box = {
