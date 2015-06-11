@@ -56,7 +56,7 @@ core.register_abm({
 	nodenames = {"group:crumbly", "group:snappy", "group:cracky", "group:choppy", "group:melts"},
 	neighbors = {"air"},
 	interval = 10.0, 
-	chance = 80,
+	chance = 50,
 	--interval = 1.0, 
 	--chance = 5,
 	action = function (pos, node, active_object_count, active_object_count_wider)

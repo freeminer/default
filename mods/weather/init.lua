@@ -11,6 +11,8 @@ addvectors = function (v1, v2)
 end
 
 local cloud_height = tonumber(core.setting_get("cloud_height"));
+local snow_humidity = 65
+local rain_humidity = 75
 
 get_snow = function (p)
 	if not p then return 0 end
@@ -18,9 +20,9 @@ get_snow = function (p)
 	local heat = core.get_heat(p)
 	if heat >= 0 then return 0 end
 	local humidity = core.get_humidity(p)
-	if humidity < 75 then return 0 end
+	if humidity < snow_humidity then return 0 end
 	--print('S h='..core.get_heat(p)..' h='..core.get_humidity(p))
-	return (humidity-75)/(100-75)
+	return (humidity-snow_humidity)/(100-snow_humidity)
 end
 
 get_rain = function (p)
@@ -30,9 +32,9 @@ get_rain = function (p)
 	if heat <= 0 then return 0 end
 	if heat > 50 then return 0 end
 	local humidity = core.get_humidity(p)
-	if humidity < 85 then return 0 end
+	if humidity < rain_humidity then return 0 end
 	--print('R h='..core.get_heat(p)..' h='..core.get_humidity(p))
-	return (humidity-80)/(100-80)
+	return (humidity-rain_humidity)/(100-rain_humidity)
 end
 
 if default.weather then

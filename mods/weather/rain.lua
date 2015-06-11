@@ -34,7 +34,7 @@ core.register_abm({
 	nodenames = {"group:crumbly", "group:snappy", "group:cracky", "group:choppy", "group:water"},
 	neighbors = {"air"},
 	interval = 15.0,
-	chance = 80,
+	chance = 50,
 	action = function (pos, node, active_object_count, active_object_count_wider)
 		-- todo! chance must depend on rain value
 		local amount = get_rain(pos)
