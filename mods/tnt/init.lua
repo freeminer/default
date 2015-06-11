@@ -309,14 +309,14 @@ core.register_node("tnt:gunpowder", {
 	paramtype = "light",
 	sunlight_propagates = true,
 	walkable = false,
-	tiles = {"tnt_gunpowder.png",},
+	tiles = {"tnt_gunpowder_straight.png", "tnt_gunpowder_curved.png", "tnt_gunpowder_t_junction.png", "tnt_gunpowder_crossing.png"},
 	inventory_image = "tnt_gunpowder_inventory.png",
 	wield_image = "tnt_gunpowder_inventory.png",
 	selection_box = {
 		type = "fixed",
 		fixed = {-1/2, -1/2, -1/2, 1/2, -1/2+1/16, 1/2},
 	},
-	groups = {dig_immediate=2,attached_node=1},
+	groups = {dig_immediate=2,attached_node=1,connect_to_raillike=minetest.raillike_group("gunpowder")},
 	sounds = default.node_sound_leaves_defaults(),
 	
 	on_punch = function(pos, node, puncher)
@@ -332,13 +332,48 @@ core.register_node("tnt:gunpowder_burning", {
 	sunlight_propagates = true,
 	walkable = false,
 	light_source = 5,
-	tiles = {{name="tnt_gunpowder_burning_animated.png", animation={type="vertical_frames", aspect_w=16, aspect_h=16, length=1}}},
+	tiles = {{
+		name = "tnt_gunpowder_burning_straight_animated.png",
+		animation = {
+			type = "vertical_frames",
+			aspect_w = 16,
+			aspect_h = 16,
+			length = 1,
+		}
+	},
+	{
+		name = "tnt_gunpowder_burning_curved_animated.png",
+		animation = {
+			type = "vertical_frames",
+			aspect_w = 16,
+			aspect_h = 16,
+			length = 1,
+		}
+	},
+	{
+		name = "tnt_gunpowder_burning_t_junction_animated.png",
+		animation = {
+			type = "vertical_frames",
+			aspect_w = 16,
+			aspect_h = 16,
+			length = 1,
+		}
+	},
+	{
+		name = "tnt_gunpowder_burning_crossing_animated.png",
+		animation = {
+			type = "vertical_frames",
+			aspect_w = 16,
+			aspect_h = 16,
+			length = 1,
+		}
+	}},
 	selection_box = {
 		type = "fixed",
 		fixed = {-1/2, -1/2, -1/2, 1/2, -1/2+1/16, 1/2},
 	},
 	drop = "",
-	groups = {dig_immediate=2,attached_node=1},
+	groups = {dig_immediate=2,attached_node=1,connect_to_raillike=minetest.raillike_group("gunpowder")},
 	sounds = default.node_sound_leaves_defaults(),
 })
 
