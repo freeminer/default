@@ -1090,7 +1090,7 @@ minetest.register_node("default:river_water_source", {
 	liquid_viscosity = 1,
 	liquid_renewable = false,
 	liquid_range = 2,
-	post_effect_color = {a=120, r=30, g=60, b=90},
+	post_effect_color = {a=120, r=30, g=76, b=90},
 	groups = {water=3, liquid=3, puts_out_fire=1},
 
 
@@ -1145,7 +1145,7 @@ minetest.register_node("default:river_water_flowing", {
 	liquid_viscosity = 1,
 	liquid_renewable = false,
 	liquid_range = 2,
-	post_effect_color = {a=120, r=30, g=60, b=90},
+	post_effect_color = {a=120, r=30, g=76, b=90},
 	groups = {water=3, liquid=3, puts_out_fire=1, not_in_creative_inventory=1},
 
 	groups = {water=3, liquid=3, puts_out_fire=1, not_in_creative_inventory=1, freeze=-5, melt=100, liquid_drop=1, weight=999},
