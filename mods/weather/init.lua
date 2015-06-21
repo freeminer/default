@@ -38,8 +38,11 @@ get_rain = function (p)
 end
 
 if default.weather then
-	if default.weather and core.setting_getbool("liquid_real") then
+	if core.setting_getbool("liquid_real") then
 		dofile(core.get_modpath("weather").."/rain.lua")
 	end
-	dofile(core.get_modpath("weather").."/snow.lua")
+
+	if tonumber(core.setting_get("time_speed")) > 0 then
+		dofile(core.get_modpath("weather").."/snow.lua")
+	end
 end
