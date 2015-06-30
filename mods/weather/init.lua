@@ -42,7 +42,5 @@ if default.weather then
 		dofile(core.get_modpath("weather").."/rain.lua")
 	end
 
-	if tonumber(core.setting_get("time_speed")) > 0 then
-		dofile(core.get_modpath("weather").."/snow.lua")
-	end
+	dofile(core.get_modpath("weather").."/snow.lua")
 end

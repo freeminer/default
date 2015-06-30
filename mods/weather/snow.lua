@@ -51,6 +51,8 @@ local snow_box =
 }
 
 
+default.time_speed = tonumber(core.setting_get("time_speed"))
+
 -- -[[ Enable this section if you have a very fast PC
 core.register_abm({
 	nodenames = {"group:crumbly", "group:snappy", "group:cracky", "group:choppy", "group:melts"},
@@ -69,7 +71,7 @@ core.register_abm({
 		if core.get_node_light(np, 0.5) ~= 15 then return end
 		local addsnow = 1
 		if core.get_node(pos).name == "default:snow" then
-			if core.add_node_level(pos, 4) > 0 then
+			if core.add_node_level(pos, 4) > 0 and default.time_speed > 0 then
 				core.set_node(pos, {name="default:ice"})
 			else
 				addsnow = 0
