@@ -25,6 +25,7 @@ local function add_simple_flower(name, desc, box, f_groups)
 	f_groups.flower = 1
 	f_groups.flora = 1
 	f_groups.attached_node = 1
+	f_groups.dig_immediate = 3
 
 	minetest.register_node("flowers:"..name.."", {
 		description = desc,
