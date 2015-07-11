@@ -186,7 +186,7 @@ farming.register_plant = function(name, def)
 	if not def.humidity_max	then def.humidity_max	= 100 end
 
 	-- Register seed
-	local g = {seed = 1, snappy = 3, attached_node = 1}
+	local g = {seed = 1, snappy = 3, attached_node = 1, dig_immediate = 3}
 	for k, v in pairs(def.fertility) do
 		g[v] = 1
 	end
@@ -227,7 +227,7 @@ farming.register_plant = function(name, def)
 				{items = {mname .. ":seed_" .. pname}, rarity = 18 - i * 2},
 			}
 		}
-		local nodegroups = {snappy = 3, flammable = 2, plant = 1, not_in_creative_inventory = 1, attached_node = 1, drop_by_liquid=1}
+		local nodegroups = {snappy = 3, flammable = 2, plant = 1, not_in_creative_inventory = 1, attached_node = 1, drop_by_liquid = 1, dig_immediate = 3}
 		nodegroups[pname] = i
 		minetest.register_node(mname .. ":" .. pname .. "_" .. i, {
 			drawtype = "plantlike",
