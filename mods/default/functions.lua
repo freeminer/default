@@ -168,7 +168,7 @@ end
 
 minetest.register_abm({
 	nodenames = {"default:cactus"},
-	neighbors = {"group:sand", "default:dirt_dry", "default:dirt_dry_grass"},
+	neighbors = {"group:sand", "default:dirt_dry", "default:dirt_with_dry_grass"},
 	interval = 50,
 	chance = 20,
 	action = function(...)
@@ -304,7 +304,7 @@ minetest.register_abm({
 --
 
 minetest.register_abm({
-	nodenames = {"default:dirt", "default:dirt_dry", "default:dirt_dry_grass" },
+	nodenames = {"default:dirt", "default:dirt_dry", "default:dirt_with_dry_grass" },
 	interval = 10,
 	chance = 30,
 	action = function(pos, node)
@@ -326,7 +326,7 @@ minetest.register_abm({
 })
 
 minetest.register_abm({
-	nodenames = {"default:dirt_with_grass", "default:dirt_dry_grass"},
+	nodenames = {"default:dirt_with_grass", "default:dirt_with_dry_grass"},
 	interval = 10,
 	chance = 10,
 	action = function(pos, node)
@@ -341,7 +341,7 @@ minetest.register_abm({
 		then
 			if name == "default:dirt_with_grass" then
 				core.set_node(pos, {name = "default:dirt"}, 2)
-			elseif name == "default:dirt_dry_grass" then
+			elseif name == "default:dirt_with_dry_grass" then
 				core.set_node(pos, {name = "default:dirt_dry"}, 2)
 			end
 		elseif name == "air" and (default.weather and core.get_heat(pos) > 5 and core.get_heat(pos) < 40 and core.get_humidity(pos) > 20) 
@@ -407,14 +407,14 @@ core.register_abm({
 
 if default.weather then
 core.register_abm({
-	nodenames = {"default:sand", "default:desert_sand", "default:dirt_dry", "default:dirt_dry_grass"},
+	nodenames = {"default:sand", "default:desert_sand", "default:dirt_dry", "default:dirt_with_dry_grass"},
 	neighbors = {"default:water_flowing"},
 	interval = 20,
 	neighbors_range = 3,
 	chance = 10,
 	action = function(pos, node)
 		if ((core.get_heat(pos) > 40 or core.get_humidity(pos) < 20)) then return end
-		if node.name == "default:dirt_dry_grass" then
+		if node.name == "default:dirt_with_dry_grass" then
 			core.set_node(pos, {name = "default:dirt_with_grass"}, 2)
 		else
 			core.set_node(pos, {name = "default:dirt"}, 2)
