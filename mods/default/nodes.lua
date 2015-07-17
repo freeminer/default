@@ -309,11 +309,12 @@ minetest.register_node("default:dirt_with_dry_grass", {
 		"default_dirt.png",
 		"default_dirt.png^default_dry_grass_side.png"
 	},
-	groups = {crumbly = 3, soil = 1},
-	drop = 'default:dirt',
+	groups = {crumbly = 3, soil = 1, melt=50},
+	drop = 'default:dirt_dry',
 	sounds = default.node_sound_dirt_defaults({
 		footstep = {name = "default_grass_footstep", gain = 0.4},
 	}),
+	melt = "default:dirt_dry",
 })
 
 minetest.register_node("default:dirt_with_grass_footsteps", {
@@ -346,17 +347,6 @@ minetest.register_node("default:dirt_dry", {
 	sounds = default.node_sound_dirt_defaults(),
 })
 
-minetest.register_node("default:dirt_dry_grass", {
-	description = "Dry dirt with Grass",
-	tiles = {"default_grass_dry.png", "default_dirt_dry.png", "default_dirt_dry.png^default_grass_dry_side.png"},
-	is_ground_content = true,
-	groups = {crumbly=3, soil=1, not_in_creative_inventory=1, melt=50},
-	drop = 'default:dirt_dry',
-	sounds = default.node_sound_dirt_defaults({
-		footstep = {name="default_grass_footstep", gain=0.25},
-	}),
-	melt = "default:dirt_dry",
-})
 
 
 
@@ -1836,3 +1826,4 @@ minetest.register_node("default:nyancat_rainbow", {
 	is_ground_content = false,
 	sounds = default.node_sound_defaults(),
 })
+
