@@ -30,8 +30,12 @@ minetest.register_abm({
 		if default.weather and (core.get_heat(pos) < 5 or core.get_humidity(pos) < 20) then return end
 
 		minetest.log("action", "A sapling grows into a tree at "..
-				minetest.pos_to_string(pos))
-		default.grow_tree(pos, random(1, 4) == 1)
+			minetest.pos_to_string(pos))
+		if minetest.get_mapgen_params().mgname == "v6" then
+			default.grow_tree(pos, random(1, 4) == 1)
+		else
+			default.grow_new_apple_tree(pos)
+		end
 	end
 })
 
@@ -46,8 +50,12 @@ minetest.register_abm({
 		if default.weather and (core.get_heat(pos) < 15 or core.get_humidity(pos) < 30) then return end
 
 		minetest.log("action", "A jungle sapling grows into a tree at "..
-				minetest.pos_to_string(pos))
-		default.grow_jungle_tree(pos)
+			minetest.pos_to_string(pos))
+		if minetest.get_mapgen_params().mgname == "v6" then
+			default.grow_jungle_tree(pos)
+		else
+			default.grow_new_jungle_tree(pos)
+		end
 	end
 })
 
@@ -63,8 +71,27 @@ minetest.register_abm({
 		if default.weather and (core.get_heat(pos) < 1 or core.get_humidity(pos) < 10) then return end
 
 		minetest.log("action", "A pine sapling grows into a tree at "..
-				minetest.pos_to_string(pos))
-		default.grow_pine_tree(pos)
+			minetest.pos_to_string(pos))
+		if minetest.get_mapgen_params().mgname == "v6" then
+			default.grow_pine_tree(pos)
+		else
+			default.grow_new_pine_tree(pos)
+		end
+	end
+})
+
+minetest.register_abm({
+	nodenames = {"default:acacia_sapling"},
+	interval = 13,
+	chance = 50,
+	action = function(pos, node)
+		if not can_grow(pos) then
+			return
+		end
+
+		minetest.log("action", "An acacia sapling grows into a tree at "..
+			minetest.pos_to_string(pos))
+		default.grow_new_acacia_tree(pos)
 	end
 })
 
@@ -350,3 +377,34 @@ function default.grow_pine_tree(pos)
 	vm:update_map()
 end
 
+-- New tree
+
+function default.grow_new_apple_tree(pos)
+	local path = minetest.get_modpath("default") .. "/schematics/apple_tree.mts"
+	minetest.place_schematic({x = pos.x - 2, y = pos.y - 1, z = pos.z - 2},
+		path, 0, nil, false)
+end
+
+-- New jungle tree
+
+function default.grow_new_jungle_tree(pos)
+	local path = minetest.get_modpath("default") .. "/schematics/jungle_tree.mts"
+	minetest.place_schematic({x = pos.x - 2, y = pos.y - 1, z = pos.z - 2},
+		path, 0, nil, false)
+end
+
+-- New pine tree
+
+function default.grow_new_pine_tree(pos)
+	local path = minetest.get_modpath("default") .. "/schematics/pine_tree.mts"
+	minetest.place_schematic({x = pos.x - 2, y = pos.y - 1, z = pos.z - 2},
+		path, 0, nil, false)
+end
+
+-- New acacia tree
+
+function default.grow_new_acacia_tree(pos)
+	local path = minetest.get_modpath("default") .. "/schematics/acacia_tree.mts"
+	minetest.place_schematic({x = pos.x - 4, y = pos.y - 1, z = pos.z - 4},
+		path, random, nil, false)
+end
