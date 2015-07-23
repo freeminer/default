@@ -223,14 +223,35 @@ function stairs.register_stair_and_slab(subname, recipeitem, groups, images, des
 end
 
 stairs.register_stair_and_slab("wood", "default:wood",
-		{snappy=2,choppy=2,oddly_breakable_by_hand=2,flammable=3},
+		{snappy = 2, choppy = 2, oddly_breakable_by_hand = 2, flammable = 3},
 		{"default_wood.png"},
 		"Wooden Stair",
 		"Wooden Slab",
 		default.node_sound_wood_defaults())
 
+stairs.register_stair_and_slab("junglewood", "default:junglewood",
+		{snappy = 2, choppy = 2, oddly_breakable_by_hand = 2, flammable = 3},
+		{"default_junglewood.png"},
+		"Junglewood Stair",
+		"Junglewood Slab",
+		default.node_sound_wood_defaults())
+
+stairs.register_stair_and_slab("pinewood", "default:pinewood",
+		{snappy = 2, choppy = 2, oddly_breakable_by_hand = 2, flammable = 3},
+		{"default_pinewood.png"},
+		"Pinewood Stair",
+		"Pinewood Slab",
+		default.node_sound_wood_defaults())
+
+stairs.register_stair_and_slab("acacia_wood", "default:acacia_wood",
+		{snappy = 2, choppy = 2, oddly_breakable_by_hand = 2, flammable = 3},
+		{"default_acacia_wood.png"},
+		"Acacia Wood Stair",
+		"Acacia Wood Slab",
+		default.node_sound_wood_defaults())
+
 stairs.register_stair_and_slab("stone", "default:stone",
-		{cracky=3, melt=3000},
+		{cracky = 3, melt = 3000},
 		{"default_stone.png"},
 		"Stone Stair",
 		"Stone Slab",
@@ -238,15 +259,22 @@ stairs.register_stair_and_slab("stone", "default:stone",
 		"default:lava_flowing")
 
 stairs.register_stair_and_slab("cobble", "default:cobble",
-		{cracky=3, melt=2900},
+		{cracky = 3, melt = 3000},
 		{"default_cobble.png"},
 		"Cobblestone Stair",
 		"Cobblestone Slab",
 		default.node_sound_stone_defaults(),
 		"default:lava_flowing")
 
+stairs.register_stair_and_slab("stonebrick", "default:stonebrick",
+		{cracky = 3, melt = 3000},
+		{"default_stone_brick.png"},
+		"Stone Brick Stair",
+		"Stone Brick Slab",
+		default.node_sound_stone_defaults())
+
 stairs.register_stair_and_slab("desert_stone", "default:desert_stone",
-		{cracky=3},
+		{cracky = 3},
 		{"default_desert_stone.png"},
 		"Desertstone Stair",
 		"Desertstone Slab",
@@ -254,7 +282,7 @@ stairs.register_stair_and_slab("desert_stone", "default:desert_stone",
 		"default:lava_flowing")
 
 stairs.register_stair_and_slab("desert_cobble", "default:desert_cobble",
-		{cracky=3},
+		{cracky = 3},
 		{"default_desert_cobble.png"},
 		"Desert Cobblestone Stair",
 		"Desert Cobblestone Slab",
@@ -262,14 +290,14 @@ stairs.register_stair_and_slab("desert_cobble", "default:desert_cobble",
 		"default:lava_flowing")
 
 stairs.register_stair_and_slab("desert_stonebrick", "default:desert_stonebrick",
-		{cracky=3},
+		{cracky = 3},
 		{"default_desert_stone_brick.png"},
 		"Desert Stone Brick Stair",
 		"Desert Stone Brick Slab",
 		default.node_sound_stone_defaults())
 
 stairs.register_stair_and_slab("brick", "default:brick",
-		{cracky=3},
+		{cracky = 3},
 		{"default_brick.png"},
 		"Brick Stair",
 		"Brick Slab",
@@ -277,7 +305,7 @@ stairs.register_stair_and_slab("brick", "default:brick",
 		"default:lava_flowing")
 
 stairs.register_stair_and_slab("sandstone", "default:sandstone",
-		{crumbly=2,cracky=2,melt=3200},
+		{crumbly = 2, cracky = 2, melt = 3200},
 		{"default_sandstone.png"},
 		"Sandstone Stair",
 		"Sandstone Slab",
@@ -285,37 +313,15 @@ stairs.register_stair_and_slab("sandstone", "default:sandstone",
 		"default:lava_flowing")
 		
 stairs.register_stair_and_slab("sandstonebrick", "default:sandstonebrick",
-		{crumbly=2,cracky=2},
+		{crumbly = 2, cracky = 2},
 		{"default_sandstone_brick.png"},
 		"Sandstone Brick Stair",
 		"Sandstone Brick Slab",
 		default.node_sound_stone_defaults(),
 		"default:lava_flowing")
 
-stairs.register_stair_and_slab("junglewood", "default:junglewood",
-		{snappy=2,choppy=2,oddly_breakable_by_hand=2,flammable=3},
-		{"default_junglewood.png"},
-		"Junglewood Stair",
-		"Junglewood Slab",
-		default.node_sound_wood_defaults())
-
-stairs.register_stair_and_slab("stonebrick", "default:stonebrick",
-		{cracky=3,melt=3000},
-		{"default_stone_brick.png"},
-		"Stone Brick Stair",
-		"Stone Brick Slab",
-		default.node_sound_stone_defaults(),
-		"default:lava_flowing")
-
-stairs.register_stair_and_slab("pinewood", "default:pinewood",
-		{snappy=2,choppy=2,oddly_breakable_by_hand=2,flammable=3},
-		{"default_pinewood.png"},
-		"Pinewood Stair",
-		"Pinewood Slab",
-		default.node_sound_wood_defaults())
-
 stairs.register_stair_and_slab("obsidian", "default:obsidian",
-		{cracky=1,level=2,melt=5000},
+		{cracky = 1, level = 2, melt = 5000},
 		{"default_obsidian.png"},
 		"Obsidian Stair",
 		"Obsidian Slab",
@@ -323,7 +329,7 @@ stairs.register_stair_and_slab("obsidian", "default:obsidian",
 		"default:lava_flowing")
 
 stairs.register_stair_and_slab("obsidianbrick", "default:obsidianbrick",
-		{cracky=1,level=2,melt=5000},
+		{cracky = 1, level = 2, melt = 5000},
 		{"default_obsidian_brick.png"},
 		"Obsidian Brick Stair",
 		"Obsidian Brick Slab",
