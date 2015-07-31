@@ -50,8 +50,3 @@ dofile(minetest.get_modpath("default").."/player.lua")
 dofile(minetest.get_modpath("default").."/trees.lua")
 dofile(minetest.get_modpath("default").."/aliases.lua")
 dofile(minetest.get_modpath("default").."/legacy.lua")
-
-local mg_params = minetest.get_mapgen_params()
-if mg_params.mgname == "v5" or mg_params.mgname == "v7" or mg_params.mgname == "math" then
-	dofile(minetest.get_modpath("default").."/biomes.lua")
-end
