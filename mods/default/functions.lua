@@ -95,7 +95,7 @@ minetest.register_abm({
 	chance = 3,
 	action = function(pos, node, active_object_count, active_object_count_wider)
 		core.freeze_melt(pos, -1);
-		minetest.sound_play("default_cool_lava", {pos = pos,  gain = 0.25})
+		minetest.sound_play("default_cool_lava", {pos = pos, max_hear_distance = 16, gain = 0.25})
 	end,
 })
 
