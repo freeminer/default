@@ -87,7 +87,7 @@ for _, m in pairs(mushrooms_datas) do
 		sunlight_propagates = true,
 		walkable = false,
 		buildable_to = true,
-		groups = {snappy = 3, flammable = 3, attached_node = 1},
+		groups = {snappy = 3, flammable = 3, attached_node = 1, dig_immediate = 3},
 		drop = {
 			items = {
 				{items = {"flowers:spores_" .. name}, rarity = 2,},
