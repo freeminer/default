@@ -1,6 +1,8 @@
 --
--- Grow trees
+-- Grow trees from saplings
 --
+
+-- 'Can grow' function
 
 local random = math.random
 
@@ -17,85 +19,62 @@ local function can_grow(pos)
 	return true
 end
 
--- Sapling ABMs
+-- Sapling ABM
 
 minetest.register_abm({
-	nodenames = {"default:sapling"},
+	nodenames = {"default:sapling", "default:junglesapling",
+		"default:pine_sapling", "default:acacia_sapling"},
 	interval = 10,
 	chance = 50,
 	action = function(pos, node)
 		if not can_grow(pos) then
 			return
 		end
-		if default.weather and (core.get_heat(pos) < 5 or core.get_humidity(pos) < 20) then return end
 
-		minetest.log("action", "A sapling grows into a tree at "..
-			minetest.pos_to_string(pos))
-		if minetest.get_mapgen_params().mgname == "v6" then
-			default.grow_tree(pos, random(1, 4) == 1)
-		else
-			default.grow_new_apple_tree(pos)
+		local mapgen = minetest.get_mapgen_params().mgname
+		if mapgen == "indev" then mapgen = "v6" end
+		if node.name == "default:sapling" then
+			if default.weather and (core.get_heat(pos) < 5 or core.get_humidity(pos) < 20) then return end
+			minetest.log("action", "A sapling grows into a tree at "..
+				minetest.pos_to_string(pos))
+			if mapgen == "v6" then
+				default.grow_tree(pos, random(1, 4) == 1)
+			else
+				default.grow_new_apple_tree(pos)
+			end
+		elseif node.name == "default:junglesapling" then
+			if default.weather and (core.get_heat(pos) < 15 or core.get_humidity(pos) < 30) then return end
+			minetest.log("action", "A jungle sapling grows into a tree at "..
+				minetest.pos_to_string(pos))
+			if mapgen == "v6" then
+				default.grow_jungle_tree(pos)
+			else
+				default.grow_new_jungle_tree(pos)
+			end
+		elseif node.name == "default:pine_sapling" then
+			if default.weather and (core.get_heat(pos) < 3 or core.get_humidity(pos) < 10) then return end
+			minetest.log("action", "A pine sapling grows into a tree at "..
+				minetest.pos_to_string(pos))
+			if mapgen == "v6" then
+				default.grow_pine_tree(pos)
+			else
+				default.grow_new_pine_tree(pos)
+			end
+		elseif node.name == "default:acacia_sapling" then
+			if default.weather and (core.get_heat(pos) < 20 or core.get_humidity(pos) < 20) then return end
+			minetest.log("action", "An acacia sapling grows into a tree at "..
+				minetest.pos_to_string(pos))
+			default.grow_new_acacia_tree(pos)
 		end
 	end
 })
 
-minetest.register_abm({
-	nodenames = {"default:junglesapling"},
-	interval = 11,
-	chance = 50,
-	action = function(pos, node)
-		if not can_grow(pos) then
-			return
-		end
-		if default.weather and (core.get_heat(pos) < 15 or core.get_humidity(pos) < 30) then return end
 
-		minetest.log("action", "A jungle sapling grows into a tree at "..
-			minetest.pos_to_string(pos))
-		if minetest.get_mapgen_params().mgname == "v6" then
-			default.grow_jungle_tree(pos)
-		else
-			default.grow_new_jungle_tree(pos)
-		end
-	end
-})
+--
+-- Tree generation
+--
 
-minetest.register_abm({
-	nodenames = {"default:pine_sapling"},
-	interval = 12,
-	chance = 50,
-	action = function(pos, node)
-		if not can_grow(pos) then
-			return
-		end
-
-		if default.weather and (core.get_heat(pos) < 1 or core.get_humidity(pos) < 10) then return end
-
-		minetest.log("action", "A pine sapling grows into a tree at "..
-			minetest.pos_to_string(pos))
-		if minetest.get_mapgen_params().mgname == "v6" then
-			default.grow_pine_tree(pos)
-		else
-			default.grow_new_pine_tree(pos)
-		end
-	end
-})
-
-minetest.register_abm({
-	nodenames = {"default:acacia_sapling"},
-	interval = 13,
-	chance = 50,
-	action = function(pos, node)
-		if not can_grow(pos) then
-			return
-		end
-
-		minetest.log("action", "An acacia sapling grows into a tree at "..
-			minetest.pos_to_string(pos))
-		default.grow_new_acacia_tree(pos)
-	end
-})
-
--- Appletree, jungletree function
+-- Apple tree and jungle tree trunk and leaves function
 
 local function add_trunk_and_leaves(data, a, pos, tree_cid, leaves_cid,
 		height, size, iters, is_apple_tree)
@@ -154,7 +133,8 @@ local function add_trunk_and_leaves(data, a, pos, tree_cid, leaves_cid,
 	end
 end
 
--- Appletree
+
+-- Apple tree
 
 function default.grow_tree(pos, is_apple_tree, bad)
 	--[[
@@ -186,7 +166,8 @@ function default.grow_tree(pos, is_apple_tree, bad)
 	vm:update_map()
 end
 
--- Jungletree
+
+-- Jungle tree
 
 function default.grow_jungle_tree(pos, bad)
 	--[[
@@ -237,7 +218,8 @@ function default.grow_jungle_tree(pos, bad)
 	vm:update_map()
 end
 
--- Pinetree from mg mapgen mod, design by sfan5, pointy top added by paramat
+
+-- Pine tree from mg mapgen mod, design by sfan5, pointy top added by paramat
 
 local function add_pine_needles(data, vi, c_air, c_ignore, c_snow, c_pine_needles)
 	local node_id = data[vi]
@@ -259,7 +241,7 @@ function default.grow_pine_tree(pos)
 
 	local c_air = minetest.get_content_id("air")
 	local c_ignore = minetest.get_content_id("ignore")
-	local c_pinetree = minetest.get_content_id("default:pinetree")
+	local c_pine_tree = minetest.get_content_id("default:pine_tree")
 	local c_pine_needles  = minetest.get_content_id("default:pine_needles")
 	local c_snow = minetest.get_content_id("default:snow")
 	local c_snowblock = minetest.get_content_id("default:snowblock")
@@ -363,12 +345,13 @@ function default.grow_pine_tree(pos)
 	end
 
 	-- Trunk
-	data[a:index(x, y, z)] = c_pinetree -- Force-place lowest trunk node to replace sapling
+	data[a:index(x, y, z)] = c_pine_tree -- Force-place lowest trunk node to replace sapling
 	for yy = y + 1, maxy do
 		local vi = a:index(x, yy, z)
 		local node_id = data[vi]
-		if node_id == c_air or node_id == c_ignore or node_id == c_pine_needles then
-			data[vi] = c_pinetree
+		if node_id == c_air or node_id == c_ignore or
+				node_id == c_pine_needles or node_id == c_snow then
+			data[vi] = c_pine_tree
 		end
 	end
 
@@ -377,13 +360,15 @@ function default.grow_pine_tree(pos)
 	vm:update_map()
 end
 
--- New tree
+
+-- New apple tree
 
 function default.grow_new_apple_tree(pos)
 	local path = minetest.get_modpath("default") .. "/schematics/apple_tree.mts"
 	minetest.place_schematic({x = pos.x - 2, y = pos.y - 1, z = pos.z - 2},
 		path, 0, nil, false)
 end
+
 
 -- New jungle tree
 
@@ -393,6 +378,7 @@ function default.grow_new_jungle_tree(pos)
 		path, 0, nil, false)
 end
 
+
 -- New pine tree
 
 function default.grow_new_pine_tree(pos)
@@ -400,6 +386,7 @@ function default.grow_new_pine_tree(pos)
 	minetest.place_schematic({x = pos.x - 2, y = pos.y - 1, z = pos.z - 2},
 		path, 0, nil, false)
 end
+
 
 -- New acacia tree
 
