@@ -37,8 +37,8 @@ Soft / Non-Stone
 
 default:dirt
 default:dirt_with_grass
-default:dirt_with_dry_grass
 default:dirt_with_grass_footsteps
+default:dirt_with_dry_grass
 default:dirt_with_snow
 
 default:sand
@@ -313,6 +313,17 @@ minetest.register_node("default:dirt_with_grass", {
 	}),
 })
 
+minetest.register_node("default:dirt_with_grass_footsteps", {
+	description = "Dirt with Grass and Footsteps",
+	tiles = {"default_grass.png^default_footprint.png", "default_dirt.png",
+		"default_dirt.png^default_grass_side.png"},
+	groups = {crumbly=3,soil=1,not_in_creative_inventory=1},
+	drop = 'default:dirt',
+	sounds = default.node_sound_dirt_defaults({
+		footstep = {name="default_grass_footstep", gain=0.25},
+	}),
+})
+
 minetest.register_node("default:dirt_with_dry_grass", {
 	description = "Dirt with Dry Grass",
 	tiles = {"default_dry_grass.png",
@@ -325,16 +336,6 @@ minetest.register_node("default:dirt_with_dry_grass", {
 		footstep = {name = "default_grass_footstep", gain = 0.4},
 	}),
 	melt = "default:dirt_dry",
-})
-
-minetest.register_node("default:dirt_with_grass_footsteps", {
-	description = "Dirt with Grass and Footsteps",
-	tiles = {"default_grass_footsteps.png", "default_dirt.png", "default_dirt.png^default_grass_side.png"},
-	groups = {crumbly=3,soil=1,not_in_creative_inventory=1},
-	drop = 'default:dirt',
-	sounds = default.node_sound_dirt_defaults({
-		footstep = {name="default_grass_footstep", gain=0.25},
-	}),
 })
 
 minetest.register_node("default:dirt_with_snow", {

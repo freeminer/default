@@ -119,6 +119,8 @@ paramat (CC BY-SA 3.0):
   default_dry_grass_side.png
   default_dry_grass_*.png
   default_junglewood.png, derived from a texture by BlockMen (CC BY-SA 3.0)
+  default_grass.png, derived from a texture by Philipbenr (CC BY-SA 3.0)
+  default_grass_side.png, derived from a texture by Philipbenr (CC BY-SA 3.0)
 
 brunob.santos (CC BY-SA 4.0):
   default_desert_cobble.png
