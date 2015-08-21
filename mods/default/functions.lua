@@ -339,9 +339,9 @@ minetest.register_abm({
 				(core.get_heat(pos) < -5 or core.get_heat(pos) > 50 or core.get_humidity(pos) < 10)) or
 				name == "default:snow" or name == "default:snowblock" or name == "default:ice"
 		then
-			if name == "default:dirt_with_grass" then
-				core.set_node(pos, {name = "default:dirt"}, 2)
-			elseif name == "default:dirt_with_dry_grass" then
+			if node.name == "default:dirt_with_grass" then
+				core.set_node(pos, {name = "default:dirt_with_dry_grass"}, 2)
+			elseif node.name == "default:dirt_with_dry_grass" then
 				core.set_node(pos, {name = "default:dirt_dry"}, 2)
 			end
 		elseif name == "air" and (default.weather and core.get_heat(pos) > 5 and core.get_heat(pos) < 40 and core.get_humidity(pos) > 20) 
