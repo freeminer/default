@@ -64,22 +64,22 @@ core.register_abm({
 	action = function (pos, node, active_object_count, active_object_count_wider)
 		local amount = get_snow(pos)
 		if amount == 0 then return end
+		local add = 1 + (amount * 3);
 		if core.registered_nodes[node.name].drawtype ~= "normal"
 			and core.registered_nodes[node.name].drawtype ~= "nodebox"
 			and core.registered_nodes[node.name].drawtype ~= "allfaces_optional" then return end
 		local np = addvectors(pos, {x=0, y=1, z=0})
 		if core.get_node_light(np, 0.5) ~= 15 then return end
-		local addsnow = 1
 		if core.get_node(pos).name == "default:snow" then
-			if core.add_node_level(pos, 4) > 0 and default.time_speed > 0 then
+			add = core.add_node_level(pos, add);
+			if default.time_speed <= 0 then add = 0 end
+			if add > 0 then
 				core.set_node(pos, {name="default:ice"})
-			else
-				addsnow = 0
 			end
 		end
-		if addsnow > 0 and core.get_node(np).name == "air" then
+		if add > 0 and core.get_node(np).name == "air" then
 			core.set_node(np, {name="snow"})
-			core.add_node_level(np)
+			core.add_node_level(np, add)
 		end
 	end
 })
