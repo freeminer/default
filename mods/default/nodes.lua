@@ -828,15 +828,16 @@ minetest.register_node("default:stone_with_mese", {
 	groups = {cracky = 1},
 	drop = "default:mese_crystal",
 	sounds = default.node_sound_stone_defaults(),
+	paramtype = "light",
 	light_source = 3,
 })
 
 minetest.register_node("default:mese", {
 	description = "Mese Block",
 	tiles = {"default_mese_block.png"},
-	paramtype = "light",
 	groups = {cracky = 1, level = 2},
 	sounds = default.node_sound_stone_defaults(),
+	paramtype = "light",
 	light_source = 5,
 })
 
