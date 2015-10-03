@@ -825,7 +825,6 @@ minetest.register_node("default:bronzeblock", {
 minetest.register_node("default:stone_with_mese", {
 	description = "Mese Ore",
 	tiles = {"default_stone.png^default_mineral_mese.png"},
-	paramtype = "light",
 	groups = {cracky = 1},
 	drop = "default:mese_crystal",
 	sounds = default.node_sound_stone_defaults(),
