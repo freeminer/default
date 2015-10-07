@@ -4,3 +4,9 @@
 [submodule "mods/mobs"]
 	path = mods/mobs
 	url = https://github.com/tenplus1/mobs.git
+[submodule "mods/3d_armor"]
+	path = mods/3d_armor
+	url = https://github.com/stujones11/minetest-3d_armor.git
+[submodule "mods/protector"]
+	path = mods/protector
+	url = https://github.com/tenplus1/protector.git
