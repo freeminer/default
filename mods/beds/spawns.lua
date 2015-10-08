@@ -14,7 +14,7 @@ end
 function beds.read_spawns(player)
 	--local spawns = beds.spawn
 	local name = player:get_player_name()
-	local bed = core.kv_get(name .. '_beds')
+	local bed = core.kv_get('p_' .. name .. '_beds')
 	if not bed then return end
 	beds.spawn[name] = bed.spawn
 
@@ -62,7 +62,7 @@ function beds.set_spawns()
 		local player = minetest.get_player_by_name(name)
 		local p = player:getpos()
 		beds.spawn[name] = p
-		core.kv_put(name .. '_beds', {spawn = p})
+		core.kv_put('p_' .. name .. '_beds', {spawn = p})
 	end
 	--beds.save_spawns()
 end
