@@ -176,13 +176,13 @@ end
 
 -- callbacks
 
-minetest.register_on_joinplayer(function(player)
-	beds.read_spawns()
+core.register_on_joinplayer(function(player)
+	beds.read_spawns(player)
 end)
 
 -- respawn player at bed if enabled and valid position is found
 minetest.register_on_respawnplayer(function(player)
-	if not enable_respawn then
+	if not enable_respawn or not beds.spawn then
 		return false
 	end
 	local name = player:get_player_name()

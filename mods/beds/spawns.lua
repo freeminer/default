@@ -11,8 +11,14 @@ if cf ~= nil then
 	bkwd = true
 end
 
-function beds.read_spawns()
-	local spawns = beds.spawn
+function beds.read_spawns(player)
+	--local spawns = beds.spawn
+	local name = player:get_player_name()
+	local bed = core.kv_get(name .. '_beds')
+	if not bed then return end
+	beds.spawn[name] = bed.spawn
+
+--[[
 	local input = io.open(file, "r")
 	if input and not bkwd then
 		repeat
@@ -33,11 +39,13 @@ function beds.read_spawns()
 		os.rename(file, file .. ".backup")
 		file = org_file
 	else
-		spawns = {}
+		beds.spawn = {}
 	end
+]]
 end
 
 function beds.save_spawns()
+--[[
 	if not beds.spawn then
 		return
 	end
@@ -46,6 +54,7 @@ function beds.save_spawns()
 		output:write(v.x.." "..v.y.." "..v.z.." "..i.."\n")
 	end
 	io.close(output)
+]]
 end
 
 function beds.set_spawns()
@@ -53,6 +62,7 @@ function beds.set_spawns()
 		local player = minetest.get_player_by_name(name)
 		local p = player:getpos()
 		beds.spawn[name] = p
+		core.kv_put(name .. '_beds', {spawn = p})
 	end
-	beds.save_spawns()
+	--beds.save_spawns()
 end
