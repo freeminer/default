@@ -303,134 +303,42 @@ minetest.register_abm({
 -- Grass growing
 --
 
+if not default.weather then
+
 minetest.register_abm({
-	nodenames = {"default:dirt", "default:dirt_dry", "default:dirt_with_dry_grass" },
-	interval = 10,
-	chance = 30,
+	nodenames = {"default:dirt"},
+	interval = 2,
+	chance = 200,
 	action = function(pos, node)
-		local above = {x=pos.x, y=pos.y+1, z=pos.z}
-		local name = core.get_node(above).name
-		local nodedef = core.registered_nodes[name]
-		if (name == "ignore" or not nodedef) then return end
-		if ( not ((nodedef.sunlight_propagates or nodedef.paramtype == "light") and nodedef.liquidtype == "none")) then return end
-		if (default.weather and core.get_heat(pos) < -10) or name == "default:snow" or
-			name == "default:snowblock" or name == "default:ice"
-		then
-			core.set_node(pos, {name = "default:dirt_with_snow"}, 2)
-		elseif (not default.weather or (core.get_heat(pos) > 5 and core.get_humidity(pos) > 22)) and nodedef and
-			(core.get_node_light(above) or 0) >= 13
-		then
-			core.set_node(pos, {name = "default:dirt_with_grass"}, 2)
+		local above = {x = pos.x, y = pos.y + 1, z = pos.z}
+		local name = minetest.get_node(above).name
+		local nodedef = minetest.registered_nodes[name]
+		if nodedef and (nodedef.sunlight_propagates or nodedef.paramtype == "light") and
+				nodedef.liquidtype == "none" and
+				(minetest.get_node_light(above) or 0) >= 13 then
+			if name == "default:snow" or name == "default:snowblock" then
+				minetest.set_node(pos, {name = "default:dirt_with_snow"})
+			else
+				minetest.set_node(pos, {name = "default:dirt_with_grass"})
+			end
 		end
 	end
 })
 
 minetest.register_abm({
 	nodenames = {"default:dirt_with_grass", "default:dirt_with_dry_grass"},
-	interval = 10,
-	chance = 10,
+	interval = 2,
+	chance = 20,
 	action = function(pos, node)
 		local above = {x = pos.x, y = pos.y + 1, z = pos.z}
 		local name = minetest.get_node(above).name
 		local nodedef = minetest.registered_nodes[name]
-		if (name == "ignore" or not nodedef) then return end
-		if ( not ((nodedef.sunlight_propagates or nodedef.paramtype == "light") and
-				nodedef.liquidtype == "none")) or (default.weather and 
-				(core.get_heat(pos) < -5 or core.get_heat(pos) > 50 or core.get_humidity(pos) < 10)) or
-				name == "default:snow" or name == "default:snowblock" or name == "default:ice"
-		then
-			if node.name == "default:dirt_with_grass" then
-				core.set_node(pos, {name = "default:dirt_with_dry_grass"}, 2)
-			elseif node.name == "default:dirt_with_dry_grass" then
-				core.set_node(pos, {name = "default:dirt_dry"}, 2)
-			end
-		elseif name == "air" and (default.weather and core.get_heat(pos) > 5 and core.get_heat(pos) < 40 and core.get_humidity(pos) > 20) 
-			and math.random(1, 50) == 1 and (core.get_node_light(above) or 0) >= 13 then
-			core.set_node(above, {name = "default:grass_1"}, 2)
+		if name ~= "ignore" and nodedef and not ((nodedef.sunlight_propagates or
+				nodedef.paramtype == "light") and
+				nodedef.liquidtype == "none") then
+			minetest.set_node(pos, {name = "default:dirt"})
 		end
 	end
 })
 
-minetest.register_abm({
-	nodenames = {"default:grass_1", "default:grass_2", "default:grass_3", "default:grass_4", "default:grass_5"},
-	neighbors = {"default:dirt_with_grass", "default:dirt"},
-	interval = 20,
-	chance = 30,
-	action = function(pos, node)
-		local humidity = core.get_humidity(pos)
-		local heat = core.get_heat(pos)
-		if heat < 5 or heat > 40 or (core.get_node_light(pos) or 0) < 12 then return end
-		local rnd = math.random(1, 110-humidity)
-		local node = core.get_node(pos)
-		local name = node.name
-		if name == "default:grass_5" then
-				if rnd >= 2 then return end
-				if     humidity > 75 and heat > 25 then node.name = "default:junglesapling" 
-				elseif humidity > 40 then node.name = "default:sapling"
-				elseif humidity > 30 and heat < 10 then node.name = "default:pine_sapling"
-				else return end
-				core.set_node(pos, node, 2)
-		else
-			for i=1,4 do
-				if rnd >= i+5 then return end
-				if name == "default:grass_"..i then
-					node.name = "default:grass_"..(i+1)
-					core.set_node(pos, node, 2)
-				end
-			end
-		end
-	end
-})
-
-
-core.register_abm({
-	nodenames = {"default:dirt_with_snow"},
-	interval = 10,
-	chance = 100,
-	action = function(pos, node)
-		local above = {x = pos.x, y = pos.y + 1, z = pos.z}
-		local name = core.get_node(above).name
-		local nodedef = core.registered_nodes[name]
-		if (name == "ignore" or not nodedef) then return end
-		if (not ((nodedef.sunlight_propagates or nodedef.paramtype == "light") and
-			nodedef.liquidtype == "none") or
-			(default.weather and core.get_heat(pos) > 3 and name ~= "default:snow" and name ~= "default:snowblock" and name ~= "default:ice"))
-		then
-			if core.get_humidity(pos) > 30 then
-				core.set_node(pos, {name = "default:dirt"}, 2)
-			else
-				core.set_node(pos, {name = "default:dirt_dry"}, 2)
-			end
-		end
-	end
-})
-
-if default.weather then
-core.register_abm({
-	nodenames = {"default:sand", "default:desert_sand", "default:dirt_dry", "default:dirt_with_dry_grass"},
-	neighbors = {"default:water_flowing"},
-	interval = 20,
-	neighbors_range = 3,
-	chance = 10,
-	action = function(pos, node)
-		if ((core.get_heat(pos) > 40 or core.get_humidity(pos) < 20)) then return end
-		if node.name == "default:dirt_with_dry_grass" then
-			core.set_node(pos, {name = "default:dirt_with_grass"}, 2)
-		else
-			core.set_node(pos, {name = "default:dirt"}, 2)
-		end
-	end
-})
-
-core.register_abm({
-	nodenames = {"default:cobble"},
-	neighbors = {"default:water_flowing"},
-	interval = 20,
-	neighbors_range = 2,
-	chance = 50,
-	action = function(pos, node)
-		if ((core.get_heat(pos) < 5 or core.get_heat(pos) > 40 or core.get_humidity(pos) < 20)) then return end
-		core.set_node(pos, {name = "default:mossycobble", param1 = node.param1, param2 = node.param2, }, 2)
-	end
-})
 end

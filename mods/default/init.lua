@@ -9,6 +9,7 @@ MAP_GENERATION_LIMIT=31000
 default = {}
 
 default.weather = core.setting_getbool("weather")
+if default.weather == 0 then default.weather = nil end
 
 default.LIGHT_MAX = 14
 
