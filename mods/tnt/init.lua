@@ -46,15 +46,22 @@ local function destroy(drops, pos, last, fast)
 
 	local nodename = core.get_node(pos).name
 	if nodename ~= "air" then
+
+		local def = core.registered_nodes[nodename]
+		if def and def.on_blast then
+			def.on_blast(vector.new(pos), 1)
+			return
+		end
+
 		core.remove_node(pos, (fast and 1 or 0))
 		if last then
 			nodeupdate(pos)
 		end
-		if not core.registered_nodes[nodename] or not core.registered_nodes[nodename].groups then
+		if not def or not def.groups then
 			-- broken map and unknown nodes
 			return
 		end
-		if core.registered_nodes[nodename].groups.flammable ~= nil then
+		if def.groups.flammable ~= nil then
 			core.set_node(pos, {name="fire:basic_flame"}, (fast and 2 or 0))
 			return
 		end
@@ -76,7 +83,7 @@ boom = function(pos, time, force)
 		if not force and core.get_node(pos).name ~= "tnt:tnt_burning" then
 			return
 		end
-		core.sound_play("tnt_explode", {pos=pos, gain=1.5, max_hear_distance=2*64})
+		core.sound_play("tnt_explode", {pos=pos, gain=1.5, max_hear_distance=10*64})
 		core.set_node(pos, {name="tnt:boom"}, 2)
 		core.after(0.5, function(pos)
 			core.remove_node(pos, 2)
