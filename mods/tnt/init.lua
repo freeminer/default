@@ -6,6 +6,7 @@ loss_prob["default:dirt"] = 4
 
 local radius_max = tonumber(core.setting_get("tnt_radius_max") or 25)
 local time_max = tonumber(core.setting_get("tnt_time_max") or 3)
+local liquid_real = core.setting_getbool("liquid_real")
 
 local eject_drops = function(pos, stack)
 	local obj = core.add_item(pos, stack)
@@ -143,7 +144,7 @@ boom = function(pos, time, force)
 						or node.name == "tnt:boom"
 						then
 						
-					elseif last and radius > 10 and math.random(1,15) <= 1 then
+					elseif liquid_real and last and radius > 10 and math.random(1,15) <= 1 then
 						melted = melted + core.freeze_melt(np, 1)
 					else
 						if math.abs(p.x)<2 and math.abs(p.y)<2 and math.abs(p.z)<2 then
