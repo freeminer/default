@@ -157,7 +157,8 @@ for _, m in pairs(mushrooms_datas) do
 		sunlight_propagates = true,
 		walkable = false,
 		buildable_to = true,
-		groups = {snappy = 3, flammable = 3, attached_node = 1, dig_immediate = 3,
+		groups = {snappy = 3, flammable = 3, attached_node = 1,
+			dig_immediate = 3, drop_by_liquid = 1,
 			not_in_creative_inventory = 1},
 		drop = {
 			items = {
@@ -191,7 +192,8 @@ for _, m in pairs(mushrooms_datas) do
 		sunlight_propagates = true,
 		walkable = false,
 		buildable_to = true,
-		groups = {snappy = 3, flammable = 3, attached_node = 1},
+		groups = {snappy = 3, flammable = 3, attached_node = 1,
+			dig_immediate = 3, drop_by_liquid = 1},
 		sounds = default.node_sound_leaves_defaults(),
 		on_use = minetest.item_eat(nut),
 		selection_box = {
@@ -217,7 +219,7 @@ for _, m in pairs(mushrooms_datas) do
 		selection_box = {
 			type = "wallmounted",
 		},
-		groups = {dig_immediate = 3, attached_node = 1},
+		groups = {attached_node = 1, dig_immediate = 3,  drop_by_liquid = 1},
 	})
 end
 
