@@ -1009,7 +1009,7 @@ for i = 2, 5 do
 		buildable_to = true,
 		drop = "default:grass_1",
 		groups = {snappy = 3, flammable = 3, flora = 1,
-			attached_node = 1, not_in_creative_inventory = 1, 
+			attached_node = 1, not_in_creative_inventory = 1,
 			dig_immediate = 3, drop_by_liquid = 1, melt = 40},
 		sounds = default.node_sound_leaves_defaults(),
 		selection_box = {
@@ -1032,7 +1032,8 @@ minetest.register_node("default:dry_grass_1", {
 	sunlight_propagates = true,
 	walkable = false,
 	buildable_to = true,
-	groups = {snappy = 3, flammable = 3, flora = 1, attached_node = 1},
+	groups = {snappy = 3, flammable = 3, flora = 1,
+		attached_node = 1, dig_immediate = 3, drop_by_liquid = 1},
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
@@ -1061,7 +1062,8 @@ for i = 2, 5 do
 		walkable = false,
 		buildable_to = true,
 		groups = {snappy = 3, flammable = 3, flora = 1,
-			attached_node = 1, not_in_creative_inventory=1},
+			attached_node = 1, not_in_creative_inventory=1,
+			dig_immediate = 3, drop_by_liquid = 1},
 		drop = "default:dry_grass_1",
 		sounds = default.node_sound_leaves_defaults(),
 		selection_box = {
