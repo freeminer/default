@@ -156,6 +156,8 @@ core.register_abm({
 	end
 })
 
+--[[ now in mt
+
 core.register_abm({
 	nodenames = {"default:cobble"},
 	neighbors = {"default:water_flowing"},
@@ -168,4 +170,7 @@ core.register_abm({
 		core.set_node(pos, node, 2)
 	end
 })
+
+]]
+
 end
