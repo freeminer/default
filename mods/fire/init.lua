@@ -5,26 +5,34 @@
 fire = {}
 
 
--- Register flame node
+-- Register flame nodes
 
 minetest.register_node("fire:basic_flame", {
-	description = "Fire",
+	description = "Basic Flame",
 	drawtype = "firelike",
-	tiles = {{
-		name = "fire_basic_flame_animated.png",
-		animation = {type = "vertical_frames",
-			aspect_w = 16, aspect_h = 16, length = 1},
-	}},
+	tiles = {
+		{
+			name = "fire_basic_flame_animated.png",
+			animation = {
+				type = "vertical_frames",
+				aspect_w = 16,
+				aspect_h = 16,
+				length = 1
+			},
+		},
+	},
 	inventory_image = "fire_basic_flame.png",
 	paramtype = "light",
 	light_source = 14,
-	waving = 1,
-	groups = {igniter = 2, dig_immediate = 3, hot = 200, wield_light = 13, drop_by_liquid = 1},
-	drop = '',
 	walkable = false,
 	buildable_to = true,
 	sunlight_propagates = true,
 	damage_per_second = 4,
+	groups = {igniter = 2, dig_immediate = 3},
+	drop = "",
+
+	waving = 1,
+	groups = {igniter = 2, dig_immediate = 3, hot = 200, wield_light = 13, drop_by_liquid = 1},
 
 	on_construct = function(pos)
 		minetest.after(0, fire.on_flame_add_at, pos)
@@ -34,7 +42,36 @@ minetest.register_node("fire:basic_flame", {
 		minetest.after(0, fire.on_flame_remove_at, pos)
 	end,
 
-	on_blast = function() end, -- unaffected by explosions
+	on_blast = function()
+	end, -- unaffected by explosions
+})
+
+minetest.register_node("fire:permanent_flame", {
+	description = "Permanent Flame",
+	drawtype = "firelike",
+	tiles = {
+		{
+			name = "fire_basic_flame_animated.png",
+			animation = {
+				type = "vertical_frames",
+				aspect_w = 16,
+				aspect_h = 16,
+				length = 1
+			},
+		},
+	},
+	inventory_image = "fire_basic_flame.png",
+	paramtype = "light",
+	light_source = 14,
+	walkable = false,
+	buildable_to = true,
+	sunlight_propagates = true,
+	damage_per_second = 4,
+	groups = {igniter = 2, dig_immediate = 3},
+	drop = "",
+
+	on_blast = function()
+	end,
 })
 
 
@@ -136,43 +173,42 @@ function fire.flame_should_extinguish(pos)
 end
 
 
--- Enable ABMs according to 'disable fire' setting
+-- Extinguish all flames quickly with water, snow, ice
+
+minetest.register_abm({
+	nodenames = {"fire:basic_flame", "fire:permanent_flame"},
+	neighbors = {"group:puts_out_fire"},
+	interval = 3,
+	chance = 2,
+	action = function(p0, node, _, _)
+		minetest.remove_node(p0)
+		minetest.sound_play("fire_extinguish_flame",
+			{pos = p0, max_hear_distance = 16, gain = 0.25})
+	end,
+})
+
+
+-- Enable the following ABMs according to 'disable fire' setting
 
 if minetest.setting_getbool("disable_fire") then
 
-	-- Extinguish flames quickly with dedicated ABM
+	-- Remove basic flames only
 
 	minetest.register_abm({
 		nodenames = {"fire:basic_flame"},
-		interval = 3,
+		interval = 7,
 		chance = 2,
 		action = function(p0, node, _, _)
 			--check if fire is permanent or not
 			if core.get_node(p0).param2 == 128 then return end
+
 			minetest.remove_node(p0)
 		end,
 	})
 
 else
 
-	-- Extinguish flames quickly with water, snow, ice
-
-	minetest.register_abm({
-		nodenames = {"fire:basic_flame"},
-		neighbors = {"group:puts_out_fire"},
-		interval = 3,
-		chance = 2,
-		action = function(p0, node, _, _)
-			--check if fire is permanent or not
-			if core.get_node(p0).param2 == 128 then return end
-
-			minetest.remove_node(p0)
-			minetest.sound_play("fire_extinguish_flame",
-				{pos = p0, max_hear_distance = 16, gain = 0.25})
-		end,
-	})
-
-	-- Ignite neighboring nodes
+	-- Ignite neighboring nodes, add basic flames
 
 	minetest.register_abm({
 		nodenames = {"group:flammable"},
@@ -191,7 +227,7 @@ else
 		end,
 	})
 
-	-- Remove flames and flammable nodes
+	-- Remove basic flames and flammable nodes
 
 	minetest.register_abm({
 		nodenames = {"fire:basic_flame"},
