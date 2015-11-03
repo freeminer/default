@@ -262,28 +262,28 @@ end
 -- Register default stairs and slabs
 
 stairs.register_stair_and_slab("wood", "default:wood",
-		{snappy = 2, choppy = 2, oddly_breakable_by_hand = 2, flammable = 3},
+		{snappy = 2, choppy = 2, oddly_breakable_by_hand = 2, flammable = 3, wood = 1},
 		{"default_wood.png"},
 		"Wooden Stair",
 		"Wooden Slab",
 		default.node_sound_wood_defaults())
 
 stairs.register_stair_and_slab("junglewood", "default:junglewood",
-		{snappy = 2, choppy = 2, oddly_breakable_by_hand = 2, flammable = 3},
+		{snappy = 2, choppy = 2, oddly_breakable_by_hand = 2, flammable = 3, wood = 1},
 		{"default_junglewood.png"},
 		"Junglewood Stair",
 		"Junglewood Slab",
 		default.node_sound_wood_defaults())
 
 stairs.register_stair_and_slab("pine_wood", "default:pine_wood",
-		{snappy = 2, choppy = 2, oddly_breakable_by_hand = 2, flammable = 3},
+		{snappy = 2, choppy = 2, oddly_breakable_by_hand = 2, flammable = 3, wood = 1},
 		{"default_pine_wood.png"},
 		"Pine Wood Stair",
 		"Pine Wood Slab",
 		default.node_sound_wood_defaults())
 
 stairs.register_stair_and_slab("acacia_wood", "default:acacia_wood",
-		{snappy = 2, choppy = 2, oddly_breakable_by_hand = 2, flammable = 3},
+		{snappy = 2, choppy = 2, oddly_breakable_by_hand = 2, flammable = 3, wood = 1},
 		{"default_acacia_wood.png"},
 		"Acacia Wood Stair",
 		"Acacia Wood Slab",
