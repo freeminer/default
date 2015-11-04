@@ -52,7 +52,7 @@ local mg_params = {
 		{ name = "default:stone_with_coal",    y_max = -1000, },
 		{ name = "default:water_source",       y_min = -3000, y_max = -70, thickness  = 3},
 		{ name = "default:stone",              y_min = -3000, y_max = -70, }, -- stone after water
-		{ name = "default:dirt",               y_min = -500,  y_max = 50, },
+		{ name = "default:dirt",               y_min = -50,   y_max = 50, },
 		{ name = "default:desert_stone",       thickness  = 3, },
 		{ name = "default:stone_with_iron",    y_max = -2000, },
 		{ name = "default:gravel",             y_max = -1, },
