@@ -129,6 +129,9 @@ function default.grow_cactus(pos, node)
 	if minetest.get_item_group(minetest.get_node(pos).name, "sand") == 0 then
 		return
 	end
+	if default.weather and core.get_heat(pos) < 3 then
+		return
+	end
 	pos.y = pos.y + 1
 	local height = 0
 	while node.name == "default:cactus" and height < 4 do
@@ -150,6 +153,9 @@ function default.grow_papyrus(pos, node)
 		return
 	end
 	if not minetest.find_node_near(pos, 3, {"group:water"}) then
+		return
+	end
+	if default.weather and core.get_heat(pos) < 3 then
 		return
 	end
 	pos.y = pos.y + 1
