@@ -93,6 +93,7 @@ minetest.register_abm({
 	neighbors = {"group:water"},
 	interval = 3,
 	chance = 3,
+	--catch_up = false,
 	action = function(pos, node, active_object_count, active_object_count_wider)
 		core.freeze_melt(pos, -1);
 		minetest.sound_play("default_cool_lava", {pos = pos, max_hear_distance = 16, gain = 0.25})
@@ -103,6 +104,7 @@ minetest.register_abm({
 	nodenames = {"default:lava_source", "default:lava_flowing"},
 	interval = 100,
 	chance = 10,
+	--catch_up = false,
 	action = function(pos, node, active_object_count, active_object_count_wider)
 		-- bad place: to not freeze lava in caves
 		if not pos.y or pos.y < -100 then return end
@@ -315,6 +317,7 @@ minetest.register_abm({
 	nodenames = {"default:dirt"},
 	interval = 2,
 	chance = 200,
+	--catch_up = false,
 	action = function(pos, node)
 		local above = {x = pos.x, y = pos.y + 1, z = pos.z}
 		local name = minetest.get_node(above).name
@@ -340,6 +343,7 @@ minetest.register_abm({
 	nodenames = {"default:dirt_with_grass", "default:dirt_with_dry_grass"},
 	interval = 2,
 	chance = 20,
+	--catch_up = false,
 	action = function(pos, node)
 		local above = {x = pos.x, y = pos.y + 1, z = pos.z}
 		local name = minetest.get_node(above).name
