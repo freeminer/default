@@ -965,7 +965,7 @@ function default.register_mgv6_decorations()
 	minetest.register_decoration({
 		deco_type = "simple",
 		place_on = {"default:dirt_with_grass"},
-		sidelen = 8,
+		sidelen = 16,
 		noise_params = {
 			offset = -0.3,
 			scale = 0.7,
@@ -1153,10 +1153,10 @@ function default.register_decorations()
 	minetest.register_decoration({
 		deco_type = "schematic",
 		place_on = {"default:dirt_with_dry_grass"},
-		sidelen = 80,
+		sidelen = 16,
 		noise_params = {
 			offset = 0,
-			scale = 0.003,
+			scale = 0.002,
 			spread = {x = 250, y = 250, z = 250},
 			seed = 2,
 			octaves = 3,
@@ -1175,7 +1175,7 @@ function default.register_decorations()
 	minetest.register_decoration({
 		deco_type = "schematic",
 		place_on = {"default:desert_sand"},
-		sidelen = 80,
+		sidelen = 16,
 		noise_params = {
 			offset = -0.0005,
 			scale = 0.0015,
@@ -1197,7 +1197,7 @@ function default.register_decorations()
 	minetest.register_decoration({
 		deco_type = "simple",
 		place_on = {"default:desert_sand"},
-		sidelen = 80,
+		sidelen = 16,
 		noise_params = {
 			offset = -0.0005,
 			scale = 0.0015,
