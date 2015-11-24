@@ -1452,7 +1452,7 @@ minetest.register_node("default:torch", {
 	sounds = default.node_sound_defaults(),
 
 	groups = {choppy = 2, dig_immediate = 3, flammable = 1, attached_node = 1,
-		hot = 30, wield_light = default.LIGHT_MAX-1, drop_by_liquid = 1},
+		hot = 90, wield_light = default.LIGHT_MAX-1, drop_by_liquid = 1},
 })
 
 
@@ -1831,7 +1831,7 @@ minetest.register_node("default:meselamp", {
 	paramtype = "light",
 	sunlight_propagates = true,
 	is_ground_content = false,
-	groups = {cracky = 3, oddly_breakable_by_hand = 3, wield_light=default.LIGHT_MAX},
+	groups = {cracky = 3, oddly_breakable_by_hand = 3, wield_light = default.LIGHT_MAX, hot = 50},
 	sounds = default.node_sound_glass_defaults(),
 	light_source = default.LIGHT_MAX,
 })
