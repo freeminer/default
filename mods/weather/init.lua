@@ -47,6 +47,9 @@ end
 
 
 if default.weather then
+local grass_heat_max = 41
+local grass_humidity_min = 10
+local grass_light_min = 2
 
 core.register_abm({
 	nodenames = {"default:dirt", "default:dirt_with_grass", "default:dirt_dry", "default:dirt_with_dry_grass" },
@@ -73,14 +76,14 @@ core.register_abm({
 			if top_name == "default:snow" or top_name == "default:snowblock" or top_name == "default:ice" then
 					new_name = "default:dirt_with_snow"
 			elseif top_name == "air" then
-				if node.name == "default:dirt_with_grass" and (light <= 2 or heat > 40 or humidity < 2) then
+				if node.name == "default:dirt_with_grass" and (light <= grass_light_min or heat > grass_heat_max or humidity < 2) then
 					new_name = "default:dirt_with_dry_grass"
-				elseif node.name == "default:dirt" and (light <= 2 or heat > 40 or humidity < 10) then
+				elseif node.name == "default:dirt" and (light <= grass_light_min or heat > grass_heat_max or humidity < grass_humidity_min) then
 					new_name = "default:dirt_dry"
 				end
 				if (default.weather and heat < -5 and humidity > 5) then
 					new_name = "default:dirt_with_snow"
-				elseif (not default.weather or (heat > 5 and heat < 40 and humidity > 15)) and light >= 13 then
+				elseif (not default.weather or (heat > 5 and heat < grass_heat_max and humidity > grass_humidity_min)) and light >= grass_light_min then
 					new_name = "default:dirt_with_grass"
 				end
 			end
@@ -90,8 +93,8 @@ core.register_abm({
 			node.name = new_name
 			core.set_node(pos, node, 2)
 		else
-			if node.name == "default:dirt_with_grass" and top_name == "air" and (default.weather and heat > 5 and heat < 40 and humidity > 20)
-				and math.random(1, 50) == 1 and light >= 13 then
+			if node.name == "default:dirt_with_grass" and top_name == "air" and (default.weather and heat > 5 and heat < grass_heat_max and humidity > grass_humidity_min)
+				and math.random(1, 50) == 1 and light >= grass_light_min then
 				core.set_node(top_pos, {name = "default:grass_1"}, 2)
 			end
 		end
@@ -107,12 +110,12 @@ core.register_abm({
 	action = function(pos, node)
 		local humidity = core.get_humidity(pos)
 		local heat = core.get_heat(pos)
-		if (heat < -5 or heat > 40 or humidity < 3) and (name == "default:grass_4" or name == "default:grass_5") then
+		if (heat < -5 or heat > grass_heat_max or humidity < 3) and (name == "default:grass_4" or name == "default:grass_5") then
 			node.name = "default:dry_shrub"
 			core.set_node(pos, node, 2)
 			return
 		end
-		if heat < 5 or heat > 40 or (core.get_node_light(pos) or 0) < 12 then return end
+		if heat < 5 or heat > grass_heat_max or (core.get_node_light(pos) or 0) < grass_light_min then return end
 		local rnd = math.random(1, 110-humidity)
 		local node = core.get_node(pos)
 		local name = node.name
@@ -146,7 +149,7 @@ core.register_abm({
 	neighbors_range = 3,
 	chance = 10,
 	action = function(pos, node)
-		if ((core.get_heat(pos) > 40 or core.get_humidity(pos) < 20)) then return end
+		if ((core.get_heat(pos) > grass_heat_max or core.get_humidity(pos) < grass_humidity_min)) then return end
 		if node.name == "default:dirt_with_dry_grass" then
 			node.name = "default:dirt_with_grass"
 		else
