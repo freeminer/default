@@ -936,7 +936,8 @@ minetest.register_node("default:dry_shrub", {
 	sunlight_propagates = true,
 	walkable = false,
 	buildable_to = true,
-	groups = {snappy = 3, flammable = 3, attached_node = 1, dig_immediate = 3, drop_by_liquid = 1},
+	groups = {snappy = 3, flammable = 3, attached_node = 1, dig_immediate = 3,
+				drop_by_liquid = 1, attached_node = 1},
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
