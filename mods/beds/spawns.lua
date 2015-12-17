@@ -1,3 +1,4 @@
+--[[
 local world_path = minetest.get_worldpath()
 local org_file = world_path .. "/beds_spawns"
 local file = world_path .. "/beds_spawns"
@@ -10,6 +11,7 @@ if cf ~= nil then
 	file = world_path .. "/beds_player_spawns"
 	bkwd = true
 end
+]]
 
 function beds.read_spawns(player)
 	--local spawns = beds.spawn
