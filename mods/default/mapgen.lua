@@ -115,7 +115,7 @@ function default.register_ores()
 		clust_size       = 5,
 		y_min            = -15,
 		y_max            = 0,
-		noise_threshhold = 0.0,
+		noise_threshold = 0.0,
 		noise_params     = {
 			offset = 0.5,
 			scale = 0.2,
@@ -136,7 +136,7 @@ function default.register_ores()
 		clust_size       = 5,
 		y_min            = -31,
 		y_max            = 4,
-		noise_threshhold = 0.0,
+		noise_threshold = 0.0,
 		noise_params     = {
 			offset = 0.5,
 			scale = 0.2,
@@ -157,7 +157,7 @@ function default.register_ores()
 		clust_size       = 5,
 		y_min            = -31,
 		y_max            = 31000,
-		noise_threshhold = 0.0,
+		noise_threshold = 0.0,
 		noise_params     = {
 			offset = 0.5,
 			scale = 0.2,
@@ -178,7 +178,7 @@ function default.register_ores()
 		clust_size       = 5,
 		y_min            = -31000,
 		y_max            = 31000,
-		noise_threshhold = 0.0,
+		noise_threshold = 0.0,
 		noise_params     = {
 			offset = 0.5,
 			scale = 0.2,
@@ -201,7 +201,7 @@ function default.register_ores()
 		y_min          = -31000,
 		y_max          = 64,
 		noise_params     = coal_params,
-		noise_threshhold = coal_threshhold,
+		noise_threshold = coal_threshhold,
 	})
 
 --[[
@@ -229,7 +229,7 @@ function default.register_ores()
 		y_min          = -15,
 		y_max          = 2,
 		noise_params     = iron_params,
-		noise_threshhold = iron_threshhold,
+		noise_threshold = iron_threshhold,
 	})
 
 	minetest.register_ore({
@@ -243,7 +243,7 @@ function default.register_ores()
 		y_min          = -63,
 		y_max          = -16,
 		noise_params     = iron_params,
-		noise_threshhold = iron_threshhold,
+		noise_threshold = iron_threshhold,
 	})
 
 	minetest.register_ore({
@@ -257,7 +257,7 @@ function default.register_ores()
 		y_max          = -64,
 		flags          = "absheight",
 		noise_params     = iron_params,
-		noise_threshhold = iron_threshhold,
+		noise_threshold = iron_threshhold,
 	})
 
 	--Mese
@@ -273,7 +273,7 @@ function default.register_ores()
 		y_max          = -64,
 		flags          = "absheight",
 		noise_params     = mese_params,
-		noise_threshhold = mese_threshhold,
+		noise_threshold = mese_threshhold,
 	})
 
 	minetest.register_ore({
@@ -287,7 +287,7 @@ function default.register_ores()
 		y_max          = -256,
 		flags          = "absheight",
 		noise_params     = mese_params,
-		noise_threshhold = mese_threshhold,
+		noise_threshold = mese_threshhold,
 	})
 
 	minetest.register_ore({
@@ -301,7 +301,7 @@ function default.register_ores()
 		y_max          = -1024,
 		flags          = "absheight",
 		noise_params     = mese_params,
-		noise_threshhold = mese_block_threshhold,
+		noise_threshold = mese_block_threshhold,
 	})
 
 	-- Gold
@@ -317,7 +317,7 @@ function default.register_ores()
 		y_max          = -64,
 		flags          = "absheight",
 		noise_params     = gold_params,
-		noise_threshhold = gold_threshhold,
+		noise_threshold = gold_threshhold,
 	})
 
 	minetest.register_ore({
@@ -331,7 +331,7 @@ function default.register_ores()
 		y_max          = -256,
 		flags          = "absheight",
 		noise_params     = gold_params,
-		noise_threshhold = gold_threshhold,
+		noise_threshold = gold_threshhold,
 	})
 
 	-- Diamond
@@ -347,7 +347,7 @@ function default.register_ores()
 		y_max          = -128,
 		flags          = "absheight",
 		noise_params     = diamond_params,
-		noise_threshhold = diamond_threshhold,
+		noise_threshold = diamond_threshhold,
 	})
 
 	minetest.register_ore({
@@ -361,7 +361,7 @@ function default.register_ores()
 		y_max          = -256,
 		flags          = "absheight",
 		noise_params     = diamond_params,
-		noise_threshhold = diamond_threshhold,
+		noise_threshold = diamond_threshhold,
 	})
 
 	-- Copper
@@ -376,7 +376,7 @@ function default.register_ores()
 		y_min          = -63,
 		y_max          = -16,
 		noise_params     = copper_params,
-		noise_threshhold = copper_threshhold,
+		noise_threshold = copper_threshhold,
 	})
 
 	minetest.register_ore({
@@ -390,7 +390,7 @@ function default.register_ores()
 		y_max          = -64,
 		flags          = "absheight",
 		noise_params     = copper_params,
-		noise_threshhold = copper_threshhold,
+		noise_threshold = copper_threshhold,
 	})
 
 --if minetest.setting_get("mg_name") == "indev" then
