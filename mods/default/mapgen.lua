@@ -108,15 +108,15 @@ function default.register_ores()
 	-- Clay
 
 	minetest.register_ore({ 
-		ore_type         = "blob",
-		ore              = "default:clay",
-		wherein          = {"default:sand"},
-		clust_scarcity   = 16 * 16 * 16,
-		clust_size       = 5,
-		y_min            = -15,
-		y_max            = 0,
+		ore_type        = "blob",
+		ore             = "default:clay",
+		wherein         = {"default:sand"},
+		clust_scarcity  = 16 * 16 * 16,
+		clust_size      = 5,
+		y_min           = -15,
+		y_max           = 0,
 		noise_threshold = 0.0,
-		noise_params     = {
+		noise_params    = {
 			offset = 0.5,
 			scale = 0.2,
 			spread = {x = 5, y = 5, z = 5},
@@ -129,15 +129,16 @@ function default.register_ores()
 	-- Sand
 
 	minetest.register_ore({ 
-		ore_type         = "blob",
-		ore              = "default:sand",
-		wherein          = {"default:stone"},
-		clust_scarcity   = 16 * 16 * 16,
-		clust_size       = 5,
-		y_min            = -31,
-		y_max            = 4,
+		ore_type        = "blob",
+		ore             = "default:sand",
+		wherein         = {"default:stone", "default:sandstone",
+			"default:desert_stone"},
+		clust_scarcity  = 16 * 16 * 16,
+		clust_size      = 5,
+		y_min           = -31,
+		y_max           = 4,
 		noise_threshold = 0.0,
-		noise_params     = {
+		noise_params    = {
 			offset = 0.5,
 			scale = 0.2,
 			spread = {x = 5, y = 5, z = 5},
@@ -150,15 +151,15 @@ function default.register_ores()
 	-- Dirt
 
 	minetest.register_ore({
-		ore_type         = "blob",
-		ore              = "default:dirt",
-		wherein          = {"default:stone"},
-		clust_scarcity   = 16 * 16 * 16,
-		clust_size       = 5,
-		y_min            = -31,
-		y_max            = 31000,
+		ore_type        = "blob",
+		ore             = "default:dirt",
+		wherein         = {"default:stone", "default:sandstone"},
+		clust_scarcity  = 16 * 16 * 16,
+		clust_size      = 5,
+		y_min           = -31,
+		y_max           = 31000,
 		noise_threshold = 0.0,
-		noise_params     = {
+		noise_params    = {
 			offset = 0.5,
 			scale = 0.2,
 			spread = {x = 5, y = 5, z = 5},
@@ -171,15 +172,15 @@ function default.register_ores()
 	-- Gravel
 
 	minetest.register_ore({
-		ore_type         = "blob",
-		ore              = "default:gravel",
-		wherein          = {"default:stone"},
-		clust_scarcity   = 16 * 16 * 16,
-		clust_size       = 5,
-		y_min            = -31000,
-		y_max            = 31000,
+		ore_type        = "blob",
+		ore             = "default:gravel",
+		wherein         = {"default:stone"},
+		clust_scarcity  = 16 * 16 * 16,
+		clust_size      = 5,
+		y_min           = -31000,
+		y_max           = 31000,
 		noise_threshold = 0.0,
-		noise_params     = {
+		noise_params    = {
 			offset = 0.5,
 			scale = 0.2,
 			spread = {x = 5, y = 5, z = 5},
@@ -628,8 +629,26 @@ function default.register_biomes()
 		--depth_water_top = ,
 		--node_water = "",
 		--node_river_water = "",
-		y_min = 5,
+		y_min = 6,
 		y_max = 31000,
+		heat_point = 40,
+		humidity_point = 35,
+	})
+
+	minetest.register_biome({
+		name = "stone_grassland_dunes",
+		--node_dust = "",
+		node_top = "default:sand",
+		depth_top = 1,
+		node_filler = "default:sand",
+		depth_filler = 2,
+		--node_stone = "",
+		--node_water_top = "",
+		--depth_water_top = ,
+		--node_water = "",
+		--node_river_water = "",
+		y_min = 5,
+		y_max = 5,
 		heat_point = 40,
 		humidity_point = 35,
 	})
@@ -665,8 +684,26 @@ function default.register_biomes()
 		--depth_water_top = ,
 		--node_water = "",
 		--node_river_water = "",
-		y_min = 5,
+		y_min = 6,
 		y_max = 31000,
+		heat_point = 40,
+		humidity_point = 65,
+	})
+
+	minetest.register_biome({
+		name = "coniferous_forest_dunes",
+		--node_dust = "",
+		node_top = "default:sand",
+		depth_top = 1,
+		node_filler = "default:sand",
+		depth_filler = 3,
+		--node_stone = "",
+		--node_water_top = "",
+		--depth_water_top = ,
+		--node_water = "",
+		--node_river_water = "",
+		y_min = 5,
+		y_max = 5,
 		heat_point = 40,
 		humidity_point = 65,
 	})
@@ -702,8 +739,26 @@ function default.register_biomes()
 		--depth_water_top = ,
 		--node_water = "",
 		--node_river_water = "",
-		y_min = 5,
+		y_min = 6,
 		y_max = 31000,
+		heat_point = 60,
+		humidity_point = 35,
+	})
+
+	minetest.register_biome({
+		name = "sandstone_grassland_dunes",
+		--node_dust = "",
+		node_top = "default:sand",
+		depth_top = 1,
+		node_filler = "default:sand",
+		depth_filler = 2,
+		node_stone = "default:sandstone",
+		--node_water_top = "",
+		--depth_water_top = ,
+		--node_water = "",
+		--node_river_water = "",
+		y_min = 5,
+		y_max = 5,
 		heat_point = 60,
 		humidity_point = 35,
 	})
@@ -1061,7 +1116,9 @@ local function register_grass_decoration(offset, scale, length)
 			persist = 0.6
 		},
 		biomes = {"stone_grassland", "sandstone_grassland",
-			"deciduous_forest", "coniferous_forest"},
+			"deciduous_forest", "coniferous_forest",
+			"stone_grassland_dunes", "sandstone_grassland_dunes",
+			"coniferous_forest_dunes"},
 		y_min = 1,
 		y_max = 31000,
 		decoration = "default:grass_"..length,
