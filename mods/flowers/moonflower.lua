@@ -15,7 +15,8 @@ minetest.register_node("flowers:moonflower_closed", {
 	sunlight_propagates = true,
 	paramtype = "light",
 	walkable = false,
-	groups = { snappy = 3, dig_immediate = 3, flammable=2, flower=1, wield_light=2 },
+	light_source = default.LIGHT_MAX / 4,
+	groups = { snappy = 3, dig_immediate = 3, flammable=2, flower=1, wield_light=2, dig_immediate = 3, drop_by_liquid = 1, },
 	drop = 'flowers:moonflower_closed',
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
@@ -35,8 +36,8 @@ minetest.register_node("flowers:moonflower_open", {
 	sunlight_propagates = true,
 	paramtype = "light",
 	walkable = false,
-	light_source = default.LIGHT_MAX / 2,
-	groups = { not_in_creative_inventory = 1, snappy = 3, dig_immediate = 3, flammable=2, flower=1, wield_light=4 },
+	light_source = default.LIGHT_MAX / 1.5,
+	groups = { not_in_creative_inventory = 1, snappy = 3, dig_immediate = 3, flammable=2, flower=1, wield_light=6, dig_immediate = 3, drop_by_liquid = 1, },
 	drop = 'flowers:moonflower_closed',
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
