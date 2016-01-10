@@ -49,7 +49,7 @@ minetest.register_node("flowers:moonflower_open", {
 
 set_moonflower = function (pos)
 	-- choose the appropriate form of the moon flower
-	if (minetest.get_node_light(pos, 0.5) == 15)
+	if (minetest.get_node_light(pos, 0.5) == default.LIGHT_SUN)
 	and ((minetest.get_timeofday() < OPEN_TIME_START) or (minetest.get_timeofday() > OPEN_TIME_END)) then
 		minetest.add_node(pos, { name = "flowers:moonflower_open" })
 	else

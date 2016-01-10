@@ -175,7 +175,7 @@ minetest.register_abm({
 	interval = 11,
 	chance = 50,
 	action = function(pos, node)
-		if minetest.get_node_light(pos, nil) == 15 then
+		if minetest.get_node_light(pos, nil) == default.LIGHT_SUN then
 			minetest.remove_node(pos)
 		end
 		local random = {

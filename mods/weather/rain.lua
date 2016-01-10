@@ -6,7 +6,7 @@ core.register_globalstep(function(dtime)
 		if strength > 0 and core.get_node(ppos).name == "air" then
 --print("rain he=".. core.get_heat(ppos).." hu=".. core.get_humidity(ppos) .. " s=" .. strength)
 		-- Make sure player is not in a cave/house...
-		if core.get_node_light(ppos, 0.5) ~= 15 then return end
+		if core.get_node_light(ppos, 0.5) ~= default.LIGHT_SUN then return end
 
 		local minp = addvectors(ppos, {x=-9, y=7, z=-9})
 		local maxp = addvectors(ppos, {x= 9, y=7, z= 9})
@@ -47,7 +47,7 @@ core.register_abm({
 			and core.registered_nodes[node.name].drawtype ~= "liquid"
 			and core.registered_nodes[node.name].drawtype ~= "allfaces_optional" then  return end
 		local np = addvectors(pos, {x=0, y=1, z=0})
-		if core.get_node_light(np, 0.5) ~= 15 then return end
+		if core.get_node_light(np, 0.5) ~= default.LIGHT_SUN then return end
 			if core.get_node(pos).name == "default:water_flowing" then
 				core.add_node_level(pos, 4*amount)
 			elseif core.get_node(np).name == "air" then
@@ -68,7 +68,7 @@ core.register_abm({
 		local humidity = core.get_humidity(pos)
 		if get_rain(pos) > 0 or humidity > 90 then return end
 		local np = addvectors(pos, {x=0, y=1, z=0})
-		--if core.get_node_light(np, 0.5) == 15 then
+		--if core.get_node_light(np, 0.5) == default.LIGHT_SUN then
 		if core.get_node(np).name == "air" then
 		local amount = ((100-humidity)/20)
 		if amount < 1 then amount = 1 end

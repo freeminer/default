@@ -12,6 +12,7 @@ default.weather = core.setting_getbool("weather")
 if default.weather == 0 then default.weather = nil end
 
 default.LIGHT_MAX = 14
+default.LIGHT_SUN = default.LIGHT_MAX + 1
 
 -- GUI related stuff
 default.gui_bg = "bgcolor[#080808BB;true]"

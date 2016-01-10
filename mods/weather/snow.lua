@@ -6,7 +6,7 @@ core.register_globalstep(function(dtime)
 		if strength > 0 and core.get_node(ppos).name == "air" then
 --print("snow he=".. core.get_heat(ppos).." hu=".. core.get_humidity(ppos) .. " s=" .. strength)
 		-- Make sure player is not in a cave/house...
-		if core.get_node_light(ppos, 0.5) ~= 15 then return end
+		if core.get_node_light(ppos, 0.5) ~= default.LIGHT_SUN then return end
 
 		local minp = addvectors(ppos, {x=-9, y=7, z=-9})
 		local maxp = addvectors(ppos, {x= 9, y=7, z= 9})
@@ -57,10 +57,8 @@ default.time_speed = tonumber(core.setting_get("time_speed"))
 core.register_abm({
 	nodenames = {"group:crumbly", "group:snappy", "group:cracky", "group:choppy", "group:melts"},
 	neighbors = {"air"},
-	interval = 10.0, 
+	interval = 10.0,
 	chance = 50,
-	--interval = 1.0, 
-	--chance = 5,
 	action = function (pos, node, active_object_count, active_object_count_wider)
 		local amount = get_snow(pos)
 		if amount == 0 then return end
@@ -69,8 +67,23 @@ core.register_abm({
 			and core.registered_nodes[node.name].drawtype ~= "nodebox"
 			and core.registered_nodes[node.name].drawtype ~= "allfaces_optional" then return end
 		local np = addvectors(pos, {x=0, y=1, z=0})
-		if core.get_node_light(np, 0.5) ~= 15 then return end
+		if core.get_node_light(np, 0.5) ~= default.LIGHT_SUN then return end
 		if core.get_node(pos).name == "default:snow" then
+			local min_level = core.get_node_level(pos)
+			local min_pos = pos
+			local addv = {x=0, y=0, z=0}
+			local rnd = math.random(1, 4)
+			if     rnd == 1 then addv.x = 1
+			elseif rnd == 2 then addv.x = -1
+			elseif rnd == 3 then addv.z = -1
+			elseif rnd == 4 then addv.z = 1 end
+			local ngp = addvectors(min_pos, addv)
+			-- smooth
+			if core.get_node(ngp).name == "default:snow" and core.get_node_level(ngp) < min_level then
+				min_pos = ngp
+			end
+			pos = min_pos
+			np = addvectors(pos, {x=0, y=1, z=0})
 			add = core.add_node_level(pos, add);
 			if default.time_speed <= 0 then add = 0 end
 			if add > 0 then
