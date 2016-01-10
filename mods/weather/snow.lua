@@ -17,6 +17,7 @@ core.register_globalstep(function(dtime)
 		local vel = {x=0, y=   -0.5, z=0}
 		local acc = {x=0, y=   -0.5, z=0}
 
+--[[
 		core.add_particlespawner({
 			amount=5*strength, time=0.5,
 			minpos=minp, maxpos=maxp,
@@ -40,6 +41,33 @@ core.register_globalstep(function(dtime)
 			texture="weather_snow.png",
 			player=player:get_player_name()
 		})
+]]
+	       local minpos = addvectors(player:getpos(), {x = -30, y = 20, z = -30})
+	       local maxpos = addvectors(player:getpos(), {x = 30, y = 15, z = 30})
+	       local vel = {x = 16.0, y = -8, z = 13.0}
+	       local acc = {x = -16.0, y = -8, z = -13.0}
+	       core.add_particlespawner(
+		  {
+		     amount = 8*strength,
+		     time = 0.4,
+		     minpos = minpos,
+		     maxpos = maxpos,
+		     minvel = {x=-vel.x, y=vel.y, z=-vel.z},
+		     maxvel = vel,
+		     minacc = acc,
+		     maxacc = acc,
+		     minexptime = 1.0,
+		     maxexptime = 1.4,
+		     minsize = 3,
+		     maxsize = 4,
+		     collisiondetection = true,
+		     vertical = false,
+		     texture = "weather_snow.png",
+		     playername = player:get_player_name()
+		  }
+	       )
+
+
 		end
 	end
 end)

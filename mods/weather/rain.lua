@@ -31,9 +31,9 @@ core.register_globalstep(function(dtime)
 
 	       local minpos = addvectors(player:getpos(), {x = -15, y = 15, z = -15})
 	       local maxpos = addvectors(player:getpos(), {x = 15, y = 10, z = 15})
-	       minetest.add_particlespawner(
+	       core.add_particlespawner(
 		  {
-		     amount = 30,
+		     amount = 30*strength,
 		     time = 0.5,
 		     minpos = minpos,
 		     maxpos = maxpos,
