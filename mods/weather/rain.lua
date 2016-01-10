@@ -11,6 +11,7 @@ core.register_globalstep(function(dtime)
 		local minp = addvectors(ppos, {x=-9, y=7, z=-9})
 		local maxp = addvectors(ppos, {x= 9, y=7, z= 9})
 
+--[[ old
 		local vel = {x=0, y=   -4, z=0}
 		local acc = {x=0, y=-9.81, z=0}
 
@@ -26,6 +27,31 @@ core.register_globalstep(function(dtime)
 			texture="weather_rain.png",
 			player=player:get_player_name()
 		})
+]]
+
+	       local minpos = addvectors(player:getpos(), {x = -15, y = 15, z = -15})
+	       local maxpos = addvectors(player:getpos(), {x = 15, y = 10, z = 15})
+	       minetest.add_particlespawner(
+		  {
+		     amount = 30,
+		     time = 0.5,
+		     minpos = minpos,
+		     maxpos = maxpos,
+		     minvel = {x = 0, y = -20, z = 0},
+		     maxvel = {x = 0, y = -20, z = 0},
+		     minexptime = 0.9,
+		     maxexptime = 1.1,
+		     minsize = 2,
+		     maxsize = 3,
+		     collisiondetection = false, --true,
+		     vertical = true,
+		     texture = "weather_rain.png",
+		     playername = player:get_player_name()
+		  }
+		  )
+
+
+
 		end
 	end
 end)
