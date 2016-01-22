@@ -39,11 +39,6 @@ minetest.register_alias("mapgen_sandstonebrick", "default:sandstonebrick")
 minetest.register_alias("mapgen_stair_sandstonebrick", "stairs:stair_sandstonebrick")
 
 
---freeminer:
-minetest.register_alias("mapgen_ice", "default:ice")
-minetest.register_alias("mapgen_dirt_with_snow", "default:dirt_with_snow")
-
-
 -- freeminer layers
 local mg_params = {
 	layer_default_thickness = 1,
