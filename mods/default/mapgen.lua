@@ -1362,8 +1362,8 @@ function default.register_decorations()
 		place_on = {"default:dirt_with_grass"},
 		sidelen = 16,
 		noise_params = {
-			offset = 0.01,
-			scale = -0.02,
+			offset = 0.0,
+			scale = -0.03,
 			spread = {x = 250, y = 250, z = 250},
 			seed = 2,
 			octaves = 3,
@@ -1382,8 +1382,8 @@ function default.register_decorations()
 		place_on = {"default:dirt_with_grass"},
 		sidelen = 16,
 		noise_params = {
-			offset = 0.0005,
-			scale = -0.001,
+			offset = 0.0,
+			scale = -0.0015,
 			spread = {x = 250, y = 250, z = 250},
 			seed = 2,
 			octaves = 3,
