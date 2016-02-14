@@ -409,8 +409,8 @@ core.register_node("tnt:gunpowder_burning", {
 core.register_abm({
 	nodenames = {"tnt:tnt", "tnt:gunpowder"},
 	neighbors = {"fire:basic_flame", "default:lava_source", "default:lava_flowing"},
-	interval = 2,
-	chance = 10,
+	interval = 4,
+	chance = 1,
 	action = function(pos, node)
 		if node.name == "tnt:tnt" then
 			core.set_node(pos, {name="tnt:tnt_burning"})
