@@ -274,6 +274,12 @@ core.register_node("tnt:tnt_burning", {
 	light_source = 5,
 	drop = "",
 	sounds = default.node_sound_wood_defaults(),
+	on_construct = function(pos)
+		minetest.get_node_timer(pos):start(4)
+	end,
+	on_timer = boom,
+	-- unaffected by explosions
+	on_blast = function() end,
 })
 
 core.register_node("tnt:boom", {
@@ -435,7 +441,3 @@ core.register_craft({
 		{"", "group:wood", ""}
 	}
 })
-
-if core.setting_get("log_mods") then
-	core.log("action", "tnt loaded")
-end
