@@ -119,7 +119,7 @@ function _doors.door_toggle(pos, clicker)
 	local meta = minetest.get_meta(pos)
 	local state = meta:get_int("state")
 	local def = minetest.registered_nodes[minetest.get_node(pos).name]
-	local name = def.door.basename
+	local name = def.door.name
 
 	if clicker then
 		local owner = meta:get_string("doors_owner")
@@ -146,7 +146,7 @@ function _doors.door_toggle(pos, clicker)
 	end
 
 	minetest.swap_node(pos, {
-		name = "doors:" .. name .. transform[state + 1][dir+1].v,
+		name = name .. transform[state + 1][dir+1].v,
 		param2 = transform[state + 1][dir+1].param2
 	})
 	meta:set_int("state", state)
@@ -154,10 +154,33 @@ function _doors.door_toggle(pos, clicker)
 	return true
 end
 
+
+local function on_place_node(place_to, newnode, placer, oldnode, itemstack, pointed_thing)
+	-- Run script hook
+	local _, callback
+	for _, callback in ipairs(core.registered_on_placenodes) do
+		-- Deepcopy pos, node and pointed_thing because callback can modify them
+		local place_to_copy = {x = place_to.x, y = place_to.y, z = place_to.z}
+		local newnode_copy = {name = newnode.name, param1 = newnode.param1, param2 = newnode.param2}
+		local oldnode_copy = {name = oldnode.name, param1 = oldnode.param1, param2 = oldnode.param2}
+		local pointed_thing_copy = {
+			type  = pointed_thing.type,
+			above = vector.new(pointed_thing.above),
+			under = vector.new(pointed_thing.under),
+			ref   = pointed_thing.ref,
+		}
+		callback(place_to_copy, newnode_copy, placer, oldnode_copy, itemstack, pointed_thing_copy)
+	end
+end
+
 function doors.register(name, def)
+	if not name:find(":") then
+		name = "doors:" .. name
+	end
+
 	-- replace old doors of this type automatically
 	minetest.register_abm({
-		nodenames = {"doors:"..name.."_b_1", "doors:"..name.."_b_2"},
+		nodenames = {name.."_b_1", name.."_b_2"},
 		interval = 7.0,
 		chance = 1,
 		action = function(pos, node, active_object_count, active_object_count_wider)
@@ -171,23 +194,40 @@ function doors.register(name, def)
 			}
 			local new = replace[l][h]
 			-- retain infotext and doors_owner fields
-			minetest.swap_node(pos, { name = "doors:" .. name .. "_" .. new.type, param2 = p2})
+			minetest.swap_node(pos, {name = name .. "_" .. new.type, param2 = p2})
 			meta:set_int("state", new.state)
 			-- wipe meta on top node as it's unused
 			minetest.set_node({x = pos.x, y = pos.y + 1, z = pos.z}, { name = "doors:hidden" })
 		end
 	})
 
-	minetest.register_craftitem(":doors:" .. name, {
+	minetest.register_craftitem(":" .. name, {
 		description = def.description,
 		inventory_image = def.inventory_image,
 
 		on_place = function(itemstack, placer, pointed_thing)
-			local pos = pointed_thing.above
-			local node = minetest.get_node(pos)
+			local pos = nil
 
-			if not minetest.registered_nodes[node.name].buildable_to then
+			if not pointed_thing.type == "node" then
 				return itemstack
+			end
+
+			local node = minetest.get_node(pointed_thing.under)
+			local pdef = minetest.registered_nodes[node.name]
+			if pdef and pdef.on_rightclick then
+				return pdef.on_rightclick(pointed_thing.under,
+						node, placer, itemstack)
+			end
+
+			if pdef and pdef.buildable_to then
+				pos = pointed_thing.under
+			else
+				pos = pointed_thing.above
+				node = minetest.get_node(pos)
+				pdef = minetest.registered_nodes[node.name]
+				if not pdef or not pdef.buildable_to then
+					return itemstack
+				end
 			end
 
 			local above = { x = pos.x, y = pos.y + 1, z = pos.z }
@@ -213,9 +253,9 @@ function doors.register(name, def)
 			local state = 0
 			if minetest.get_item_group(minetest.get_node(aside).name, "door") == 1 then
 				state = state + 2
-				minetest.set_node(pos, {name = "doors:" .. name .. "_b", param2 = dir})
+				minetest.set_node(pos, {name = name .. "_b", param2 = dir})
 			else
-				minetest.set_node(pos, {name = "doors:" .. name .. "_a", param2 = dir})
+				minetest.set_node(pos, {name = name .. "_a", param2 = dir})
 			end
 			minetest.set_node(above, { name = "doors:hidden" })
 
@@ -231,6 +271,8 @@ function doors.register(name, def)
 			if not minetest.setting_getbool("creative_mode") then
 				itemstack:take_item()
 			end
+
+			on_place_node(pos, minetest.get_node(pos), placer, node, itemstack, pointed_thing)
 
 			return itemstack
 		end
@@ -258,9 +300,9 @@ function doors.register(name, def)
 
 	def.groups.not_in_creative_inventory = 1
 	def.groups.door = 1
-	def.drop = "doors:" .. name
+	def.drop = name
 	def.door = {
-		basename = name,
+		name = name,
 		sounds = { def.sound_close, def.sound_open },
 	}
 
@@ -283,12 +325,12 @@ function doors.register(name, def)
 		def.on_blast = function(pos, intensity)
 			minetest.remove_node(pos)
 			-- hidden node doesn't get blasted away.
-			minetest.remove_node({ x = pos.x, y = pos.y + 1, z = pos.z})
-			return { "doors:" .. name }
+			minetest.remove_node({x = pos.x, y = pos.y + 1, z = pos.z})
+			return {name}
 		end
 	end
 
-	minetest.register_node(":doors:" .. name .. "_a", {
+	minetest.register_node(":" .. name .. "_a", {
 		description = def.description,
 		visual = "mesh",
 		mesh = "door_a.obj",
@@ -320,7 +362,7 @@ function doors.register(name, def)
 		},
 	})
 
-	minetest.register_node(":doors:" .. name .. "_b", {
+	minetest.register_node(":" .. name .. "_b", {
 		description = def.description,
 		visual = "mesh",
 		mesh = "door_b.obj",
@@ -354,13 +396,13 @@ function doors.register(name, def)
 
 	if def.recipe then
 		minetest.register_craft({
-			output = "doors:" .. name,
+			output = name,
 			recipe = def.recipe,
 		})
 	end
 
-	_doors.registered_doors["doors:" .. name .. "_a"] = true
-	_doors.registered_doors["doors:" .. name .. "_b"] = true
+	_doors.registered_doors[name .. "_a"] = true
+	_doors.registered_doors[name .. "_b"] = true
 end
 
 doors.register("door_wood", {
@@ -413,6 +455,30 @@ doors.register("door_obsidian_glass", {
 			{"default:obsidian_glass", "default:obsidian_glass"},
 		},
 })
+
+-- Capture mods using the old API as best as possible.
+function doors.register_door(name, def)
+	if def.only_placer_can_open then
+		def.protected = true
+	end
+	def.only_placer_can_open = nil
+
+	local i = name:find(":")
+	local modname = name:sub(1, i - 1)
+	if not def.tiles then
+		if def.protected then
+			def.tiles = {{name = "doors_door_steel.png", backface_culling = true}}
+		else
+			def.tiles = {{name = "doors_door_wood.png", backface_culling = true}}
+		end
+		minetest.log("warning", modname .. " registered door \"" .. name .. "\" " ..
+				"using deprecated API method \"doors.register_door()\" but " ..
+				"did not provide the \"tiles\" parameter. A fallback tiledef " ..
+				"will be used instead.")
+	end
+
+	doors.register(name, def)
+end
 
 ----trapdoor----
 
