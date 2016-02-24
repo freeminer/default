@@ -1168,8 +1168,8 @@ function default.register_decorations()
 		place_on = {"default:dirt_with_grass"},
 		sidelen = 16,
 		noise_params = {
-			offset = 0.04,
-			scale = 0.02,
+			offset = 0.036,
+			scale = 0.022,
 			spread = {x = 250, y = 250, z = 250},
 			seed = 2,
 			octaves = 3,
@@ -1187,8 +1187,8 @@ function default.register_decorations()
 		place_on = {"default:dirt_with_grass"},
 		sidelen = 16,
 		noise_params = {
-			offset = 0.002,
-			scale = 0.001,
+			offset = 0.0018,
+			scale = 0.0011,
 			spread = {x = 250, y = 250, z = 250},
 			seed = 2,
 			octaves = 3,
@@ -1263,8 +1263,8 @@ function default.register_decorations()
 		place_on = {"default:dirt_with_snow", "default:dirt_with_grass"},
 		sidelen = 16,
 		noise_params = {
-			offset = 0.04,
-			scale = 0.02,
+			offset = 0.036,
+			scale = 0.022,
 			spread = {x = 250, y = 250, z = 250},
 			seed = 2,
 			octaves = 3,
@@ -1281,7 +1281,14 @@ function default.register_decorations()
 		deco_type = "schematic",
 		place_on = {"default:dirt_with_snow", "default:dirt_with_grass"},
 		sidelen = 80,
-		fill_ratio = 0.003,
+		noise_params = {
+			offset = 0.0018,
+			scale = 0.0011,
+			spread = {x = 250, y = 250, z = 250},
+			seed = 2,
+			octaves = 3,
+			persist = 0.66
+		},
 		biomes = {"taiga", "coniferous_forest"},
 		y_min = 1,
 		y_max = 31000,
@@ -1363,7 +1370,7 @@ function default.register_decorations()
 		sidelen = 16,
 		noise_params = {
 			offset = 0.0,
-			scale = -0.03,
+			scale = -0.015,
 			spread = {x = 250, y = 250, z = 250},
 			seed = 2,
 			octaves = 3,
@@ -1383,7 +1390,7 @@ function default.register_decorations()
 		sidelen = 16,
 		noise_params = {
 			offset = 0.0,
-			scale = -0.0015,
+			scale = -0.0008,
 			spread = {x = 250, y = 250, z = 250},
 			seed = 2,
 			octaves = 3,
