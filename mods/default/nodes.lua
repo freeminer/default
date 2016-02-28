@@ -1243,6 +1243,10 @@ minetest.register_node("default:water_flowing", {
 })
 
 
+minetest.register_alias("default:river_water_source", "default:water_source")
+minetest.register_alias("default:river_water_flowing", "default:water_flowing")
+
+--[[
 minetest.register_node("default:river_water_source", {
 	description = "River Water Source",
 	drawtype = "liquid",
@@ -1348,6 +1352,7 @@ minetest.register_node("default:river_water_flowing", {
 	melt = "air",
 })
 
+]]
 
 minetest.register_node("default:lava_source", {
 	description = "Lava Source",
