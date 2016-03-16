@@ -426,8 +426,15 @@ minetest.register_node("default:gravel", {
 	liquidtype = flowing_sand_type,
 	paramtype2 = flowing_sand_paramtype2,
 	drowning = 1,
-})
 
+	drop = {
+		max_items = 1,
+		items = {
+			{items = {'default:flint'}, rarity = 16},
+			{items = {'default:gravel'}}
+		}
+	}
+})
 
 minetest.register_node("default:clay", {
 	description = "Clay",
