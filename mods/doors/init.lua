@@ -287,6 +287,9 @@ function doors.register(name, def)
 		if not def.protected then
 			return true
 		end
+		if minetest.check_player_privs(digger, "protection_bypass") then
+			return true
+		end
 		local meta = minetest.get_meta(pos)
 		local name = ""
 		if digger then
@@ -438,6 +441,8 @@ doors.register("door_steel", {
 		inventory_image = "doors_item_steel.png",
 		protected = true,
 		groups = { snappy = 1, bendy = 2, cracky = 1, melty = 2, level = 2 },
+		sound_open = "doors_steel_door_open",
+		sound_close = "doors_steel_door_close",
 		recipe = {
 			{"default:steel_ingot", "default:steel_ingot"},
 			{"default:steel_ingot", "default:steel_ingot"},
@@ -628,6 +633,8 @@ doors.register_trapdoor("doors:trapdoor_steel", {
 	tile_front = "doors_trapdoor_steel.png",
 	tile_side = "doors_trapdoor_steel_side.png",
 	protected = true,
+	sound_open = "doors_steel_door_open",
+	sound_close = "doors_steel_door_close",
 	groups = {snappy=1, bendy=2, cracky=1, melty=2, level=2, door=1},
 })
 
