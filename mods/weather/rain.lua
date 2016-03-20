@@ -65,7 +65,7 @@ core.register_abm({
 		-- todo! chance must depend on rain value
 		local amount = get_rain(pos)
 		if amount == 0 then return end
-		amount = amount * 4
+		amount = amount * 3
 		if amount < 1 then amount = 1 end
 		if core.registered_nodes[node.name].drawtype ~= "normal"
 			and core.registered_nodes[node.name].drawtype ~= "nodebox"

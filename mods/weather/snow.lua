@@ -87,10 +87,11 @@ core.register_abm({
 	neighbors = {"air"},
 	interval = 10.0,
 	chance = 50,
+
 	action = function (pos, node, active_object_count, active_object_count_wider)
 		local amount = get_snow(pos)
 		if amount == 0 then return end
-		local add = 1 + (amount * 3);
+		local add = 1 + (amount * 2);
 		if core.registered_nodes[node.name].drawtype ~= "normal"
 			and core.registered_nodes[node.name].drawtype ~= "nodebox"
 			and core.registered_nodes[node.name].drawtype ~= "allfaces_optional" then return end
@@ -99,17 +100,24 @@ core.register_abm({
 		if core.get_node(pos).name == "default:snow" then
 			local min_level = core.get_node_level(pos)
 			local min_pos = pos
-			local addv = {x=0, y=0, z=0}
-			local rnd = math.random(1, 4)
-			if     rnd == 1 then addv.x = 1
-			elseif rnd == 2 then addv.x = -1
-			elseif rnd == 3 then addv.z = -1
-			elseif rnd == 4 then addv.z = 1 end
-			local ngp = addvectors(min_pos, addv)
+
 			-- smooth
-			if core.get_node(ngp).name == "default:snow" and core.get_node_level(ngp) < min_level then
-				min_pos = ngp
+			--local rnd = math.random(1, 4)
+			for rnd = 1, 4 do
+				if min_level <= 1 then break end
+				local addv = {x=0, y=0, z=0}
+				if     rnd == 1 then addv.x = 1
+				elseif rnd == 2 then addv.x = -1
+				elseif rnd == 3 then addv.z = -1
+				elseif rnd == 4 then addv.z = 1 end
+				local ngp = addvectors(min_pos, addv)
+				local lev = core.get_node_level(ngp)
+				if core.get_node(ngp).name == "default:snow" and lev < min_level then
+					min_level = lev
+					min_pos = ngp
+				end
 			end
+
 			pos = min_pos
 			np = addvectors(pos, {x=0, y=1, z=0})
 			add = core.add_node_level(pos, add);
