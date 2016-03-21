@@ -74,17 +74,32 @@ end
 -- nodes from being placed in the top half of the door.
 minetest.register_node("doors:hidden", {
 	description = "Hidden Door Segment",
-	drawtype = "airlike",
+	-- can't use airlike otherwise falling nodes will turn to entities
+	-- and will be forever stuck until door is removed.
+	drawtype = "nodebox",
 	paramtype = "light",
+	paramtype2 = "facedir",
 	sunlight_propagates = true,
-	walkable = false,
+	-- has to be walkable for falling nodes to stop falling.
+	walkable = true,
 	pointable = false,
 	diggable = false,
 	buildable_to = false,
 	floodable = false,
 	drop = "",
-	groups = { not_in_creative_inventory = 1 },
-	on_blast = function() end
+	groups = {not_in_creative_inventory = 1},
+	on_blast = function() end,
+	tiles = {"doors_blank.png"},
+	-- 1px transparent block inside door hinge near node top.
+	nodebox = {
+		type = "fixed",
+		fixed = {-15/32, 13/32, -15/32, -13/32, 1/2, -13/32},
+	},
+	-- collision_box needed otherise selection box would be full node size
+	collision_box = {
+		type = "fixed",
+		fixed = {-15/32, 13/32, -15/32, -13/32, 1/2, -13/32},
+	},
 })
 
 -- table used to aid door opening/closing
@@ -196,8 +211,21 @@ function doors.register(name, def)
 			-- retain infotext and doors_owner fields
 			minetest.swap_node(pos, {name = name .. "_" .. new.type, param2 = p2})
 			meta:set_int("state", new.state)
+			-- properly place doors:hidden at the right spot
+			local p3 = p2
+			if new.state >= 2 then
+				p3 = (p3 + 3) % 4
+			end
+			if new.state % 2 == 1 then
+				if new.state >= 2 then
+					p3 = (p3 + 1) % 4
+				else
+					p3 = (p3 + 3) % 4
+				end
+			end
 			-- wipe meta on top node as it's unused
-			minetest.set_node({x = pos.x, y = pos.y + 1, z = pos.z}, { name = "doors:hidden" })
+			minetest.set_node({x = pos.x, y = pos.y + 1, z = pos.z},
+				{name = "doors:hidden", param2 = p3})
 		end
 	})
 
@@ -259,10 +287,11 @@ function doors.register(name, def)
 			if minetest.get_item_group(minetest.get_node(aside).name, "door") == 1 then
 				state = state + 2
 				minetest.set_node(pos, {name = name .. "_b", param2 = dir})
+				minetest.set_node(above, {name = "doors:hidden", param2 = (dir + 3) % 4})
 			else
 				minetest.set_node(pos, {name = name .. "_a", param2 = dir})
+				minetest.set_node(above, {name = "doors:hidden", param2 = dir})
 			end
-			minetest.set_node(above, { name = "doors:hidden" })
 
 			local meta = minetest.get_meta(pos)
 			meta:set_int("state", state)
@@ -322,7 +351,8 @@ function doors.register(name, def)
 		_doors.door_toggle(pos, clicker)
 	end
 	def.after_dig_node = function(pos, node, meta, digger)
-		minetest.remove_node({ x = pos.x, y = pos.y + 1, z = pos.z})
+		minetest.remove_node({x = pos.x, y = pos.y + 1, z = pos.z})
+		nodeupdate({x = pos.x, y = pos.y + 1, z = pos.z})
 	end
 	def.can_dig = function(pos, player)
 		return can_dig(pos, player)
@@ -658,59 +688,101 @@ minetest.register_craft({
 
 ----fence gate----
 
-local fence = {
-	description = "Fence Gate",
-	drawtype = "mesh",
-	tiles = {"default_wood.png"},
-	paramtype = "light",
-	paramtype2 = "facedir",
-	sunlight_propagates = true,
-	is_ground_content = false,
-	drop = "doors:gate_closed",
-	connect_sides = { "left", "right" },
-	groups = {snappy = 1, choppy = 2, oddly_breakable_by_hand = 2,
-		flammable = 2, fence = 1},
-	on_rightclick = function(pos, clicker)
-		local node = minetest.get_node(pos)
-		local def = minetest.registered_nodes[node.name]
-		minetest.swap_node(pos, {name = def.gate, param2 = node.param2})
-		minetest.sound_play(def.sound, {pos = pos, gain = 0.3,
-			max_hear_distance = 8})
-	end,
-	selection_box = {
+function doors.register_fencegate(name, def)
+	local fence = {
+		description = def.description,
+		drawtype = "mesh",
+		tiles = { def.texture },
+		paramtype = "light",
+		paramtype2 = "facedir",
+		sunlight_propagates = true,
+		is_ground_content = false,
+		drop = name .. "_closed",
+		connect_sides = { "left", "right" },
+		groups = def.groups,
+		sounds = def.sounds,
+		on_rightclick = function(pos, clicker)
+			local node = minetest.get_node(pos)
+			local node_def = minetest.registered_nodes[node.name]
+			minetest.swap_node(pos, {name = node_def.gate, param2 = node.param2})
+			minetest.sound_play(node_def.sound, {pos = pos, gain = 0.3,
+				max_hear_distance = 8})
+		end,
+		selection_box = {
+			type = "fixed",
+			fixed = {-1/2, -1/2, -1/4, 1/2, 1/2, 1/4},
+		},
+	}
+
+	if not fence.sounds then
+		fence.sounds = default.node_sound_wood_defaults()
+	end
+
+	fence.groups.fence = 1
+
+	local fence_closed = table.copy(fence)
+	fence_closed.mesh = "doors_fencegate_closed.obj"
+	fence_closed.gate = name .. "_open"
+	fence_closed.sound = "doors_fencegate_open"
+	fence_closed.collision_box = {
 		type = "fixed",
 		fixed = {-1/2, -1/2, -1/4, 1/2, 1/2, 1/4},
-	},
-}
+	}
 
-local fence_closed = table.copy(fence)
-fence_closed.mesh = "doors_fencegate_closed.obj"
-fence_closed.gate = "doors:gate_open"
-fence_closed.sound = "doors_fencegate_open"
-fence_closed.collision_box = {
-	type = "fixed",
-	fixed = {-1/2, -1/2, -1/4, 1/2, 1/2, 1/4},
-}
+	local fence_open = table.copy(fence)
+	fence_open.mesh = "doors_fencegate_open.obj"
+	fence_open.gate = name .. "_closed"
+	fence_open.sound = "doors_fencegate_close"
+	fence_open.groups.not_in_creative_inventory = 1
+	fence_open.collision_box = {
+		type = "fixed",
+		fixed = {{-1/2, -1/2, -1/4, -3/8, 1/2, 1/4},
+			{-5/8, -3/8, -14/16, -3/8, 3/8, 0}},
+	}
 
-local fence_open = table.copy(fence)
-fence_open.mesh = "doors_fencegate_open.obj"
-fence_open.gate = "doors:gate_closed"
-fence_open.sound = "doors_fencegate_close"
-fence_open.groups.not_in_creative_inventory = 1
-fence_open.collision_box = {
-	type = "fixed",
-	fixed = {{-1/2, -1/2, -1/4, -3/8, 1/2, 1/4},
-		{-5/8, -3/8, -14/16, -3/8, 3/8, 0}},
-}
+	minetest.register_node(":" .. name .. "_closed", fence_closed)
+	minetest.register_node(":" .. name .. "_open", fence_open)
 
-minetest.register_node("doors:gate_closed", fence_closed)
-minetest.register_node("doors:gate_open", fence_open)
+	minetest.register_craft({
+		output = name .. "_closed",
+		recipe = {
+			{"default:stick", def.material, "default:stick"},
+			{"default:stick", def.material, "default:stick"}
+		}
+	})
+end
 
-minetest.register_craft({
-	output = "doors:gate_closed",
-	recipe = {
-		{"default:stick", "group:wood", "default:stick"},
-		{"default:stick", "group:wood", "default:stick"},
-	},
+doors.register_fencegate("doors:gate_wood", {
+	description = "Wooden Fence Gate",
+	texture = "default_wood.png",
+	material = "default:wood",
+	groups = {choppy = 2, oddly_breakable_by_hand = 2, flammable = 2}
 })
 
+doors.register_fencegate("doors:gate_acacia_wood", {
+	description = "Acacia Fence Gate",
+	texture = "default_acacia_wood.png",
+	material = "default:acacia_wood",
+	groups = {choppy = 2, oddly_breakable_by_hand = 2, flammable = 2}
+})
+
+doors.register_fencegate("doors:gate_junglewood", {
+	description = "Junglewood Fence Gate",
+	texture = "default_junglewood.png",
+	material = "default:junglewood",
+	groups = {choppy = 2, oddly_breakable_by_hand = 2, flammable = 2}
+})
+
+doors.register_fencegate("doors:gate_pine_wood", {
+	description = "Pine Fence Gate",
+	texture = "default_pine_wood.png",
+	material = "default:pine_wood",
+	groups = {choppy = 2, oddly_breakable_by_hand = 2, flammable = 2}
+})
+
+doors.register_fencegate("doors:gate_aspen_wood", {
+	description = "Aspen Fence Gate",
+	texture = "default_aspen_wood.png",
+	material = "default:aspen_wood",
+	groups = {choppy = 2, oddly_breakable_by_hand = 2, flammable = 2}
+})
