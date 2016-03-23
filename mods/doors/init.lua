@@ -132,9 +132,18 @@ local transform = {
 
 function _doors.door_toggle(pos, clicker)
 	local meta = minetest.get_meta(pos)
-	local state = meta:get_int("state")
 	local def = minetest.registered_nodes[minetest.get_node(pos).name]
 	local name = def.door.name
+
+	local state = meta:get_string("state")
+	if state == "" then
+		-- fix up lvm-placed right-hinged doors, default closed
+		if minetest.get_node(pos).name:sub(-2) == "_b" then
+			state = 2
+		end
+	else
+		state = tonumber(state)
+	end
 
 	if clicker and not minetest.check_player_privs(clicker, "protection_bypass") then
 		local owner = meta:get_string("doors_owner")
@@ -495,7 +504,7 @@ doors.register("door_glass", {
 
 doors.register("door_obsidian_glass", {
 		tiles = { "doors_door_obsidian_glass.png" },
-		description = "Glass Door",
+		description = "Obsidian Glass Door",
 		inventory_image = "doors_item_obsidian_glass.png",
 		groups = { snappy=1, cracky=1, oddly_breakable_by_hand=3 },
 		sounds = default.node_sound_glass_defaults(),
