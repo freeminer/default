@@ -505,6 +505,8 @@ minetest.register_node("default:ice", {
 	groups = {cracky = 3, puts_out_fire = 1, melt = 3, slippery = 90},
 	sounds = default.node_sound_glass_defaults(),
 	melt = "default:water_source",
+	drawtype = "glasslike",
+	use_texture_alpha = true,
 })
 
 --
