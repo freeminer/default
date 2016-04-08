@@ -32,7 +32,7 @@ minetest.override_item("default:dirt_with_grass", {
 })
 
 minetest.override_item("default:dirt_with_dry_grass", {
-	groups = {crumbly=3, soil=1},
+	--groups = {crumbly=3, soil=1},
 	soil = {
 		base = "default:dirt_with_dry_grass",
 		dry = "farming:soil",
