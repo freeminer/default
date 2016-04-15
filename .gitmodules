@@ -2,7 +2,7 @@
 	path = mods/heads
 	url = https://github.com/HybridDog/heads.git
 [submodule "mods/mobs"]
-	path = mods/mobs
+	path = mods/mobs_redo
 	url = https://github.com/tenplus1/mobs.git
 [submodule "mods/3d_armor"]
 	path = mods/3d_armor
