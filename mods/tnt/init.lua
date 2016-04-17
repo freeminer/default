@@ -1,4 +1,5 @@
 tnt = {}
+--[[
 -- Default to enabled in singleplayer and disabled in multiplayer
 local singleplayer = minetest.is_singleplayer()
 local setting = minetest.setting_getbool("enable_tnt")
@@ -6,6 +7,7 @@ if (not singleplayer and setting ~= true) or
 		(singleplayer and setting == false) then
 	return
 end
+]]
 
 tnt.radius_max = tonumber(core.setting_get("tnt_radius_max") or 25)
 tnt.time_max = tonumber(core.setting_get("tnt_time_max") or 3)
