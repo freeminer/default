@@ -144,8 +144,8 @@ local function destroy(drops, npos, on_blast_queue, ignore_protection, ignore_on
 			-- broken map and unknown nodes
 			return
 		end
-		if def.flammable then
-			core.set_node(pos, {name="fire:basic_flame"}, (fast and 2 or 0))
+		if def.groups.flammable then
+			core.set_node(npos, {name="fire:basic_flame"}, (fast and 2 or 0))
 			return
 		end
 
