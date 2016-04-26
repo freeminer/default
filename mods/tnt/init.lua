@@ -65,7 +65,9 @@ local function eject_drops(drops, pos, radius)
 			if count < item:get_stack_max() then take = count end
 
 			rand_pos(pos, drop_pos, radius)
-			local obj = minetest.add_item(drop_pos, item:get_name() .. " " .. take)
+			local dropitem = ItemStack(item)
+			dropitem:set_count(take)
+			local obj = minetest.add_item(drop_pos, dropitem)
 			if obj then
 				obj:get_luaentity().collect = true
 				obj:setacceleration({x = 0, y = -10, z = 0})
@@ -99,7 +101,7 @@ local function destroy(drops, npos, cid, c_air, c_fire, on_blast_queue, ignore_p
 	if not ignore_protection and minetest.is_protected(npos, "") then
 		return cid
 	end
-	
+
 	local def = cid_data[cid]
 
 	if not def then
@@ -167,6 +169,13 @@ local function calc_velocity(pos1, pos2, old_vel, power)
 	-- Add old velocity
 	vel = vector.add(vel, old_vel)
 
+	-- randomize it a bit
+	vel = vector.add(vel, {
+		x = math.random() - 0.5,
+		y = math.random() - 0.5,
+		z = math.random() - 0.5,
+	})
+
 	-- Limit to terminal velocity
 	dist = vector.length(vel)
 --print("cacl velocity=" .. dist .. " power=" .. power)
@@ -180,46 +189,55 @@ local function entity_physics(pos, radius)
 	local objs = minetest.get_objects_inside_radius(pos, radius)
 	for _, obj in pairs(objs) do
 		local obj_pos = obj:getpos()
-		local obj_vel = obj:getvelocity()
 		local dist = math.max(1, vector.distance(pos, obj_pos))
 
-		if obj_vel ~= nil then
+		local damage = (4 / dist) * radius
+--[[
+		if obj:is_player() then
+			-- currently the engine has no method to set
+			-- player velocity. See #2960
+			-- instead, we knock the player back 1.0 node, and slightly upwards
+			local dir = vector.normalize(vector.subtract(obj_pos, pos))
+			local moveoff = vector.multiply(dir, dist + 1.0)
+			local newpos = vector.add(pos, moveoff)
+			local newpos = vector.add(newpos, {x = 0, y = 0.2, z = 0})
+			obj:setpos(newpos)
+
+			obj:set_hp(obj:get_hp() - damage)
+		else
+]]
+--[[
+			local obj_vel = obj:getvelocity()
 			obj:setvelocity(calc_velocity(pos, obj_pos,
 					obj_vel, radius * 10))
-		end
-
---[[
-		local damage = (4 / dist) * radius
-		obj:set_hp(obj:get_hp() - damage)
 ]]
-
+		damage = ((radius*20)/dist)
 		local vec = {x=obj_pos.x-pos.x, y=obj_pos.y-pos.y, z=obj_pos.z-pos.z}
-		--local damage_mt = (4 / dist) * radius
-		local damage = ((radius*20)/dist)
+		--if obj:is_player() or (obj:get_luaentity() and obj:get_luaentity().name ~= "__builtin:item") then
 		--print("DMG dist="..dist.." damage="..damage .. " damage_mt=" .. damage_mt)
-		if obj:is_player() or (obj:get_luaentity() and obj:get_luaentity().name ~= "__builtin:item") then
-			obj:punch(obj, 1.0, { full_punch_interval=1.0, damage_groups={fleshy=damage}, }, vec)
+			obj:punch(obj, 1.0, {
+				full_punch_interval = 1.0,
+				damage_groups = {fleshy = damage},
+			}, vec)
+--[[
 		end
-		--if v ~= nil then
-		--	--obj:setvelocity({x=(p.x - pos.x) + (radius / 4) + v.x, y=(p.y - pos.y) + (radius / 2) + v.y, z=(p.z - pos.z) + (radius / 4) + v.z})
-		--	obj:setvelocity({x=(p.x - pos.x) + (radius / 2) + v.x, y=(p.y - pos.y) + radius + v.y,       z=(p.z - pos.z) + (radius / 2) + v.z})
-		--end
+]]
 
 	end
 end
 
 local function add_effects(pos, radius, drops)
 	minetest.add_particlespawner({
-		amount = 128,
-		time = 1,
+		amount = 64,
+		time = 0.5,
 		minpos = vector.subtract(pos, radius / 2),
 		maxpos = vector.add(pos, radius / 2),
-		minvel = {x = -20, y = -20, z = -20},
-		maxvel = {x = 20, y = 20, z = 20},
+		minvel = {x = -10, y = -10, z = -10},
+		maxvel = {x = 10, y = 10, z = 10},
 		minacc = vector.new(),
 		maxacc = vector.new(),
 		minexptime = 1,
-		maxexptime = 3,
+		maxexptime = 2.5,
 		minsize = 8,
 		maxsize = 16,
 		texture = "tnt_smoke.png",
@@ -449,9 +467,8 @@ end
 function tnt.boom(pos, def)
 	minetest.sound_play("tnt_explode", {pos = pos, gain = 1.5, max_hear_distance = 2*64})
 	minetest.set_node(pos, {name = "tnt:boom"})
-	minetest.get_node_timer(pos):start(0.5)
 	local drops, radius = tnt_explode(pos, def, def.radius, def.ignore_protection,
-			def.ignore_on_blast)
+ 			def.ignore_on_blast)
 	local damage_radius = radius * 3
 	entity_physics(pos, damage_radius)
 	if not def.disable_drops then
@@ -461,12 +478,25 @@ function tnt.boom(pos, def)
 end
 
 minetest.register_node("tnt:boom", {
-	drawtype = "plantlike",
-	tiles = {"tnt_boom.png"},
+	drawtype = "airlike",
 	light_source = default.LIGHT_MAX,
 	walkable = false,
 	drop = "",
 	groups = {dig_immediate = 3},
+	on_construct = function(pos)
+		minetest.add_particle({
+			pos = pos,
+			velocity = vector.new(),
+			acceleration = vector.new(),
+			expirationtime = 0.4,
+			size = 30,
+			collisiondetection = false,
+			vertical = false,
+			texture = "tnt_boom.png",
+			playername = nil,
+		})
+		minetest.get_node_timer(pos):start(0.4)
+	end,
 	on_timer = function(pos, elapsed)
 		minetest.remove_node(pos)
 	end,
@@ -490,7 +520,7 @@ minetest.register_node("tnt:gunpowder", {
 	},
 	groups = {dig_immediate = 2, attached_node = 1, connect_to_raillike = minetest.raillike_group("gunpowder")},
 	sounds = default.node_sound_leaves_defaults(),
-	
+
 	on_punch = function(pos, node, puncher)
 		if puncher:get_wielded_item():get_name() == "default:torch" then
 			tnt.burn(pos)
@@ -611,7 +641,7 @@ function tnt.register_tnt(def)
 	local tnt_side = def.tiles.side or def.name .. "_side.png"
 	local tnt_burning = def.tiles.burning or def.name .. "_top_burning_animated.png"
 	if not def.damage_radius then def.damage_radius = def.radius * 2 end
-	
+
 	minetest.register_node(":" .. name, {
 		description = def.description,
 		tiles = {tnt_top, tnt_bottom, tnt_side},
@@ -637,15 +667,15 @@ function tnt.register_tnt(def)
 				tnt.boom(pos, def)
 			end)
 		end,
-		mesecons = {effector = 
-			{action_on = 
+		mesecons = {effector =
+			{action_on =
 				function(pos)
 					tnt.boom(pos, def)
 				end
 			}
 		},
 	})
-	
+
 	minetest.register_node(":" .. name .. "_burning", {
 		tiles = {
 			{
@@ -662,6 +692,7 @@ function tnt.register_tnt(def)
 		light_source = 5,
 		drop = "",
 		sounds = default.node_sound_wood_defaults(),
+		groups = {falling_node = 1},
 		on_timer = function(pos, elapsed)
 			tnt.boom(pos, def)
 		end,
@@ -670,6 +701,7 @@ function tnt.register_tnt(def)
 		on_construct = function(pos)
 			minetest.sound_play("tnt_ignite", {pos = pos})
 			minetest.get_node_timer(pos):start(4)
+			nodeupdate(pos)
 		end,
 	})
 end
