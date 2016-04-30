@@ -185,7 +185,7 @@ local function calc_velocity(pos1, pos2, old_vel, power)
 	return vel
 end
 
-local function entity_physics(pos, radius)
+local function entity_physics(pos, radius, drops)
 	local objs = minetest.get_objects_inside_radius(pos, radius)
 	for _, obj in pairs(objs) do
 		local obj_pos = obj:getpos()
@@ -206,23 +206,42 @@ local function entity_physics(pos, radius)
 			obj:set_hp(obj:get_hp() - damage)
 		else
 ]]
---[[
-			local obj_vel = obj:getvelocity()
-			obj:setvelocity(calc_velocity(pos, obj_pos,
-					obj_vel, radius * 10))
-]]
-		damage = ((radius*20)/dist)
-		local vec = {x=obj_pos.x-pos.x, y=obj_pos.y-pos.y, z=obj_pos.z-pos.z}
-		--if obj:is_player() or (obj:get_luaentity() and obj:get_luaentity().name ~= "__builtin:item") then
-		--print("DMG dist="..dist.." damage="..damage .. " damage_mt=" .. damage_mt)
-			obj:punch(obj, 1.0, {
-				full_punch_interval = 1.0,
-				damage_groups = {fleshy = damage},
-			}, vec)
---[[
-		end
-]]
+		if true then
 
+			local do_damage = true
+			local do_knockback = true
+			local entity_drops = {}
+			local luaobj = obj:get_luaentity()
+			local objdef = luaobj and minetest.registered_entities[luaobj.name] or nil
+
+			if objdef and objdef.on_blast then
+				do_damage, do_knockback, entity_drops = objdef.on_blast(luaobj, damage)
+			end
+
+			if do_knockback then
+				local obj_vel = obj:getvelocity()
+				obj:setvelocity(calc_velocity(pos, obj_pos,
+						obj_vel, radius * 10))
+			end
+			if do_damage then
+				if not obj:get_armor_groups().immortal then
+
+					damage = ((radius*20)/dist)
+					local vec = {x=obj_pos.x-pos.x, y=obj_pos.y-pos.y, z=obj_pos.z-pos.z}
+					--print("DMG dist="..dist.." damage="..damage .. " damage_mt=" .. damage_mt)
+					--if obj:is_player() or (obj:get_luaentity() and obj:get_luaentity().name ~= "__builtin:item") then
+
+
+					obj:punch(obj, 1.0, {
+						full_punch_interval = 1.0,
+						damage_groups = {fleshy = damage},
+					}, vec)
+				end
+			end
+			for _, item in ipairs(entity_drops) do
+				add_drop(drops, item)
+			end
+		end
 	end
 end
 
@@ -470,7 +489,9 @@ function tnt.boom(pos, def)
 	local drops, radius = tnt_explode(pos, def, def.radius, def.ignore_protection,
  			def.ignore_on_blast)
 	local damage_radius = radius * 3
-	entity_physics(pos, damage_radius)
+	-- append entity drops
+	entity_physics(pos, damage_radius, drops)
+
 	if not def.disable_drops then
 		eject_drops(drops, pos, radius)
 	end
