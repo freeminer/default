@@ -420,17 +420,14 @@ minetest.register_node("default:gravel", {
 	description = "Gravel",
 	tiles = {"default_gravel.png"},
 	groups = {crumbly = 2, falling_node = 1},
-	sounds = default.node_sound_dirt_defaults({
-		footstep = {name = "default_gravel_footstep", gain = 0.5},
-		dug = {name = "default_gravel_footstep", gain = 1.0},
-	}),
 
-	groups = {crumbly=2, falling_node=1, liquid_drop=flowing_sand_liquid_drop, weight=2000},
+	groups = {crumbly = 2, falling_node = 1, liquid_drop = flowing_sand_liquid_drop, weight = 2000},
 	leveled = flowing_sand_leveled,
 	liquidtype = flowing_sand_type,
 	paramtype2 = flowing_sand_paramtype2,
 	drowning = 1,
 
+	sounds = default.node_sound_gravel_defaults(),
 	drop = {
 		max_items = 1,
 		items = {
