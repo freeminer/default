@@ -57,7 +57,7 @@ local function eject_drops(drops, pos, radius)
 		local count = item:get_count()
 		while count > 0 do
 			local take = math.max(1,math.min(radius * radius,
-					item:get_count(),
+					count,
 					item:get_stack_max()))
 
 			if count > item:get_stack_max() then take = item:get_stack_max() end

@@ -345,7 +345,7 @@ stairs.register_stair_and_slab("desert_stonebrick", "default:desert_stonebrick",
 		default.node_sound_stone_defaults())
 
 stairs.register_stair_and_slab("sandstone", "default:sandstone",
-		{crumbly = 2, cracky = 2, melt = 3200},
+		{crumbly = 1, cracky = 3, melt = 3200, },
 		{"default_sandstone.png"},
 		"Sandstone Stair",
 		"Sandstone Slab",
@@ -353,7 +353,7 @@ stairs.register_stair_and_slab("sandstone", "default:sandstone",
 		"default:lava_flowing")
 		
 stairs.register_stair_and_slab("sandstonebrick", "default:sandstonebrick",
-		{crumbly = 2, cracky = 2, melt = 3200},
+		{cracky = 2, melt = 3200, },
 		{"default_sandstone_brick.png"},
 		"Sandstone Brick Stair",
 		"Sandstone Brick Slab",
