@@ -327,7 +327,8 @@ minetest.register_abm({
 			return
 		end
 
-		local p = fire.find_pos_for_flame_around(p0)
+		--local p = fire.find_pos_for_flame_around(p0)
+		local p = minetest.find_node_near(p0, 1, {"air"})
 		if p then
 			minetest.set_node(p, {name="fire:basic_flame"})
 			fire.on_flame_add_at(p)
