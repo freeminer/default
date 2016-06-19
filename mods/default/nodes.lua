@@ -204,6 +204,8 @@ minetest.register_node("default:cobble", {
 
 minetest.register_node("default:stonebrick", {
 	description = "Stone Brick",
+	paramtype2 = "facedir",
+	place_param2 = 0,
 	tiles = {"default_stone_brick.png"},
 	is_ground_content = false,
 	groups = {cracky = 2, stone = 1, melt = 3000},
@@ -242,6 +244,8 @@ minetest.register_node("default:desert_cobble", {
 
 minetest.register_node("default:desert_stonebrick", {
 	description = "Desert Stone Brick",
+	paramtype2 = "facedir",
+	place_param2 = 0,
 	tiles = {"default_desert_stone_brick.png"},
 	is_ground_content = false,
 	groups = {cracky = 2, stone = 1, melt = 3000},
@@ -260,6 +264,8 @@ minetest.register_node("default:sandstone", {
 
 minetest.register_node("default:sandstonebrick", {
 	description = "Sandstone Brick",
+	paramtype2 = "facedir",
+	place_param2 = 0,
 	tiles = {"default_sandstone_brick.png"},
 	is_ground_content = false,
 	groups = {cracky = 2, melt = 3000},
@@ -278,6 +284,8 @@ minetest.register_node("default:obsidian", {
 
 minetest.register_node("default:obsidianbrick", {
 	description = "Obsidian Brick",
+	paramtype2 = "facedir",
+	place_param2 = 0,
 	tiles = {"default_obsidian_brick.png"},
 	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
@@ -524,6 +532,8 @@ minetest.register_node("default:tree", {
 
 minetest.register_node("default:wood", {
 	description = "Wooden Planks",
+	paramtype2 = "facedir",
+	place_param2 = 0,
 	tiles = {"default_wood.png"},
 	is_ground_content = false,
 	groups = {choppy = 2, oddly_breakable_by_hand = 2, flammable = 3, wood = 1},
@@ -624,6 +634,8 @@ minetest.register_node("default:jungletree", {
 
 minetest.register_node("default:junglewood", {
 	description = "Junglewood Planks",
+	paramtype2 = "facedir",
+	place_param2 = 0,
 	tiles = {"default_junglewood.png"},
 	is_ground_content = false,
 	groups = {choppy = 2, oddly_breakable_by_hand = 2, flammable = 3, wood = 1},
@@ -690,6 +702,8 @@ minetest.register_node("default:pine_tree", {
 
 minetest.register_node("default:pine_wood", {
 	description = "Pine Wood Planks",
+	paramtype2 = "facedir",
+	place_param2 = 0,
 	tiles = {"default_pine_wood.png"},
 	is_ground_content = false,
 	groups = {choppy = 2, oddly_breakable_by_hand = 2, flammable = 3, wood = 1},
@@ -755,6 +769,8 @@ minetest.register_node("default:acacia_tree", {
 
 minetest.register_node("default:acacia_wood", {
 	description = "Acacia Wood Planks",
+	paramtype2 = "facedir",
+	place_param2 = 0,
 	tiles = {"default_acacia_wood.png"},
 	is_ground_content = false,
 	groups = {choppy = 2, oddly_breakable_by_hand = 2, flammable = 3, wood = 1},
@@ -819,6 +835,8 @@ minetest.register_node("default:aspen_tree", {
 
 minetest.register_node("default:aspen_wood", {
 	description = "Aspen Wood Planks",
+	paramtype2 = "facedir",
+	place_param2 = 0,
 	tiles = {"default_aspen_wood.png"},
 	is_ground_content = false,
 	groups = {choppy = 2, oddly_breakable_by_hand = 2, flammable = 3, wood = 1},
@@ -1960,6 +1978,8 @@ minetest.register_node("default:rail", {
 
 minetest.register_node("default:brick", {
 	description = "Brick Block",
+	paramtype2 = "facedir",
+	place_param2 = 0,
 	tiles = {"default_brick.png"},
 	is_ground_content = false,
 	groups = {cracky = 3, melt = 3500},
