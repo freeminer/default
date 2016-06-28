@@ -380,7 +380,7 @@ stairs.register_stair_and_slab(
 	"Desert Stone Stair",
 	"Desert Stone Slab",
 	default.node_sound_stone_defaults()
-	"default:lava_flowing"
+	, "default:lava_flowing"
 )
 
 stairs.register_stair_and_slab(
@@ -485,7 +485,7 @@ stairs.register_stair_and_slab(
 stairs.register_stair_and_slab(
 	"brick",
 	"default:brick",
-	{cracky = 3, melt = 4000}
+	{cracky = 3, melt = 4000},
 	{"default_brick.png"},
 	"Brick Stair",
 	"Brick Slab",
