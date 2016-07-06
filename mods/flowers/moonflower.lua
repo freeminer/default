@@ -47,29 +47,27 @@ minetest.register_node("flowers:moonflower_open", {
 	visual_scale = 0.6,
 })
 
+set_moonflower = function (pos)
+		local tod = minetest.get_timeofday()
+		-- choose the appropriate form of the moon flower
+		if node.name == "flowers:moonflower_open"
+			and (tod > OPEN_TIME_START and tod < OPEN_TIME_END) then
+				minetest.swap_node(pos, { name = "flowers:moonflower_closed" })
+		elseif node.name == "flowers:moonflower_closed"
+			and (tod > OPEN_TIME_END or tod < OPEN_TIME_START)
+			and minetest.get_node_light(pos, 0.5) == default.LIGHT_SUN then
+				minetest.swap_node(pos, { name = "flowers:moonflower_open" })
+		end
+	end
+
 minetest.register_abm({
 	nodenames = { "flowers:moonflower_closed", "flowers:moonflower_open" },
 	interval = OPEN_CHECK,
 	chance = 1,
-
-	action = function(pos, node)
-
-		local tod = minetest.get_timeofday()
-
-		-- choose the appropriate form of the moon flower
-		if node.name == "flowers:moonflower_open"
-		and (tod > OPEN_TIME_START and tod < OPEN_TIME_END) then
-
-			minetest.swap_node(pos, { name = "flowers:moonflower_closed" })
-
-		elseif node.name == "flowers:moonflower_closed"
-		and (tod > OPEN_TIME_END or tod < OPEN_TIME_START)
-		and minetest.get_node_light(pos, 0.5) == default.LIGHT_SUN then
-
-			minetest.swap_node(pos, { name = "flowers:moonflower_open" })
-		end
-
+	action = function(pos, node, active_object_count, active_object_count_wider)
+		set_moonflower(pos)
 	end
+
 })
 
 minetest.register_on_generated(function(minp, maxp, seed)
