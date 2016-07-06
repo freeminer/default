@@ -47,7 +47,7 @@ minetest.register_node("flowers:moonflower_open", {
 	visual_scale = 0.6,
 })
 
-set_moonflower = function (pos)
+set_moonflower = function (pos, node)
 		local tod = minetest.get_timeofday()
 		-- choose the appropriate form of the moon flower
 		if node.name == "flowers:moonflower_open"
@@ -65,7 +65,7 @@ minetest.register_abm({
 	interval = OPEN_CHECK,
 	chance = 1,
 	action = function(pos, node, active_object_count, active_object_count_wider)
-		set_moonflower(pos)
+		set_moonflower(pos, node)
 	end
 
 })
@@ -85,7 +85,7 @@ for attempts = 0, SPAWN_ATTEMPTS do
 
 		if (node_here.name == "default:dirt_with_grass") and (node_top.name == "air") then
 			if (math.random() <= SPAWN_PROBABILITY) then
-				set_moonflower(pos_top)
+				set_moonflower(pos_top, node_top)
 			end
 			break
 		end
