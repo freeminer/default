@@ -166,7 +166,7 @@ end
 -- the use of minetest.generate_ores or minetest.generate_decorations
 
 local mg_name = minetest.get_mapgen_setting("mg_name")
-if mg_name == "v6" or mg_params.mgname == "indev" then
+if mg_name == "v6" or mg_name == "indev" then
 	flowers.register_mgv6_decorations()
 elseif mg_name ~= "singlenode" then
 	flowers.register_decorations()
