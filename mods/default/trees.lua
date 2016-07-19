@@ -26,33 +26,10 @@ end
 -- 'is snow nearby' function
 
 local function is_snow_nearby(pos)
-	local x, y, z = pos.x, pos.y, pos.z
-	local c_snow = minetest.get_content_id("default:snow")
-	local c_snowblock = minetest.get_content_id("default:snowblock")
-	local c_dirtsnow = minetest.get_content_id("default:dirt_with_snow")
-
-	local vm = minetest.get_voxel_manip()
-	local minp, maxp = vm:read_from_map(
-		{x = x - 1, y = y - 1, z = z - 1},
-		{x = x + 1, y = y + 1, z = z + 1}
-	)
-	local a = VoxelArea:new({MinEdge = minp, MaxEdge = maxp})
-	local data = vm:get_data()
-
-	for yy = y - 1, y + 1 do
-	for zz = z - 1, z + 1 do
-		local vi  = a:index(x - 1, yy, zz)
-		for xx = x - 1, x + 1 do
-			local nodid = data[vi]
-			if nodid == c_snow or nodid == c_snowblock or nodid == c_dirtsnow then
-				return true
-			end
-			vi  = vi + 1
-		end
-	end
-	end
-
-	return false
+	return #minetest.find_nodes_in_area(
+		{x = pos.x - 1, y = pos.y - 1, z = pos.z - 1},
+		{x = pos.x + 1, y = pos.y + 1, z = pos.z + 1},
+		{"default:snow", "default:snowblock", "default:dirt_with_snow"}) > 0
 end
 
 -- Sapling ABM
@@ -64,14 +41,14 @@ function default.grow_sapling(pos)
 		return
 	end
 
-	local mapgen = minetest.get_mapgen_params().mgname
-	if mapgen == "indev" then mapgen = "v6" end
+	local mg_name = minetest.get_mapgen_setting("mg_name")
+	if mg_name == "indev" then mg_name = "v6" end
 	local node = minetest.get_node(pos)
 	if node.name == "default:sapling" then
 		if default.weather and (core.get_heat(pos) < 5 or core.get_humidity(pos) < 20) then return end
 		minetest.log("action", "A sapling grows into a tree at "..
 			minetest.pos_to_string(pos))
-		if mapgen == "v6" then
+		if mg_name == "v6" then
 			default.grow_tree(pos, random(1, 4) == 1)
 		else
 			default.grow_new_apple_tree(pos)
@@ -80,7 +57,7 @@ function default.grow_sapling(pos)
 		if default.weather and (core.get_heat(pos) < 15 or core.get_humidity(pos) < 30) then return end
 		minetest.log("action", "A jungle sapling grows into a tree at "..
 			minetest.pos_to_string(pos))
-		if mapgen == "v6" then
+		if mg_name == "v6" then
 			default.grow_jungle_tree(pos)
 		else
 			default.grow_new_jungle_tree(pos)
@@ -90,7 +67,7 @@ function default.grow_sapling(pos)
 		minetest.log("action", "A pine sapling grows into a tree at "..
 			minetest.pos_to_string(pos))
 		local snow = is_snow_nearby(pos)
-		if mapgen == "v6" then
+		if mg_name == "v6" then
 			default.grow_pine_tree(pos, snow)
 		elseif snow then
 			default.grow_new_snowy_pine_tree(pos)
@@ -203,8 +180,8 @@ function default.grow_tree(pos, is_apple_tree, bad)
 
 	local vm = minetest.get_voxel_manip()
 	local minp, maxp = vm:read_from_map(
-		{x = pos.x - 2, y = pos.y, z = pos.z - 2},
-		{x = pos.x + 2, y = pos.y + height + 1, z = pos.z + 2}
+		{x = x - 2, y = y, z = z - 2},
+		{x = x + 2, y = y + height + 1, z = z + 2}
 	)
 	local a = VoxelArea:new({MinEdge = minp, MaxEdge = maxp})
 	local data = vm:get_data()
@@ -238,8 +215,8 @@ function default.grow_jungle_tree(pos, bad)
 
 	local vm = minetest.get_voxel_manip()
 	local minp, maxp = vm:read_from_map(
-		{x = pos.x - 3, y = pos.y - 1, z = pos.z - 3},
-		{x = pos.x + 3, y = pos.y + height + 1, z = pos.z + 3}
+		{x = x - 3, y = y - 1, z = z - 3},
+		{x = x + 3, y = y + height + 1, z = z + 3}
 	)
 	local a = VoxelArea:new({MinEdge = minp, MaxEdge = maxp})
 	local data = vm:get_data()
@@ -358,7 +335,7 @@ function default.grow_pine_tree(pos, snow)
 		end
 	end
 
-	local dev = 2
+	dev = 2
 	for yy = my + 1, my + 2 do
 		for zz = z - dev, z + dev do
 			local vi = a:index(x - dev, yy, zz)

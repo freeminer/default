@@ -167,7 +167,7 @@ function boat.on_step(self, dtime)
 
 	local p = self.object:getpos()
 	p.y = p.y - 0.5
-	local new_velo = {x = 0, y = 0, z = 0}
+	local new_velo
 	local new_acce = {x = 0, y = 0, z = 0}
 	if not is_water(p) then
 		local nodedef = minetest.registered_nodes[minetest.get_node(p).name]
@@ -224,10 +224,10 @@ minetest.register_craftitem("boats:boat", {
 
 	on_place = function(itemstack, placer, pointed_thing)
 		if pointed_thing.type ~= "node" then
-			return
+			return itemstack
 		end
 		if not is_water(pointed_thing.under) then
-			return
+			return itemstack
 		end
 		pointed_thing.under.y = pointed_thing.under.y + 0.5
 		minetest.add_entity(pointed_thing.under, "boats:boat")

@@ -229,10 +229,10 @@ minetest.register_abm({
 	interval = 3,
 	chance = 1,
 	catch_up = false,
-	action = function(p0, node, _, _)
-		minetest.remove_node(p0)
+	action = function(pos, node, active_object_count, active_object_count_wider)
+		minetest.remove_node(pos)
 		minetest.sound_play("fire_extinguish_flame",
-			{pos = p0, max_hear_distance = 16, gain = 0.25})
+			{pos = pos, max_hear_distance = 16, gain = 0.25})
 	end,
 })
 
@@ -248,11 +248,11 @@ if minetest.setting_getbool("disable_fire") then
 		interval = 7,
 		chance = 1,
 		catch_up = false,
-		action = function(p0, node, _, _)
+		action = function(pos, node, _, _)
 			--check if fire is permanent or not
-			if core.get_node(p0).param2 == 128 then return end
+			if core.get_node(pos).param2 == 128 then return end
 
-			minetest.remove_node(p0)
+			minetest.remove_node(pos)
 		end,
 	})
 
@@ -266,21 +266,20 @@ else
 		interval = 7,
 		chance = 12,
 		catch_up = false,
-		action = function(p0, node, _, _)
+		action = function(pos, node, active_object_count, active_object_count_wider)
 
 			if default.weather then
-				local humidity = core.get_humidity(p0)
+				local humidity = core.get_humidity(pos)
 				if humidity > 55 and math.random(55, humidity) >= 60 then
 					return
 				end
 			end
 
 			-- If there is water or stuff like that around node, don't ignite
-
-			if minetest.find_node_near(p0, 1, {"group:puts_out_fire"}) then
+			if minetest.find_node_near(pos, 1, {"group:puts_out_fire"}) then
 				return
 			end
-			local p = minetest.find_node_near(p0, 1, {"air"})
+			local p = minetest.find_node_near(pos, 1, {"air"})
 			if p then
 				minetest.set_node(p, {name = "fire:basic_flame"})
 			end
@@ -295,12 +294,12 @@ else
 		interval = 5,
 		chance = 18,
 		catch_up = false,
-		action = function(p0, node, _, _)
-			local p = minetest.find_node_near(p0, 1, {"group:flammable"})
+		action = function(pos, node, active_object_count, active_object_count_wider)
+			local p = minetest.find_node_near(pos, 1, {"group:flammable"})
 			if p then
 				-- remove flammable nodes around flame
-				local node = minetest.get_node(p)
-				local def = minetest.registered_nodes[node.name]
+				local flammable_node = minetest.get_node(p)
+				local def = minetest.registered_nodes[flammable_node.name]
 				if def.on_burn then
 					def.on_burn(p)
 				else
@@ -324,13 +323,13 @@ minetest.register_abm({
 	neighbors = {"air"},
 	interval = 5,
 	chance = 10,
-	action = function(p0, node, _, _)
+	action = function(pos, node, active_object_count, active_object_count_wider)
 		local reg = minetest.registered_nodes[node.name]
 		if not reg or not reg.groups.igniter or reg.groups.igniter < 2 then
 			return
 		end
 		local d = reg.groups.igniter
-		local p = minetest.find_node_near(p0, d, {"group:flammable"})
+		local p = minetest.find_node_near(pos, d, {"group:flammable"})
 		if p then
 			-- If there is water or stuff like that around flame, don't ignite
 			if fire.flame_should_extinguish(p) then

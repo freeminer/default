@@ -46,6 +46,10 @@ function beds.read_spawns(player)
 ]]
 end
 
+--[[
+beds.read_spawns()
+]]
+
 function beds.save_spawns()
 --[[
 	if not beds.spawn then
@@ -71,5 +75,5 @@ function beds.set_spawns()
 			core.kv_put('p_' .. name .. '_beds', {spawn = p})
 		end
 	end
-	--beds.save_spawns()
+	beds.save_spawns()
 end

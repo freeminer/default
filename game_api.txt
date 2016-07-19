@@ -12,6 +12,7 @@ Please note:
 
  * [XYZ] refers to a section the Minetest API
  * [#ABC] refers to a section in this document
+ * [pos] refers to a position table `{x = -5, y = 0, z = 200}`
 
 Bucket API
 ----------
@@ -249,6 +250,18 @@ Give Initial Stuff API
 ^ str is a comma separated list of initial stuff
 ^ Adds items to the list of items to be given
 
+Nyancat API
+-----------
+
+`nyancat.place(pos, facedir, length)`
+
+^ Place a cat at `pos` facing `facedir` with tail length `length`
+  Only accepts facedir 0-3, if facedir > 3 then it will be interpreted as facedir = 0
+
+`nyancat.generate(minp, maxp, seed)`
+
+^ Called by `minetest.register_on_generated`. To disable nyancat generation,
+  you can redefine nyancat.generate() to be an empty function
 
 TNT API
 ----------
@@ -337,6 +350,30 @@ To use it, add the `on_screwdriver` function to the node definition.
  	it but to indicate that changed have already been made (so the screwdriver will wear out)
  * use `on_rotate = screwdriver.disallow` to always disallow rotation
  * use `on_rotate = screwdriver.rotate_simple` to allow only face rotation
+
+
+Sethome API
+-----------
+
+The sethome API adds three global functions to allow mods to read a players home position,
+set a players home position and teleport a player to home position.
+
+`sethome.get(name)`
+
+ * `name` Player who's home position you wish to get
+ * return value: false if no player home coords exist, position table if true
+
+`sethome.set(name, pos)`
+
+ * `name` Player who's home position you wish to set
+ * `pos` Position table containing coords of home position
+ * return value: false if unable to set and save new home position, otherwise true
+
+`sethome.go(name)`
+
+ * `name` Player you wish to teleport to their home position
+ * return value: false if player cannot be sent home, otherwise true
+
 
 Stairs API
 ----------

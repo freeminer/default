@@ -95,14 +95,14 @@ local copper_params = {offset = 0, scale = 1, spread = {x = 100, y = 100, z = 10
 local copper_threshhold = 0.5
 
 
--- All mapgens except singlenode
--- Blob ore first to avoid other ores inside blobs
-
 function default.register_ores()
+	-- Blob ores
+	-- These first to avoid other ores in blobs
 
 	-- Clay
+	-- This first to avoid clay in sand blobs
 
-	minetest.register_ore({ 
+	minetest.register_ore({
 		ore_type        = "blob",
 		ore             = "default:clay",
 		wherein         = {"default:sand"},
@@ -123,7 +123,7 @@ function default.register_ores()
 
 	-- Sand
 
-	minetest.register_ore({ 
+	minetest.register_ore({
 		ore_type        = "blob",
 		ore             = "default:sand",
 		wherein         = {"default:stone", "default:sandstone",
@@ -131,7 +131,7 @@ function default.register_ores()
 		clust_scarcity  = 16 * 16 * 16,
 		clust_size      = 5,
 		y_min           = -31,
-		y_max           = 4,
+		y_max           = 0,
 		noise_threshold = 0.0,
 		noise_params    = {
 			offset = 0.5,
@@ -148,7 +148,7 @@ function default.register_ores()
 	minetest.register_ore({
 		ore_type        = "blob",
 		ore             = "default:dirt",
-		wherein         = {"default:stone", "default:sandstone"},
+		wherein         = {"default:stone"},
 		clust_scarcity  = 16 * 16 * 16,
 		clust_size      = 5,
 		y_min           = -31,
@@ -185,22 +185,36 @@ function default.register_ores()
 		},
 	})
 
+	-- Scatter ores
+
 	-- Coal
 
 	minetest.register_ore({
 		ore_type       = "scatter",
 		ore            = "default:stone_with_coal",
 		wherein        = "default:stone",
-		clust_scarcity = 6 * 6 * 6,
+		clust_scarcity = 8 * 8 * 8,
+		clust_num_ores = 9,
+		clust_size     = 3,
+		y_min          = 1025,
+		y_max          = 31000,
+		noise_params    = coal_params,
+		noise_threshold = coal_threshhold,
+	})
+
+	minetest.register_ore({
+		ore_type       = "scatter",
+		ore            = "default:stone_with_coal",
+		wherein        = "default:stone",
+		clust_scarcity = 8 * 8 * 8,
 		clust_num_ores = 8,
 		clust_size     = 3,
 		y_min          = -31000,
 		y_max          = 64,
-		noise_params     = coal_params,
+		noise_params    = coal_params,
 		noise_threshold = coal_threshhold,
 	})
 
---[[
 	minetest.register_ore({
 		ore_type       = "scatter",
 		ore            = "default:stone_with_coal",
@@ -210,8 +224,9 @@ function default.register_ores()
 		clust_size     = 6,
 		y_min          = -31000,
 		y_max          = 0,
+		noise_params    = coal_params,
+		noise_threshold = coal_threshhold,
 	})
-]]
 
 	-- Iron
 
@@ -219,12 +234,12 @@ function default.register_ores()
 		ore_type       = "scatter",
 		ore            = "default:stone_with_iron",
 		wherein        = "default:stone",
-		clust_scarcity = 8 * 8 * 8,
-		clust_num_ores = 3,
-		clust_size     = 2,
-		y_min          = -15,
-		y_max          = 2,
-		noise_params     = iron_params,
+		clust_scarcity = 9 * 9 * 9,
+		clust_num_ores = 12,
+		clust_size     = 3,
+		y_min          = 1025,
+		y_max          = 31000,
+		noise_params    = iron_params,
 		noise_threshold = iron_threshhold,
 	})
 
@@ -235,10 +250,9 @@ function default.register_ores()
 		clust_scarcity = 7 * 7 * 7,
 		clust_num_ores = 5,
 		clust_size     = 3,
-		flags          = "absheight",
-		y_min          = -63,
-		y_max          = -16,
-		noise_params     = iron_params,
+		y_min          = -31000,
+		y_max          = 0,
+		noise_params    = iron_params,
 		noise_threshold = iron_threshhold,
 	})
 
@@ -246,118 +260,13 @@ function default.register_ores()
 		ore_type       = "scatter",
 		ore            = "default:stone_with_iron",
 		wherein        = "default:stone",
-		clust_scarcity = 6 * 6 * 6,
-		clust_num_ores = 5,
-		clust_size     = 3,
+		clust_scarcity = 24 * 24 * 24,
+		clust_num_ores = 27,
+		clust_size     = 6,
 		y_min          = -31000,
 		y_max          = -64,
-		flags          = "absheight",
-		noise_params     = iron_params,
+		noise_params    = iron_params,
 		noise_threshold = iron_threshhold,
-	})
-
-	--Mese
-
-	minetest.register_ore({
-		ore_type       = "scatter",
-		ore            = "default:stone_with_mese",
-		wherein        = "default:stone",
-		clust_scarcity = 9 * 9 * 9,
-		clust_num_ores = 3,
-		clust_size     = 2,
-		y_min          = -255,
-		y_max          = -64,
-		flags          = "absheight",
-		noise_params     = mese_params,
-		noise_threshold = mese_threshhold,
-	})
-
-	minetest.register_ore({
-		ore_type       = "scatter",
-		ore            = "default:stone_with_mese",
-		wherein        = "default:stone",
-		clust_scarcity = 7 * 7 * 7,
-		clust_num_ores = 5,
-		clust_size     = 3,
-		y_min          = -31000,
-		y_max          = -256,
-		flags          = "absheight",
-		noise_params     = mese_params,
-		noise_threshold = mese_threshhold,
-	})
-
-	minetest.register_ore({
-		ore_type       = "scatter",
-		ore            = "default:mese",
-		wherein        = "default:stone",
-		clust_scarcity = 9 * 9 * 9,
-		clust_num_ores = 3,
-		clust_size     = 2,
-		y_min          = -31000,
-		y_max          = -1024,
-		flags          = "absheight",
-		noise_params     = mese_params,
-		noise_threshold = mese_block_threshhold,
-	})
-
-	-- Gold
-
-	minetest.register_ore({
-		ore_type       = "scatter",
-		ore            = "default:stone_with_gold",
-		wherein        = "default:stone",
-		clust_scarcity = 9 * 9 * 9,
-		clust_num_ores = 3,
-		clust_size     = 2,
-		y_min          = -255,
-		y_max          = -64,
-		flags          = "absheight",
-		noise_params     = gold_params,
-		noise_threshold = gold_threshhold,
-	})
-
-	minetest.register_ore({
-		ore_type       = "scatter",
-		ore            = "default:stone_with_gold",
-		wherein        = "default:stone",
-		clust_scarcity = 7 * 7 * 7,
-		clust_num_ores = 5,
-		clust_size     = 3,
-		y_min          = -31000,
-		y_max          = -256,
-		flags          = "absheight",
-		noise_params     = gold_params,
-		noise_threshold = gold_threshhold,
-	})
-
-	-- Diamond
-
-	minetest.register_ore({
-		ore_type       = "scatter",
-		ore            = "default:stone_with_diamond",
-		wherein        = "default:stone",
-		clust_scarcity = 10 * 10 * 10,
-		clust_num_ores = 4,
-		clust_size     = 3,
-		y_min          = -255,
-		y_max          = -128,
-		flags          = "absheight",
-		noise_params     = diamond_params,
-		noise_threshold = diamond_threshhold,
-	})
-
-	minetest.register_ore({
-		ore_type       = "scatter",
-		ore            = "default:stone_with_diamond",
-		wherein        = "default:stone",
-		clust_scarcity = 8 * 8 * 8,
-		clust_num_ores = 4,
-		clust_size     = 3,
-		y_min          = -31000,
-		y_max          = -256,
-		flags          = "absheight",
-		noise_params     = diamond_params,
-		noise_threshold = diamond_threshhold,
 	})
 
 	-- Copper
@@ -366,12 +275,25 @@ function default.register_ores()
 		ore_type       = "scatter",
 		ore            = "default:stone_with_copper",
 		wherein        = "default:stone",
-		clust_scarcity = 8 * 8 * 8,
+		clust_scarcity = 9 * 9 * 9,
+		clust_num_ores = 5,
+		clust_size     = 3,
+		y_min          = 1025,
+		y_max          = 31000,
+		noise_params    = iron_params,
+		noise_threshold = iron_threshhold,
+	})
+
+	minetest.register_ore({
+		ore_type       = "scatter",
+		ore            = "default:stone_with_copper",
+		wherein        = "default:stone",
+		clust_scarcity = 12 * 12 * 12,
 		clust_num_ores = 4,
 		clust_size     = 3,
 		y_min          = -63,
 		y_max          = -16,
-		noise_params     = copper_params,
+		noise_params    = copper_params,
 		noise_threshold = copper_threshhold,
 	})
 
@@ -379,14 +301,170 @@ function default.register_ores()
 		ore_type       = "scatter",
 		ore            = "default:stone_with_copper",
 		wherein        = "default:stone",
-		clust_scarcity = 6 * 6 * 6,
+		clust_scarcity = 9 * 9 * 9,
 		clust_num_ores = 5,
 		clust_size     = 3,
 		y_min          = -31000,
 		y_max          = -64,
-		flags          = "absheight",
-		noise_params     = copper_params,
+		noise_params    = copper_params,
 		noise_threshold = copper_threshhold,
+	})
+
+	-- Gold
+
+	minetest.register_ore({
+		ore_type       = "scatter",
+		ore            = "default:stone_with_gold",
+		wherein        = "default:stone",
+		clust_scarcity = 13 * 13 * 13,
+		clust_num_ores = 5,
+		clust_size     = 3,
+		y_min          = 1025,
+		y_max          = 31000,
+		noise_params    = gold_params,
+		noise_threshold = gold_threshhold,
+	})
+
+	minetest.register_ore({
+		ore_type       = "scatter",
+		ore            = "default:stone_with_gold",
+		wherein        = "default:stone",
+		clust_scarcity = 15 * 15 * 15,
+		clust_num_ores = 3,
+		clust_size     = 2,
+		y_min          = -255,
+		y_max          = -64,
+		flags          = "absheight",
+		noise_params    = gold_params,
+		noise_threshold = gold_threshhold,
+	})
+
+	minetest.register_ore({
+		ore_type       = "scatter",
+		ore            = "default:stone_with_gold",
+		wherein        = "default:stone",
+		clust_scarcity = 13 * 13 * 13,
+		clust_num_ores = 5,
+		clust_size     = 3,
+		y_min          = -31000,
+		y_max          = -256,
+		flags          = "absheight",
+		noise_params    = gold_params,
+		noise_threshold = gold_threshhold,
+	})
+
+	-- Mese crystal
+
+	minetest.register_ore({
+		ore_type       = "scatter",
+		ore            = "default:stone_with_mese",
+		wherein        = "default:stone",
+		clust_scarcity = 14 * 14 * 14,
+		clust_num_ores = 5,
+		clust_size     = 3,
+		y_min          = 1025,
+		y_max          = 31000,
+		noise_params    = mese_params,
+		noise_threshold = mese_block_threshhold,
+	})
+
+	minetest.register_ore({
+		ore_type       = "scatter",
+		ore            = "default:stone_with_mese",
+		wherein        = "default:stone",
+		clust_scarcity = 18 * 18 * 18,
+		clust_num_ores = 3,
+		clust_size     = 2,
+		y_min          = -255,
+		y_max          = -64,
+		flags          = "absheight",
+		noise_params    = mese_params,
+		noise_threshold = mese_threshhold,
+	})
+
+	minetest.register_ore({
+		ore_type       = "scatter",
+		ore            = "default:stone_with_mese",
+		wherein        = "default:stone",
+		clust_scarcity = 14 * 14 * 14,
+		clust_num_ores = 5,
+		clust_size     = 3,
+		y_min          = -31000,
+		y_max          = -256,
+		flags          = "absheight",
+		noise_params    = mese_params,
+		noise_threshold = mese_threshhold,
+	})
+
+	-- Diamond
+
+	minetest.register_ore({
+		ore_type       = "scatter",
+		ore            = "default:stone_with_diamond",
+		wherein        = "default:stone",
+		clust_scarcity = 15 * 15 * 15,
+		clust_num_ores = 4,
+		clust_size     = 3,
+		y_min          = 1025,
+		y_max          = 31000,
+		noise_params    = diamond_params,
+		noise_threshold = diamond_threshhold,
+	})
+
+	minetest.register_ore({
+		ore_type       = "scatter",
+		ore            = "default:stone_with_diamond",
+		wherein        = "default:stone",
+		clust_scarcity = 17 * 17 * 17,
+		clust_num_ores = 4,
+		clust_size     = 3,
+		y_min          = -255,
+		y_max          = -128,
+		--flags          = "absheight",
+		noise_params    = diamond_params,
+		noise_threshold = diamond_threshhold,
+	})
+
+	minetest.register_ore({
+		ore_type       = "scatter",
+		ore            = "default:stone_with_diamond",
+		wherein        = "default:stone",
+		clust_scarcity = 8 * 8 * 8,
+		clust_num_ores = 4,
+		clust_size     = 3,
+		y_min          = -31000,
+		y_max          = -256,
+		--flags          = "absheight",
+		noise_params    = diamond_params,
+		noise_threshold = diamond_threshhold,
+	})
+
+	-- Mese block
+
+	minetest.register_ore({
+		ore_type       = "scatter",
+		ore            = "default:mese",
+		wherein        = "default:stone",
+		clust_scarcity = 36 * 36 * 36,
+		clust_num_ores = 3,
+		clust_size     = 2,
+		y_min          = 1025,
+		y_max          = 31000,
+		noise_params    = mese_params,
+		noise_threshold = mese_threshhold,
+	})
+
+	minetest.register_ore({
+		ore_type       = "scatter",
+		ore            = "default:mese",
+		wherein        = "default:stone",
+		clust_scarcity = 36 * 36 * 36,
+		clust_num_ores = 3,
+		clust_size     = 2,
+		y_min          = -31000,
+		y_max          = -1024,
+		noise_params    = mese_params,
+		noise_threshold = mese_threshhold,
 	})
 
 --if minetest.setting_get("mg_name") == "indev" then
@@ -1583,72 +1661,15 @@ end
 
 
 --
--- Generate nyan cats
---
-
--- All mapgens except singlenode
-
-function default.make_nyancat(pos, facedir, length)
-	local tailvec = {x = 0, y = 0, z = 0}
-	if facedir == 0 then
-		tailvec.z = 1
-	elseif facedir == 1 then
-		tailvec.x = 1
-	elseif facedir == 2 then
-		tailvec.z = -1
-	elseif facedir == 3 then
-		tailvec.x = -1
-	else
-		facedir = 0
-		tailvec.z = 1
-	end
-	local p = {x = pos.x, y = pos.y, z = pos.z}
-	minetest.set_node(p, {name = "default:nyancat", param2 = facedir})
-	for i = 1, length do
-		p.x = p.x + tailvec.x
-		p.z = p.z + tailvec.z
-		minetest.set_node(p, {name = "default:nyancat_rainbow", param2 = facedir})
-	end
-end
-
-function default.generate_nyancats(minp, maxp, seed)
-	local height_min = -31000
-	local height_max = -32
-	if maxp.y < height_min or minp.y > height_max then
-		return
-	end
-	local y_min = math.max(minp.y, height_min)
-	local y_max = math.min(maxp.y, height_max)
-	local volume = (maxp.x - minp.x + 1) * (y_max - y_min + 1) * (maxp.z - minp.z + 1)
-	local pr = PseudoRandom(seed + 9324342)
-	local max_num_nyancats = math.floor(volume / (16 * 16 * 16))
-	for i = 1, max_num_nyancats do
-		if pr:next(0, 1000) == 0 then
-			local x0 = pr:next(minp.x, maxp.x)
-			local y0 = pr:next(minp.y, maxp.y)
-			local z0 = pr:next(minp.z, maxp.z)
-			local p0 = {x = x0, y = y0, z = z0}
-			default.make_nyancat(p0, pr:next(0, 3), pr:next(3, 15))
-		end
-	end
-end
-
-
---
 -- Detect mapgen to select functions
 --
 
--- Mods using singlenode mapgen can call these functions to enable
--- the use of minetest.generate_ores or minetest.generate_decorations
-
-local mg_params = minetest.get_mapgen_params()
-if mg_params.mgname == "v6" or mg_params.mgname == "indev" then
+local mg_name = minetest.get_mapgen_setting("mg_name")
+if mg_name == "v6" or mg_name == "indev" then
 	default.register_ores()
 	default.register_mgv6_decorations()
-	minetest.register_on_generated(default.generate_nyancats)
-elseif mg_params.mgname ~= "singlenode" then
+else
 	default.register_biomes()
 	default.register_ores()
 	default.register_decorations()
-	minetest.register_on_generated(default.generate_nyancats)
 end

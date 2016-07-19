@@ -5,15 +5,16 @@ local player_inventory = {}
 local creative_mode = minetest.setting_getbool("creative_mode")
 
 -- Create detached creative inventory after loading all mods
-creative.init_creative_inventory = function(player)
-	local player_name = player:get_player_name()
-	player_inventory[player_name] = {}
-	player_inventory[player_name].size = 0
-	player_inventory[player_name].filter = ""
-	player_inventory[player_name].start_i = 1
-	player_inventory[player_name].tab_id = 2
+creative.init_creative_inventory = function(owner)
+	local owner_name = owner:get_player_name()
+	player_inventory[owner_name] = {
+		size = 0,
+		filter = "",
+		start_i = 1,
+		tab_id = 2,
+	}
 
-	minetest.create_detached_inventory("creative_" .. player_name, {
+	minetest.create_detached_inventory("creative_" .. owner_name, {
 		allow_move = function(inv, from_list, from_index, to_list, to_index, count, player)
 			if creative_mode and not to_list == "main" then
 				return count
@@ -45,7 +46,7 @@ creative.init_creative_inventory = function(player)
 		end,
 	})
 
-	creative.update_creative_inventory(player_name)
+	creative.update_creative_inventory(owner_name)
 	--print("creative inventory size: " .. player_inventory[player_name].size)
 end
 
@@ -197,7 +198,6 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		creative.update_creative_inventory(player_name)
 		creative.set_creative_formspec(player, 0)
 	else
-		local formspec = player:get_inventory_formspec()
 		local start_i = player_inventory[player_name].start_i or 0
 
 		if fields.creative_prev then
