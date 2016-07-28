@@ -585,9 +585,6 @@ minetest.register_node("default:sapling", {
 	sunlight_propagates = true,
 	walkable = false,
 	on_timer = default.grow_sapling,
-	on_construct = function(pos)
-		minetest.get_node_timer(pos):start(math.random(2400,4800))
-	end,
 	selection_box = {
 		type = "fixed",
 		fixed = {-0.3, -0.5, -0.3, 0.3, 0.35, 0.3}
@@ -595,6 +592,23 @@ minetest.register_node("default:sapling", {
 	groups = {snappy = 2, dig_immediate = 3, flammable = 2,
 		attached_node = 1, sapling = 1},
 	sounds = default.node_sound_leaves_defaults(),
+
+	on_construct = function(pos)
+		minetest.get_node_timer(pos):start(math.random(2400,4800))
+	end,
+
+	on_place = function(itemstack, placer, pointed_thing)
+		itemstack = default.sapling_on_place(itemstack, placer, pointed_thing,
+			"default:sapling",
+			-- minp, maxp to be checked, relative to sapling pos
+			-- minp_relative.y = 1 because sapling pos has been checked
+			{x = -2, y = 1, z = -2},
+			{x = 2, y = 6, z = 2},
+			-- maximum interval of interior volume check
+			4)
+
+		return itemstack
+	end,
 })
 
 minetest.register_node("default:leaves", {
@@ -709,9 +723,6 @@ minetest.register_node("default:junglesapling", {
 	sunlight_propagates = true,
 	walkable = false,
 	on_timer = default.grow_sapling,
-	on_construct = function(pos)
-		minetest.get_node_timer(pos):start(math.random(2400,4800))
-	end,
 	selection_box = {
 		type = "fixed",
 		fixed = {-0.3, -0.5, -0.3, 0.3, 0.35, 0.3}
@@ -719,6 +730,23 @@ minetest.register_node("default:junglesapling", {
 	groups = {snappy = 2, dig_immediate = 3, flammable = 2,
 		attached_node = 1, sapling = 1},
 	sounds = default.node_sound_leaves_defaults(),
+
+	on_construct = function(pos)
+		minetest.get_node_timer(pos):start(math.random(2400,4800))
+	end,
+
+	on_place = function(itemstack, placer, pointed_thing)
+		itemstack = default.sapling_on_place(itemstack, placer, pointed_thing,
+			"default:junglesapling",
+			-- minp, maxp to be checked, relative to sapling pos
+			-- minp_relative.y = 1 because sapling pos has been checked
+			{x = -2, y = 1, z = -2},
+			{x = 2, y = 15, z = 2},
+			-- maximum interval of interior volume check
+			4)
+
+		return itemstack
+	end,
 })
 
 
@@ -776,9 +804,6 @@ minetest.register_node("default:pine_sapling", {
 	sunlight_propagates = true,
 	walkable = false,
 	on_timer = default.grow_sapling,
-	on_construct = function(pos)
-		minetest.get_node_timer(pos):start(math.random(2400,4800))
-	end,
 	selection_box = {
 		type = "fixed",
 		fixed = {-0.3, -0.5, -0.3, 0.3, 0.35, 0.3}
@@ -786,6 +811,23 @@ minetest.register_node("default:pine_sapling", {
 	groups = {snappy = 2, dig_immediate = 3, flammable = 2,
 		attached_node = 1, sapling = 1},
 	sounds = default.node_sound_leaves_defaults(),
+
+	on_construct = function(pos)
+		minetest.get_node_timer(pos):start(math.random(2400,4800))
+	end,
+
+	on_place = function(itemstack, placer, pointed_thing)
+		itemstack = default.sapling_on_place(itemstack, placer, pointed_thing,
+			"default:pine_sapling",
+			-- minp, maxp to be checked, relative to sapling pos
+			-- minp_relative.y = 1 because sapling pos has been checked
+			{x = -2, y = 1, z = -2},
+			{x = 2, y = 12, z = 2},
+			-- maximum interval of interior volume check
+			4)
+
+		return itemstack
+	end,
 })
 
 
@@ -843,9 +885,6 @@ minetest.register_node("default:acacia_sapling", {
 	sunlight_propagates = true,
 	walkable = false,
 	on_timer = default.grow_sapling,
-	on_construct = function(pos)
-		minetest.get_node_timer(pos):start(math.random(2400,4800))
-	end,
 	selection_box = {
 		type = "fixed",
 		fixed = {-0.3, -0.5, -0.3, 0.3, 0.35, 0.3}
@@ -853,6 +892,23 @@ minetest.register_node("default:acacia_sapling", {
 	groups = {snappy = 2, dig_immediate = 3, flammable = 2,
 		attached_node = 1, sapling = 1},
 	sounds = default.node_sound_leaves_defaults(),
+
+	on_construct = function(pos)
+		minetest.get_node_timer(pos):start(math.random(2400,4800))
+	end,
+
+	on_place = function(itemstack, placer, pointed_thing)
+		itemstack = default.sapling_on_place(itemstack, placer, pointed_thing,
+			"default:acacia_sapling",
+			-- minp, maxp to be checked, relative to sapling pos
+			-- minp_relative.y = 1 because sapling pos has been checked
+			{x = -4, y = 1, z = -4},
+			{x = 4, y = 6, z = 4},
+			-- maximum interval of interior volume check
+			4)
+
+		return itemstack
+	end,
 })
 
 minetest.register_node("default:aspen_tree", {
@@ -909,9 +965,6 @@ minetest.register_node("default:aspen_sapling", {
 	sunlight_propagates = true,
 	walkable = false,
 	on_timer = default.grow_sapling,
-	on_construct = function(pos)
-		minetest.get_node_timer(pos):start(math.random(2400,4800))
-	end,
 	selection_box = {
 		type = "fixed",
 		fixed = {-0.3, -0.5, -0.3, 0.3, 0.35, 0.3}
@@ -919,7 +972,25 @@ minetest.register_node("default:aspen_sapling", {
 	groups = {snappy = 2, dig_immediate = 3, flammable = 2,
 		attached_node = 1, sapling = 1},
 	sounds = default.node_sound_leaves_defaults(),
+
+	on_construct = function(pos)
+		minetest.get_node_timer(pos):start(math.random(2400,4800))
+	end,
+
+	on_place = function(itemstack, placer, pointed_thing)
+		itemstack = default.sapling_on_place(itemstack, placer, pointed_thing,
+			"default:aspen_sapling",
+			-- minp, maxp to be checked, relative to sapling pos
+			-- minp_relative.y = 1 because sapling pos has been checked
+			{x = -2, y = 1, z = -2},
+			{x = 2, y = 12, z = 2},
+			-- maximum interval of interior volume check
+			4)
+
+		return itemstack
+	end,
 })
+
 --
 -- Ores
 --
