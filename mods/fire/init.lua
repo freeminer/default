@@ -224,6 +224,7 @@ end
 -- Extinguish all flames quickly with water, snow, ice
 
 minetest.register_abm({
+	label = "Extinguish flame",
 	nodenames = {"fire:basic_flame", "fire:permanent_flame"},
 	neighbors = {"group:puts_out_fire"},
 	interval = 3,
@@ -244,6 +245,7 @@ if minetest.setting_getbool("disable_fire") then
 	-- Remove basic flames only
 
 	minetest.register_abm({
+		label = "Remove disabled fire",
 		nodenames = {"fire:basic_flame"},
 		interval = 7,
 		chance = 1,
@@ -261,6 +263,7 @@ else
 	-- Ignite neighboring nodes, add basic flames
 
 	minetest.register_abm({
+		label = "Ignite flame",
 		nodenames = {"group:flammable"},
 		neighbors = {"group:igniter"},
 		interval = 7,
@@ -289,6 +292,7 @@ else
 	-- Remove flammable nodes
 
 	minetest.register_abm({
+		label = "Remove flammable nodes",
 		nodenames = {"fire:basic_flame"},
 		neighbors = "group:flammable",
 		interval = 5,

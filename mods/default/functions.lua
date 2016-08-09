@@ -114,6 +114,7 @@ default.cool_lava = function(pos, node)
 end
 
 minetest.register_abm({
+	label = "Lava cooling",
 	nodenames = {"default:lava_source", "default:lava_flowing"},
 	neighbors = {"group:water"},
 	interval = 1,
@@ -216,6 +217,7 @@ function default.grow_papyrus(pos, node)
 end
 
 minetest.register_abm({
+	label = "Grow cactus",
 	nodenames = {"default:cactus"},
 	neighbors = {"group:sand", "default:dirt_dry", "default:dirt_with_dry_grass"},
 	interval = 12,
@@ -226,6 +228,7 @@ minetest.register_abm({
 })
 
 minetest.register_abm({
+	label = "Grow papyrus",
 	nodenames = {"default:papyrus"},
 	neighbors = {"default:dirt", "default:dirt_with_grass"},
 	interval = 14,
@@ -330,6 +333,7 @@ default.after_place_leaves = function(pos, placer, itemstack, pointed_thing)
 end
 
 minetest.register_abm({
+	label = "Leaf decay",
 	nodenames = {"group:leafdecay"},
 	neighbors = {"air", "group:liquid"},
 	-- A low interval and a high inverse chance spreads the load
@@ -413,6 +417,7 @@ minetest.register_abm({
 if not default.weather then
 
 minetest.register_abm({
+	label = "Grass spread",
 	nodenames = {"default:dirt"},
 	neighbors = {
 		"default:dirt_with_grass",
@@ -469,6 +474,7 @@ minetest.register_abm({
 --
 
 minetest.register_abm({
+	label = "Grass covered",
 	nodenames = {
 		"default:dirt_with_grass",
 		"default:dirt_with_dry_grass",
@@ -496,6 +502,7 @@ end
 --
 
 minetest.register_abm({
+	label = "Moss growth",
 	nodenames = {"default:cobble", "stairs:slab_cobble", "stairs:stair_cobble"},
 	neighbors = {"group:water"},
 	interval = 16,
