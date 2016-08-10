@@ -1,13 +1,10 @@
 tnt = {}
---[[
 
 -- Default to enabled when in singleplayer
 local enable_tnt = minetest.setting_getbool("enable_tnt")
 if enable_tnt == nil then
 	enable_tnt = minetest.is_singleplayer()
 end
-
-]]
 
 tnt.radius_max = tonumber(core.setting_get("tnt_radius_max") or 25)
 tnt.time_max = tonumber(core.setting_get("tnt_time_max") or 3)
@@ -531,7 +528,7 @@ end
 function tnt.boom(pos, def)
 	minetest.sound_play("tnt_explode", {pos = pos, gain = 1.5, max_hear_distance = 2*64})
 	minetest.set_node(pos, {name = "tnt:boom"})
-	local drops, radius = tnt_explode(pos, def.radius, def.ignore_protection,
+	local drops, radius = tnt_explode(pos, def, def.radius, def.ignore_protection,
 			def.ignore_on_blast)
 	-- append entity drops
 	local damage_radius = (radius / def.radius) * def.damage_radius
