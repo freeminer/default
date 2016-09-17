@@ -197,7 +197,6 @@ end
 
 local function can_dig_door(pos, digger)
 	local digger_name = digger and digger:get_player_name()
-print("gpp2 ".. digger_name )
 	if digger_name and minetest.get_player_privs(digger_name).protection_bypass then
 		return true
 	end
