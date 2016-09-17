@@ -67,8 +67,8 @@ action = function(pos, node, active_object_count, active_object_count_wider)
     for i=-1,1 do
         for j=-1,1 do
             for k=-1,1 do
-                p = {x=pos.x+i, y=pos.y+j, z=pos.z+k}
-                n = minetest.get_node(p)
+                local p = {x=pos.x+i, y=pos.y+j, z=pos.z+k}
+                local n = minetest.get_node(p)
                 if n.name == "default:water_flowing"
                 or n.name == "default:water_source"
                 then
@@ -88,8 +88,8 @@ action = function(pos, node, active_object_count, active_object_count_wider)
     for i=-2,2 do
         for j=-2,2 do
             for k=-2,2 do
-                p = {x=pos.x+i, y=pos.y+j, z=pos.z+k}
-                n = minetest.get_node(p)
+                local p = {x=pos.x+i, y=pos.y+j, z=pos.z+k}
+                local n = minetest.get_node(p)
                 -- if minetest.registered_nodes[n.name] and minetest.registered_nodes[n.name].liquidtype ~= "none" then
                 if n.name == "default:water_flowing"
                 or n.name == "default:water_source"
