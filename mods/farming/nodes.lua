@@ -12,8 +12,6 @@ if tonumber(minetest.setting_get("flowing_sand_disable") or 0) >= 1 then
 end
 
 minetest.override_item("default:dirt", {
-	groups = {
-				melt=55, liquid_drop=flowing_sand_liquid_drop, weight=2000},
 	soil = {
 		base = "default:dirt",
 		dry = "farming:soil",
@@ -22,8 +20,6 @@ minetest.override_item("default:dirt", {
 })
 
 minetest.override_item("default:dirt_with_grass", {
-	groups = {
-				melt=55, liquid_drop=flowing_sand_liquid_drop, weight=2000},
 	soil = {
 		base = "default:dirt_with_grass",
 		dry = "farming:soil",
