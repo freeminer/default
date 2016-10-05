@@ -47,6 +47,7 @@ default:dirt_with_snow
 
 default:sand
 default:desert_sand
+default:silver_sand
 
 default:gravel
 
@@ -455,6 +456,13 @@ minetest.register_node("default:desert_sand", {
 	paramtype2 = flowing_sand_paramtype2,
 	drowning = 1,
 	groups = {crumbly = 3, falling_node = 1, sand = 1, liquid_drop = flowing_sand_liquid_drop, weight = 2000},
+})
+
+minetest.register_node("default:silver_sand", {
+	description = "Silver Sand",
+	tiles = {"default_silver_sand.png"},
+	groups = {crumbly = 3, falling_node = 1, sand = 1},
+	sounds = default.node_sound_sand_defaults(),
 })
 
 
