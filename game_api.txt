@@ -26,7 +26,10 @@ The bucket API allows registering new types of buckets for non-default liquids.
 		"bucket:bucket_lava",    -- name of the new bucket item (or nil if liquid is not takeable)
 		"bucket_lava.png",       -- texture of the new bucket item (ignored if itemname == nil)
 		"Lava Bucket",           -- text description of the bucket item
-		{lava_bucket = 1}        -- groups of the bucket item, OPTIONAL
+		{lava_bucket = 1},       -- groups of the bucket item, OPTIONAL
+		false                    -- force-renew, OPTIONAL. Force the liquid source to renew if it has
+		                         -- a source neighbour, even if defined as 'liquid_renewable = false'.
+		                         -- Needed to avoid creating holes in sloping rivers.
 	)
 
 Beds API
@@ -183,6 +186,9 @@ The farming API allows you to easily register plants and hoes.
 `farming.register_plant(name, Plant definition)`
  * Register a new growing plant, see [#Plant definition]
 
+`farming.registered_plants[name] = definition`
+ * Table of registered plants, indexed by plant name
+
 ### Hoe Definition
 
 
@@ -290,9 +296,9 @@ TNT API
 * `position` The center of explosion.
 * `definition` The TNT definion as passed to `tnt.register`
 
-`tnt.burn(position)`
+`tnt.burn(position, [nodename])`
 
-^ Ignite TNT at position
+^ Ignite TNT at position, nodename isn't required unless already known.
 
 
 To make dropping items from node inventories easier, you can use the
