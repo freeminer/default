@@ -491,7 +491,7 @@ stairs.register_stair_and_slab(
 	{"default_steel_block.png"},
 	"Steel Block Stair",
 	"Steel Block Slab",
-	default.node_sound_stone_defaults()
+	default.node_sound_metal_defaults()
 	, "default:lava_flowing"
 )
 
@@ -502,7 +502,7 @@ stairs.register_stair_and_slab(
 	{"default_copper_block.png"},
 	"Copper Block Stair",
 	"Copper Block Slab",
-	default.node_sound_stone_defaults()
+	default.node_sound_metal_defaults()
 	, "default:lava_flowing"
 )
 
@@ -513,7 +513,7 @@ stairs.register_stair_and_slab(
 	{"default_bronze_block.png"},
 	"Bronze Block Stair",
 	"Bronze Block Slab",
-	default.node_sound_stone_defaults()
+	default.node_sound_metal_defaults()
 	, "default:lava_flowing"
 )
 
@@ -524,6 +524,6 @@ stairs.register_stair_and_slab(
 	{"default_gold_block.png"},
 	"Gold Block Stair",
 	"Gold Block Slab",
-	default.node_sound_stone_defaults()
+	default.node_sound_metal_defaults()
 	, "default:lava_flowing"
 )

@@ -60,12 +60,12 @@ local function add_simple_flower(name, desc, box, f_groups)
 end
 
 flowers.datas = {
-	{"rose", "Rose", {-0.15, -0.5, -0.15, 0.15, 0.3, 0.15}, {color_red = 1}},
-	{"tulip", "Orange Tulip", {-0.15, -0.5, -0.15, 0.15, 0.2, 0.15}, {color_orange = 1}},
-	{"dandelion_yellow", "Yellow Dandelion", {-0.15, -0.5, -0.15, 0.15, 0.2, 0.15}, {color_yellow = 1}},
-	{"geranium", "Blue Geranium", {-0.15, -0.5, -0.15, 0.15, 0.2, 0.15}, {color_blue = 1}},
-	{"viola", "Viola", {-0.5, -0.5, -0.5, 0.5, -0.2, 0.5}, {color_violet = 1}},
-	{"dandelion_white", "White dandelion", {-0.5, -0.5, -0.5, 0.5, -0.2, 0.5}, {color_white = 1}}
+	{"rose", "Rose", {-0.15, -0.5, -0.15, 0.15, 0.3, 0.15}, {color_red = 1, flammable = 1}},
+	{"tulip", "Orange Tulip", {-0.15, -0.5, -0.15, 0.15, 0.2, 0.15}, {color_orange = 1, flammable = 1}},
+	{"dandelion_yellow", "Yellow Dandelion", {-0.15, -0.5, -0.15, 0.15, 0.2, 0.15}, {color_yellow = 1, flammable = 1}},
+	{"geranium", "Blue Geranium", {-0.15, -0.5, -0.15, 0.15, 0.2, 0.15}, {color_blue = 1, flammable = 1}},
+	{"viola", "Viola", {-0.5, -0.5, -0.5, 0.5, -0.2, 0.5}, {color_violet = 1, flammable = 1}},
+	{"dandelion_white", "White dandelion", {-0.5, -0.5, -0.5, 0.5, -0.2, 0.5}, {color_white = 1, flammable = 1}}
 }
 
 for _,item in pairs(flowers.datas) do
@@ -143,7 +143,7 @@ minetest.register_node("flowers:mushroom_red", {
 	sunlight_propagates = true,
 	walkable = false,
 	buildable_to = true,
-	groups = {snappy = 3, attached_node = 1, dig_immediate = 3, drop_by_liquid = 1},
+	groups = {snappy = 3, attached_node = 1, flammable = 1, dig_immediate = 3, drop_by_liquid = 1},
 	sounds = default.node_sound_leaves_defaults(),
 	on_use = minetest.item_eat(-5),
 	selection_box = {
@@ -162,7 +162,7 @@ minetest.register_node("flowers:mushroom_brown", {
 	sunlight_propagates = true,
 	walkable = false,
 	buildable_to = true,
-	groups = {snappy = 3, attached_node = 1, dig_immediate = 3, drop_by_liquid = 1},
+	groups = {snappy = 3, attached_node = 1, flammable = 1, dig_immediate = 3, drop_by_liquid = 1},
 	sounds = default.node_sound_leaves_defaults(),
 	on_use = minetest.item_eat(1),
 	selection_box = {
@@ -240,7 +240,7 @@ minetest.register_node("flowers:waterlily", {
 	buildable_to = true,
 	sunlight_propagates = true,
 	floodable = true,
-	groups = {snappy = 3, flower = 1},
+	groups = {snappy = 3, flower = 1, flammable = 1},
 	sounds = default.node_sound_leaves_defaults(),
 	node_placement_prediction = "",
 	node_box = {

@@ -1041,7 +1041,7 @@ minetest.register_node("default:steelblock", {
 	tiles = {"default_steel_block.png"},
 	is_ground_content = false,
 	groups = {cracky = 1, level = 2},
-	sounds = default.node_sound_stone_defaults(),
+	sounds = default.node_sound_metal_defaults(),
 })
 
 
@@ -1058,7 +1058,7 @@ minetest.register_node("default:copperblock", {
 	tiles = {"default_copper_block.png"},
 	is_ground_content = false,
 	groups = {cracky = 1, level = 2},
-	sounds = default.node_sound_stone_defaults(),
+	sounds = default.node_sound_metal_defaults(),
 })
 
 minetest.register_node("default:bronzeblock", {
@@ -1066,7 +1066,7 @@ minetest.register_node("default:bronzeblock", {
 	tiles = {"default_bronze_block.png"},
 	is_ground_content = false,
 	groups = {cracky = 1, level = 2},
-	sounds = default.node_sound_stone_defaults(),
+	sounds = default.node_sound_metal_defaults(),
 })
 
 
@@ -1103,7 +1103,7 @@ minetest.register_node("default:goldblock", {
 	tiles = {"default_gold_block.png"},
 	is_ground_content = false,
 	groups = {cracky = 1},
-	sounds = default.node_sound_stone_defaults(),
+	sounds = default.node_sound_metal_defaults(),
 })
 
 
@@ -1191,8 +1191,8 @@ minetest.register_node("default:junglegrass", {
 	sunlight_propagates = true,
 	walkable = false,
 	buildable_to = true,
-	groups = {snappy = 3, flora = 1, attached_node = 1, grass = 1,
-		dig_immediate = 3, drop_by_liquid = 1, melt = 50, },
+	groups = {snappy = 3, flora = 1, attached_node = 1, grass = 1, flammable = 1
+		, dig_immediate = 3, drop_by_liquid = 1, melt = 50, },
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
@@ -1214,8 +1214,8 @@ minetest.register_node("default:grass_1", {
 	sunlight_propagates = true,
 	walkable = false,
 	buildable_to = true,
-	groups = {snappy = 3, flora = 1, attached_node = 1, grass = 1, 
-		dig_immediate = 3, drop_by_liquid = 1, melt = 40, },
+	groups = {snappy = 3, flora = 1, attached_node = 1, grass = 1, flammable = 1
+		, dig_immediate = 3, drop_by_liquid = 1, melt = 40, },
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
@@ -1246,8 +1246,8 @@ for i = 2, 5 do
 		buildable_to = true,
 		drop = "default:grass_1",
 		groups = {snappy = 3, flora = 1, attached_node = 1,
-			not_in_creative_inventory = 1, grass = 1,
-			dig_immediate = 3, drop_by_liquid = 1, melt = 40, },
+			not_in_creative_inventory = 1, grass = 1, flammable = 1
+			, dig_immediate = 3, drop_by_liquid = 1, melt = 40, },
 		sounds = default.node_sound_leaves_defaults(),
 		selection_box = {
 			type = "fixed",
@@ -1989,7 +1989,7 @@ register_sign("wood", "Wooden", {
 })
 
 register_sign("steel", "Steel", {
-	sounds = default.node_sound_defaults(),
+	sounds = default.node_sound_metal_defaults(),
 	groups = {cracky = 2, attached_node = 1}
 })
 
@@ -2035,7 +2035,7 @@ minetest.register_node("default:ladder_steel", {
 		--wall_side = = <default>
 	},
 	groups = {cracky = 2},
-	sounds = default.node_sound_stone_defaults(),
+	sounds = default.node_sound_metal_defaults(),
 })
 
 default.register_fence("default:fence_wood", {
