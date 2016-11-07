@@ -875,6 +875,7 @@ minetest.register_node("default:acacia_leaves", {
 	description = "Acacia Leaves",
 	drawtype = "allfaces_optional",
 	tiles = {"default_acacia_leaves.png"},
+	special_tiles = {"default_acacia_leaves_simple.png"},
 	waving = 1,
 	paramtype = "light",
 	is_ground_content = false,
@@ -1360,7 +1361,7 @@ minetest.register_node("default:acacia_bush_leaves", {
 	description = "Acacia Bush Leaves",
 	drawtype = "allfaces_optional",
 	waving = 1,
-	tiles = {"default_acacia_leaves.png"},
+	tiles = {"default_acacia_leaves_simple.png"},
 	paramtype = "light",
 	groups = {snappy = 3, flammable = 2, leaves = 1},
 	sounds = default.node_sound_leaves_defaults(),
@@ -1956,7 +1957,7 @@ for i = 1, 16 do
 		by = by + 1
 	end
 	bookshelf_formspec = bookshelf_formspec ..
-		"image["..bx..","..by..";1,1;default_book_slot.png]"
+		"image[" .. bx .. "," .. by .. ";1,1;default_bookshelf_slot.png]"
 	bx = bx + 1
 end
 
