@@ -520,7 +520,6 @@ minetest.register_node("default:snow", {
 	paramtype = "light",
 	buildable_to = true,
 	floodable = true,
-	walkable = false,
 	drawtype = "nodebox",
 	node_box = {
 		type = "leveled",
@@ -550,12 +549,20 @@ minetest.register_node("default:snowblock", {
 	description = "Snow Block",
 	tiles = {"default_snow.png"},
 	groups = {crumbly = 3, puts_out_fire = 1, melt = 2, slippery = 80},
+	melt = "default:water_source",
+
 	sounds = default.node_sound_dirt_defaults({
 		footstep = {name = "default_snow_footstep", gain = 0.15},
 		dug = {name = "default_snow_footstep", gain = 0.2},
 		dig = {name = "default_snow_footstep", gain = 0.2}
 	}),
-	melt = "default:water_source",
+
+	on_construct = function(pos)
+		pos.y = pos.y - 1
+		if minetest.get_node(pos).name == "default:dirt_with_grass" then
+			minetest.set_node(pos, {name = "default:dirt_with_snow"})
+		end
+	end,
 })
 
 minetest.register_node("default:ice", {
