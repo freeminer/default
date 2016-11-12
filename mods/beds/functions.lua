@@ -46,6 +46,7 @@ local function check_in_beds(players)
 end
 
 local function lay_down(player, pos, bed_pos, state, skip)
+	if not player then return end
 	local name = player:get_player_name()
 	local hud_flags = player:hud_get_flags()
 
