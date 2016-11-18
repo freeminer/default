@@ -1500,8 +1500,6 @@ minetest.register_node("default:water_flowing", {
 	liquid_viscosity = 1,
 	post_effect_color = {a = 103, r = 30, g = 60, b = 90},
 	groups = {water = 3, liquid = 3, puts_out_fire = 1,
-		not_in_creative_inventory = 1, cools_lava = 1},
-
 		not_in_creative_inventory = 1, cools_lava = 1,
 		freeze = -5, melt = 100, liquid_drop = 1, weight = 1000},
 	leveled = 8,
