@@ -181,8 +181,6 @@ default:fence_aspen_wood
 default:glass
 default:obsidian_glass
 
-default:rail
-
 default:brick
 
 default:meselamp
@@ -1450,12 +1448,15 @@ minetest.register_node("default:water_source", {
 	liquid_alternative_source = "default:water_source",
 	liquid_viscosity = 1,
 	post_effect_color = {a = 103, r = 30, g = 60, b = 90},
+
 	groups = {water = 3, liquid = 3, puts_out_fire = 1, cools_lava = 1,
 		freeze = -1, melt = 105, liquid_drop = 1, weight = 1000, pressure = 32},
 	leveled = 8,
 	paramtype2 = "leveled",
 	freeze = "default:ice",
 	melt = "air",
+
+	sounds = default.node_sound_water_defaults(),
 })
 
 minetest.register_node("default:water_flowing", {
@@ -1500,12 +1501,15 @@ minetest.register_node("default:water_flowing", {
 	liquid_viscosity = 1,
 	post_effect_color = {a = 103, r = 30, g = 60, b = 90},
 	groups = {water = 3, liquid = 3, puts_out_fire = 1,
+
 		not_in_creative_inventory = 1, cools_lava = 1,
 		freeze = -5, melt = 100, liquid_drop = 1, weight = 1000},
 	leveled = 8,
 	paramtype2 = "leveled",
 	freeze = "default:snow",
 	melt = "air",
+
+	sounds = default.node_sound_water_defaults(),
 })
 
 
@@ -1555,12 +1559,15 @@ minetest.register_node("default:river_water_source", {
 	liquid_renewable = false,
 	liquid_range = 2,
 	post_effect_color = {a = 103, r = 30, g = 76, b = 90},
+
 	groups = {water = 3, liquid = 3, puts_out_fire = 1, cools_lava = 1,
 		freeze = -1, melt = 105, liquid_drop = 1, weight = 995, pressure = 32},
 	leveled = 4,
 	paramtype2 = "leveled",
 	freeze = "default:ice",
 	melt = "air",
+
+	sounds = default.node_sound_water_defaults(),
 })
 
 minetest.register_node("default:river_water_flowing", {
@@ -1606,6 +1613,7 @@ minetest.register_node("default:river_water_flowing", {
 	liquid_renewable = false,
 	liquid_range = 2,
 	post_effect_color = {a = 103, r = 30, g = 76, b = 90},
+
 	groups = {water = 3, liquid = 3, puts_out_fire = 1,
 		not_in_creative_inventory = 1, cools_lava = 1,
 		freeze = -5, melt = 100, liquid_drop = 1, weight = 999},
@@ -1613,6 +1621,8 @@ minetest.register_node("default:river_water_flowing", {
 	paramtype2 = "leveled",
 	freeze = "default:snow",
 	melt = "air",
+
+	sounds = default.node_sound_water_defaults(),
 })
 
 ]]
@@ -2194,28 +2204,6 @@ minetest.register_node("default:obsidian_glass", {
 	sunlight_propagates = true,
 	sounds = default.node_sound_glass_defaults(),
 	groups = {cracky = 3},
-})
-
-
-minetest.register_node("default:rail", {
-	description = "Rail",
-	drawtype = "raillike",
-	tiles = {"default_rail.png", "default_rail_curved.png",
-		"default_rail_t_junction.png", "default_rail_crossing.png",
-		"default_rail_diagonal.png", "default_rail_diagonal_end.png"},
-	inventory_image = "default_rail.png",
-	wield_image = "default_rail.png",
-	paramtype = "light",
-	sunlight_propagates = true,
-	walkable = false,
-	is_ground_content = false,
-	selection_box = {
-		type = "fixed",
-                -- but how to specify the dimensions for curved and sideways rails?
-                fixed = {-1/2, -1/2, -1/2, 1/2, -1/2+1/16, 1/2},
-	},
-	groups = {dig_immediate = 2, attached_node = 1,
-		connect_to_raillike = minetest.raillike_group("rail")},
 })
 
 
