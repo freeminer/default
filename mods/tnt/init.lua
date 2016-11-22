@@ -133,7 +133,7 @@ local function destroy(drops, npos, on_blast_queue, ignore_protection, ignore_on
 
 		core.remove_node(npos, (fast and 1 or 0))
 		if last then
-			nodeupdate(npos)
+			core.check_for_falling(npos)
 		end
 		if not def or not def.groups then
 			-- broken map and unknown nodes
