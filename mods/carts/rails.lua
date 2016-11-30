@@ -23,6 +23,7 @@ minetest.register_craft({
 
 minetest.register_alias("default:rail", "carts:rail")
 
+
 carts:register_rail("carts:powerrail", {
 	description = "Powered rail",
 	tiles = {
@@ -30,7 +31,7 @@ carts:register_rail("carts:powerrail", {
 		"carts_rail_t_junction_pwr.png", "carts_rail_crossing_pwr.png"
 	},
 	groups = carts:get_rail_groups(),
-}, {acceleration = 4})
+}, {acceleration = 5})
 
 minetest.register_craft({
 	output = "carts:powerrail 8",
@@ -41,6 +42,7 @@ minetest.register_craft({
 	}
 })
 
+
 carts:register_rail("carts:brakerail", {
 	description = "Brake rail",
 	tiles = {
@@ -49,7 +51,6 @@ carts:register_rail("carts:brakerail", {
 	},
 	groups = carts:get_rail_groups(),
 }, {acceleration = -3})
-
 
 minetest.register_craft({
 	output = "carts:brakerail 8",
