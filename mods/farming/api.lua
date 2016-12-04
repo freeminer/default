@@ -213,7 +213,11 @@ farming.grow_plant = function(pos, elapsed)
 		-- omitted is a check for light, we assume seeds can germinate in the dark.
 		for _, v in pairs(def.fertility) do
 			if minetest.get_item_group(soil_node.name, v) ~= 0 then
-				minetest.swap_node(pos, {name = def.next_plant})
+				local placenode = {name = def.next_plant}
+				if def.place_param2 then
+					placenode.param2 = def.place_param2
+				end
+				minetest.swap_node(pos, placenode)
 				if minetest.registered_nodes[def.next_plant].next_plant then
 					tick(pos)
 					return
@@ -246,7 +250,11 @@ farming.grow_plant = function(pos, elapsed)
 	) then return end
 
 	-- grow
-	minetest.swap_node(pos, {name = def.next_plant})
+	local placenode = {name = def.next_plant}
+	if def.place_param2 then
+		placenode.param2 = def.place_param2
+	end
+	minetest.swap_node(pos, placenode)
 
 	-- new timer needed?
 	if minetest.registered_nodes[def.next_plant].next_plant then
@@ -303,6 +311,7 @@ farming.register_plant = function(name, def)
 		groups = g,
 		paramtype = "light",
 		paramtype2 = "wallmounted",
+		place_param2 = def.place_param2 or nil, -- this isn't actually used for placement
 		walkable = false,
 		sunlight_propagates = true,
 		selection_box = {
@@ -356,6 +365,8 @@ farming.register_plant = function(name, def)
 			waving = 1,
 			tiles = {mname .. "_" .. pname .. "_" .. i .. ".png"},
 			paramtype = "light",
+			paramtype2 = def.paramtype2 or nil,
+			place_param2 = def.place_param2 or nil,
 			walkable = false,
 			buildable_to = true,
 			drop = drop,
