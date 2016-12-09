@@ -48,8 +48,10 @@ minetest.register_node("fire:basic_flame", {
 		minetest.get_node_timer(pos):start(math.random(30, 60))
 	end,
 
-	--on_blast = function() -- Unaffected by explosions
+--[[
+	on_blast = function() -- Unaffected by explosions
 	end,
+]]
 })
 
 minetest.register_node("fire:permanent_flame", {
