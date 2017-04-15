@@ -22,3 +22,6 @@
 [submodule "mods/mobs_npc"]
 	path = mods/mobs_npc
 	url = https://github.com/tenplus1/mobs_npc.git
+[submodule "mods/pbj_pup"]
+	path = mods/pbj_pup
+	url = https://github.com/tenplus1/pbj_pup.git
