@@ -20,10 +20,8 @@ When stable releases are made, default is packaged and made available in
 and in case the repository has grown too much, it may be reset. In that sense,
 this is not a "real" git repository. (Package maintainers please note!)
 
-License of source code
-----------------------
-Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
-See README.txt in each mod directory for information about other authors.
+Licensing
+---------
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -53,3 +51,5 @@ http://creativecommons.org/licenses/by-sa/3.0/
 
 License of menu/header.png
 Copyright (C) 2015 paramat CC BY-SA 3.0
+
+See LICENSE.txt
