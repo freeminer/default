@@ -17,6 +17,8 @@ loss_prob["default:cobble"] = 3
 loss_prob["default:dirt"] = 4
 
 local tnt_radius = tonumber(minetest.setting_get("tnt_radius") or 3)
+local c_air = minetest.get_content_id("air")
+local c_fire = minetest.get_content_id("fire:basic_flame")
 
 -- Fill a list with data for content IDs, after all nodes are registered
 local cid_data = {}
@@ -515,14 +517,16 @@ local function tnt_explode(pos, def, radius, ignore_protection, ignore_on_blast)
 					else
 						local last = dr == radius
 						local fast = radius > 6
+						local cid = minetest.get_content_id(node.name)
+
 						if math.abs(p.x)<2 and math.abs(p.y)<2 and math.abs(p.z)<2 then
 							--destroy(drops, np, dr == radius, radius > 7)
-							destroy(drops, np, on_blast_queue, on_construct_queue, ignore_protection, ignore_on_blast, last, fast)
+							destroy(drops, np, cid, c_air, c_fire, on_blast_queue, on_construct_queue, ignore_protection, ignore_on_blast, last, fast)
 							destroyed = destroyed + 1
 						else
 							if math.random(1,5) <= 4 then
 								--destroy(drops, np, dr == radius, radius > 7)
-								destroy(drops, np, on_blast_queue, on_construct_queue, ignore_protection, ignore_on_blast, last, fast)
+								destroy(drops, np, cid, c_air, c_fire, on_blast_queue, on_construct_queue, ignore_protection, ignore_on_blast, last, fast)
 								destroyed = destroyed + 1
 							end
 						end
