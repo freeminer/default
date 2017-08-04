@@ -190,6 +190,9 @@ minetest.register_craft({
 	}
 })
 
+-- Axes
+-- Recipes face left to match appearence in textures and inventory
+
 minetest.register_craft({
 	output = 'default:axe_wood',
 	recipe = {
@@ -241,60 +244,6 @@ minetest.register_craft({
 		{'default:diamond', 'default:diamond'},
 		{'default:diamond', 'group:stick'},
 		{'', 'group:stick'},
-	}
-})
-
-minetest.register_craft({
-	output = 'default:axe_wood',
-	recipe = {
-		{'group:wood', 'group:wood'},
-		{'group:stick', 'group:wood'},
-		{'group:stick',''},
-	}
-})
-
-minetest.register_craft({
-	output = 'default:axe_stone',
-	recipe = {
-		{'group:stone', 'group:stone'},
-		{'group:stick', 'group:stone'},
-		{'group:stick', ''},
-	}
-})
-
-minetest.register_craft({
-	output = 'default:axe_steel',
-	recipe = {
-		{'default:steel_ingot', 'default:steel_ingot'},
-		{'group:stick', 'default:steel_ingot'},
-		{'group:stick', ''},
-	}
-})
-
-minetest.register_craft({
-	output = 'default:axe_bronze',
-	recipe = {
-		{'default:bronze_ingot', 'default:bronze_ingot'},
-		{'group:stick', 'default:bronze_ingot'},
-		{'group:stick', ''},
-	}
-})
-
-minetest.register_craft({
-	output = 'default:axe_mese',
-	recipe = {
-		{'default:mese_crystal', 'default:mese_crystal'},
-		{'group:stick', 'default:mese_crystal'},
-		{'group:stick', ''},
-	}
-})
-
-minetest.register_craft({
-	output = 'default:axe_diamond',
-	recipe = {
-		{'default:diamond', 'default:diamond'},
-		{'group:stick', 'default:diamond'},
-		{'group:stick', ''},
 	}
 })
 
@@ -393,12 +342,6 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	type = "shapeless",
-	output = "default:bronze_ingot",
-	recipe = {"default:steel_ingot", "default:copper_ingot"},
-})
-
-minetest.register_craft({
 	output = 'default:coalblock',
 	recipe = {
 		{'default:coal_lump', 'default:coal_lump', 'default:coal_lump'},
@@ -443,6 +386,31 @@ minetest.register_craft({
 	output = 'default:copper_ingot 9',
 	recipe = {
 		{'default:copperblock'},
+	}
+})
+
+minetest.register_craft({
+	output = "default:tinblock",
+	recipe = {
+		{"default:tin_ingot", "default:tin_ingot", "default:tin_ingot"},
+		{"default:tin_ingot", "default:tin_ingot", "default:tin_ingot"},
+		{"default:tin_ingot", "default:tin_ingot", "default:tin_ingot"},
+	}
+})
+
+minetest.register_craft({
+	output = "default:tin_ingot 9",
+	recipe = {
+		{"default:tinblock"},
+	}
+})
+
+minetest.register_craft({
+	output = "default:bronze_ingot 9",
+	recipe = {
+		{"default:copper_ingot", "default:copper_ingot", "default:copper_ingot"},
+		{"default:copper_ingot", "default:tin_ingot", "default:copper_ingot"},
+		{"default:copper_ingot", "default:copper_ingot", "default:copper_ingot"},
 	}
 })
 
@@ -847,6 +815,12 @@ minetest.register_craft({
 	type = "cooking",
 	output = "default:copper_ingot",
 	recipe = "default:copper_lump",
+})
+
+minetest.register_craft({
+	type = "cooking",
+	output = "default:tin_ingot",
+	recipe = "default:tin_lump",
 })
 
 minetest.register_craft({

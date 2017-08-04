@@ -29,12 +29,13 @@ local function is_snow_nearby(pos)
 	return minetest.find_node_near(pos, 1, {"group:snowy"})
 end
 
--- Sapling ABM
+
+-- Grow sapling
 
 function default.grow_sapling(pos)
 	if not default.can_grow(pos) then
-		-- try a bit later again
-		minetest.get_node_timer(pos):start(math.random(240, 600))
+		-- try again 5 min later
+		minetest.get_node_timer(pos):start(300)
 		return
 	end
 
@@ -98,7 +99,7 @@ minetest.register_lbm({
 			"default:pine_sapling", "default:acacia_sapling",
 			"default:aspen_sapling"},
 	action = function(pos)
-		minetest.get_node_timer(pos):start(math.random(1200, 2400))
+		minetest.get_node_timer(pos):start(math.random(300, 1500))
 	end
 })
 

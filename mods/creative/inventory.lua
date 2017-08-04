@@ -10,21 +10,24 @@ function creative.init_creative_inventory(player)
 
 	minetest.create_detached_inventory("creative_" .. player_name, {
 		allow_move = function(inv, from_list, from_index, to_list, to_index, count, player2)
-			if not to_list == "main" then
-				return count
-			else
+			local name = player2 and player2:get_player_name() or ""
+			if not creative.is_enabled_for(name) or
+					to_list == "main" then
 				return 0
 			end
+			return count
 		end,
 		allow_put = function(inv, listname, index, stack, player2)
 			return 0
 		end,
 		allow_take = function(inv, listname, index, stack, player2)
+			local name = player2 and player2:get_player_name() or ""
+			if not creative.is_enabled_for(name) then
+				return 0
+			end
 			return -1
 		end,
 		on_move = function(inv, from_list, from_index, to_list, to_index, count, player2)
-		end,
-		on_put = function(inv, listname, index, stack, player2)
 		end,
 		on_take = function(inv, listname, index, stack, player2)
 			if stack and stack:get_count() > 0 then
@@ -33,16 +36,14 @@ function creative.init_creative_inventory(player)
 		end,
 	}, player_name)
 
-	creative.update_creative_inventory(player_name, minetest.registered_items)
+	return player_inventory[player_name]
 end
 
 function creative.update_creative_inventory(player_name, tab_content)
 	local creative_list = {}
+	local inv = player_inventory[player_name] or
+			creative.init_creative_inventory(minetest.get_player_by_name(player_name))
 	local player_inv = minetest.get_inventory({type = "detached", name = "creative_" .. player_name})
-	local inv = player_inventory[player_name]
-	if not inv then
-		creative.init_creative_inventory(minetest.get_player_by_name(player_name))
-	end
 
 	for name, def in pairs(tab_content) do
 		if not (def.groups.not_in_creative_inventory == 1) and
@@ -161,7 +162,7 @@ function creative.register_tab(name, title, items)
 end
 
 minetest.register_on_joinplayer(function(player)
-	creative.init_creative_inventory(player)
+	creative.update_creative_inventory(player:get_player_name(), minetest.registered_items)
 end)
 
 creative.register_tab("all", "All", minetest.registered_items)

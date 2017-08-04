@@ -286,7 +286,7 @@ minetest.register_tool("default:axe_diamond", {
 		full_punch_interval = 0.9,
 		max_drop_level=1,
 		groupcaps={
-			choppy={times={[1]=2.10, [2]=0.90, [3]=0.50}, uses=30, maxlevel=2},
+			choppy={times={[1]=2.10, [2]=0.90, [3]=0.50}, uses=30, maxlevel=3},
 		},
 		damage_groups = {fleshy=7},
 	},
@@ -381,48 +381,6 @@ minetest.register_tool("default:sword_diamond", {
 		damage_groups = {fleshy=8},
 	},
 	sound = {breaks = "default_tool_breaks"},
-})
-
-minetest.register_tool("default:skeleton_key", {
-	description = "Skeleton Key",
-	inventory_image = "default_key_skeleton.png",
-	groups = {key = 1},
-	on_use = function(itemstack, user, pointed_thing)
-		if pointed_thing.type ~= "node" then
-			return itemstack
-		end
-
-		local pos = pointed_thing.under
-		local node = minetest.get_node(pos)
-
-		if not node then
-			return itemstack
-		end
-
-		local on_skeleton_key_use = minetest.registered_nodes[node.name].on_skeleton_key_use
-		if on_skeleton_key_use then
-			-- make a new key secret in case the node callback needs it
-			local random = math.random
-			local newsecret = string.format(
-				"%04x%04x%04x%04x",
-				random(2^16) - 1, random(2^16) - 1,
-				random(2^16) - 1, random(2^16) - 1)
-
-			local secret, _, _ = on_skeleton_key_use(pos, user, newsecret)
-
-			if secret then
-				-- finish and return the new key
-				itemstack:take_item()
-				itemstack:add_item("default:key")
-				local meta = itemstack:get_meta()
-				meta:set_string("secret", secret)
-				meta:set_string("description", "Key to "..user:get_player_name().."'s "
-					..minetest.registered_nodes[node.name].description)
-				return itemstack
-			end
-		end
-		return nil
-	end
 })
 
 minetest.register_tool("default:key", {

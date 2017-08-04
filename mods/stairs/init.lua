@@ -15,7 +15,7 @@ minetest.register_alias("stairs:slab_pinewood", "stairs:slab_pine_wood")
 
 -- Get setting for replace ABM
 
-local replace = minetest.setting_getbool("enable_stairs_replace_abm")
+local replace = minetest.settings:get_bool("enable_stairs_replace_abm")
 
 local function rotate_and_place(itemstack, placer, pointed_thing)
 	local p0 = pointed_thing.under
@@ -46,12 +46,24 @@ end
 -- Node will be called stairs:stair_<subname>
 
 function stairs.register_stair(subname, recipeitem, groups, images, description, sounds, melt)
+	local stair_images = {}
+	for i, image in ipairs(images) do
+		if type(image) == "string" then
+			stair_images[i] = {
+				name = image,
+				backface_culling = true,
+			}
+		elseif image.backface_culling == nil then -- override using any other value
+			stair_images[i] = table.copy(image)
+			stair_images[i].backface_culling = true
+		end
+	end
 	groups.stair = 1
 	minetest.register_node(":stairs:stair_" .. subname, {
 		description = description,
 		drawtype = "mesh",
 		mesh = "stairs_stair.obj",
-		tiles = images,
+		tiles = stair_images,
 		paramtype = "light",
 		paramtype2 = "facedir",
 		is_ground_content = false,
@@ -90,22 +102,22 @@ function stairs.register_stair(subname, recipeitem, groups, images, description,
 	end
 
 	if recipeitem then
-		minetest.register_craft({
-			output = 'stairs:stair_' .. subname .. ' 8',
-			recipe = {
-				{recipeitem, "", ""},
-				{recipeitem, recipeitem, ""},
-				{recipeitem, recipeitem, recipeitem},
-			},
-		})
-
-		-- Flipped recipe for the silly minecrafters
+		-- Recipe matches appearence in inventory
 		minetest.register_craft({
 			output = 'stairs:stair_' .. subname .. ' 8',
 			recipe = {
 				{"", "", recipeitem},
 				{"", recipeitem, recipeitem},
 				{recipeitem, recipeitem, recipeitem},
+			},
+		})
+
+		-- Use stairs to craft full blocks again (1:1)
+		minetest.register_craft({
+			output = recipeitem .. ' 3',
+			recipe = {
+				{'stairs:stair_' .. subname, 'stairs:stair_' .. subname},
+				{'stairs:stair_' .. subname, 'stairs:stair_' .. subname},
 			},
 		})
 
@@ -218,6 +230,15 @@ function stairs.register_slab(subname, recipeitem, groups, images, description, 
 			},
 		})
 
+		-- Use 2 slabs to craft a full block again (1:1)
+		minetest.register_craft({
+			output = recipeitem,
+			recipe = {
+				{'stairs:slab_' .. subname},
+				{'stairs:slab_' .. subname},
+			},
+		})
+
 		-- Fuel
 		local baseburntime = minetest.get_craft_result({
 			method = "fuel",
@@ -257,16 +278,171 @@ if replace then
 	})
 end
 
+-- Register stairs.
+-- Node will be called stairs:stair_inner_<subname>
+
+function stairs.register_stair_inner(subname, recipeitem, groups, images, description, sounds, melt)
+	local stair_images = {}
+	for i, image in ipairs(images) do
+		if type(image) == "string" then
+			stair_images[i] = {
+				name = image,
+				backface_culling = true,
+			}
+		elseif image.backface_culling == nil then -- override using any other value
+			stair_images[i] = table.copy(image)
+			stair_images[i].backface_culling = true
+		end
+	end
+	groups.stair = 1
+	minetest.register_node(":stairs:stair_inner_" .. subname, {
+		description = description .. " Inner",
+		drawtype = "mesh",
+		mesh = "stairs_stair_inner.obj",
+		tiles = stair_images,
+		paramtype = "light",
+		paramtype2 = "facedir",
+		is_ground_content = false,
+		groups = groups,
+		sounds = sounds,
+		melt = melt,
+		selection_box = {
+			type = "fixed",
+			fixed = {
+				{-0.5, -0.5, -0.5, 0.5, 0, 0.5},
+				{-0.5, 0, 0, 0.5, 0.5, 0.5},
+				{-0.5, 0, -0.5, 0, 0.5, 0},
+			},
+		},
+		collision_box = {
+			type = "fixed",
+			fixed = {
+				{-0.5, -0.5, -0.5, 0.5, 0, 0.5},
+				{-0.5, 0, 0, 0.5, 0.5, 0.5},
+				{-0.5, 0, -0.5, 0, 0.5, 0},
+			},
+		},
+		on_place = function(itemstack, placer, pointed_thing)
+			if pointed_thing.type ~= "node" then
+				return itemstack
+			end
+
+			return rotate_and_place(itemstack, placer, pointed_thing)
+		end,
+	})
+
+	if recipeitem then
+		minetest.register_craft({
+			output = 'stairs:stair_inner_' .. subname .. ' 7',
+			recipe = {
+				{ "", recipeitem, ""},
+				{ recipeitem, "", recipeitem},
+				{recipeitem, recipeitem, recipeitem},
+			},
+		})
+
+		-- Fuel
+		local baseburntime = minetest.get_craft_result({
+			method = "fuel",
+			width = 1,
+			items = {recipeitem}
+		}).time
+		if baseburntime > 0 then
+			minetest.register_craft({
+				type = "fuel",
+				recipe = 'stairs:stair_inner_' .. subname,
+				burntime = math.floor(baseburntime * 0.875),
+			})
+		end
+	end
+end
+
+-- Register stairs.
+-- Node will be called stairs:stair_outer_<subname>
+
+function stairs.register_stair_outer(subname, recipeitem, groups, images, description, sounds, melt)
+	local stair_images = {}
+	for i, image in ipairs(images) do
+		if type(image) == "string" then
+			stair_images[i] = {
+				name = image,
+				backface_culling = true,
+			}
+		elseif image.backface_culling == nil then -- override using any other value
+			stair_images[i] = table.copy(image)
+			stair_images[i].backface_culling = true
+		end
+	end
+	groups.stair = 1
+	minetest.register_node(":stairs:stair_outer_" .. subname, {
+		description = description .. " Outer",
+		drawtype = "mesh",
+		mesh = "stairs_stair_outer.obj",
+		tiles = stair_images,
+		paramtype = "light",
+		paramtype2 = "facedir",
+		is_ground_content = false,
+		groups = groups,
+		sounds = sounds,
+		melt = melt,
+		selection_box = {
+			type = "fixed",
+			fixed = {
+				{-0.5, -0.5, -0.5, 0.5, 0, 0.5},
+				{-0.5, 0, 0, 0, 0.5, 0.5},
+			},
+		},
+		collision_box = {
+			type = "fixed",
+			fixed = {
+				{-0.5, -0.5, -0.5, 0.5, 0, 0.5},
+				{-0.5, 0, 0, 0, 0.5, 0.5},
+			},
+		},
+		on_place = function(itemstack, placer, pointed_thing)
+			if pointed_thing.type ~= "node" then
+				return itemstack
+			end
+
+			return rotate_and_place(itemstack, placer, pointed_thing)
+		end,
+	})
+
+	if recipeitem then
+		minetest.register_craft({
+			output = 'stairs:stair_outer_' .. subname .. ' 6',
+			recipe = {
+				{ "", "", ""},
+				{ "", recipeitem, ""},
+				{recipeitem, recipeitem, recipeitem},
+			},
+		})
+
+		-- Fuel
+		local baseburntime = minetest.get_craft_result({
+			method = "fuel",
+			width = 1,
+			items = {recipeitem}
+		}).time
+		if baseburntime > 0 then
+			minetest.register_craft({
+				type = "fuel",
+				recipe = 'stairs:stair_outer_' .. subname,
+				burntime = math.floor(baseburntime * 0.625),
+			})
+		end
+	end
+end
 
 -- Stair/slab registration function.
 -- Nodes will be called stairs:{stair,slab}_<subname>
 
-function stairs.register_stair_and_slab(subname, recipeitem,
-		groups, images, desc_stair, desc_slab, sounds, melt)
+function stairs.register_stair_and_slab(subname, recipeitem, groups, images, desc_stair, desc_slab, sounds, melt)
 	stairs.register_stair(subname, recipeitem, groups, images, desc_stair, sounds, melt)
+	stairs.register_stair_inner(subname, recipeitem, groups, images, desc_stair, sounds, melt)
+	stairs.register_stair_outer(subname, recipeitem, groups, images, desc_stair, sounds, melt)
 	stairs.register_slab(subname, recipeitem, groups, images, desc_slab, sounds, melt)
 end
-
 
 -- Register default stairs and slabs
 
@@ -344,7 +520,7 @@ stairs.register_stair_and_slab(
 
 stairs.register_stair_and_slab(
 	"mossycobble",
-	nil,
+	"default:mossycobble",
 	{cracky = 3, melt = 3000},
 	{"default_mossycobble.png"},
 	"Mossy Cobblestone Stair",
@@ -557,16 +733,6 @@ stairs.register_stair_and_slab(
 )
 
 stairs.register_stair_and_slab(
-	"straw",
-	"farming:straw",
-	{snappy = 3, flammable = 4},
-	{"farming_straw.png"},
-	"Straw Stair",
-	"Straw Slab",
-	default.node_sound_leaves_defaults()
-)
-
-stairs.register_stair_and_slab(
 	"steelblock",
 	"default:steelblock",
 	{cracky = 1, level = 2, melt = 1400},
@@ -575,6 +741,16 @@ stairs.register_stair_and_slab(
 	"Steel Block Slab",
 	default.node_sound_metal_defaults()
 	, "default:lava_flowing"
+)
+
+stairs.register_stair_and_slab(
+	"tinblock",
+	"default:tinblock",
+	{cracky = 1, level = 2},
+	{"default_tin_block.png"},
+	"Tin Block Stair",
+	"Tin Block Slab",
+	default.node_sound_metal_defaults()
 )
 
 stairs.register_stair_and_slab(
@@ -608,4 +784,28 @@ stairs.register_stair_and_slab(
 	"Gold Block Slab",
 	default.node_sound_metal_defaults()
 	, "default:lava_flowing"
+)
+
+stairs.register_stair_and_slab(
+	"ice",
+	"default:ice",
+	{cracky = 3, puts_out_fire = 1, cools_lava = 1},
+	{"default_ice.png"},
+	"Ice Stair",
+	"Ice Slab",
+	default.node_sound_glass_defaults()
+)
+
+stairs.register_stair_and_slab(
+	"snowblock",
+	"default:snowblock",
+	{crumbly = 3, puts_out_fire = 1, cools_lava = 1, snowy = 1},
+	{"default_snow.png"},
+	"Snow Block Stair",
+	"Snow Block Slab",
+	default.node_sound_dirt_defaults({
+		footstep = {name = "default_snow_footstep", gain = 0.15},
+		dug = {name = "default_snow_footstep", gain = 0.2},
+		dig = {name = "default_snow_footstep", gain = 0.2}
+	})
 )

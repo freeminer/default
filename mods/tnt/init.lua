@@ -1,7 +1,7 @@
 tnt = {}
 
 -- Default to enabled when in singleplayer
-local enable_tnt = minetest.setting_getbool("enable_tnt")
+local enable_tnt = minetest.settings:get_bool("enable_tnt")
 if enable_tnt == nil then
 	enable_tnt = minetest.is_singleplayer()
 end
@@ -97,8 +97,8 @@ end
 local basic_flame_on_construct -- cached value
 local function destroy(drops, npos, cid, c_air, c_fire,
 		on_blast_queue, on_construct_queue,
-		ignore_protection, ignore_on_blast)
-	if not ignore_protection and minetest.is_protected(npos, "") then
+		ignore_protection, ignore_on_blast, owner)
+	if not ignore_protection and minetest.is_protected(npos, owner) then
 		return cid
 	end
 
@@ -130,12 +130,12 @@ end
 
 local function destroy(drops, npos, cid, c_air, c_fire,
 		on_blast_queue, on_construct_queue,
-		ignore_protection, ignore_on_blast
+		ignore_protection, ignore_on_blast, owner
 		, last, fast
 		)
 
-	if not ignore_protection and minetest.is_protected(npos, "") then
-		return
+	if not ignore_protection and minetest.is_protected(npos, owner) then
+		return cid
 	end
 
 	local nodename = core.get_node(npos).name
@@ -323,18 +323,20 @@ end
 
 function tnt.burn(pos, nodename)
 	local name = nodename or minetest.get_node(pos).name
-	local group = minetest.get_item_group(name, "tnt")
-	if group > 0 then
+	local def = minetest.registered_nodes[name]
+	if not def then
+		return
+	elseif def.on_ignite then
+		def.on_ignite(pos)
+	elseif minetest.get_item_group(name, "tnt") > 0 then
+		minetest.swap_node(pos, {name = name .. "_burning"})
 		minetest.sound_play("tnt_ignite", {pos = pos})
-		minetest.set_node(pos, {name = name .. "_burning"})
 		minetest.get_node_timer(pos):start(1)
-	elseif name == "tnt:gunpowder" then
-		minetest.set_node(pos, {name = "tnt:gunpowder_burning"})
 	end
 end
 
 --[[
-local function tnt_explode(pos, radius, ignore_protection, ignore_on_blast)
+local function tnt_explode(pos, radius, ignore_protection, ignore_on_blast, owner)
 	pos = vector.round(pos)
 	-- scan for adjacent TNT nodes first, and enlarge the explosion
 	local vm1 = VoxelManip()
@@ -395,7 +397,7 @@ local function tnt_explode(pos, radius, ignore_protection, ignore_on_blast)
 			if cid ~= c_air then
 				data[vi] = destroy(drops, p, cid, c_air, c_fire,
 					on_blast_queue, on_construct_queue,
-					ignore_protection, ignore_on_blast)
+					ignore_protection, ignore_on_blast, owner)
 			end
 		end
 		vi = vi + 1
@@ -437,11 +439,14 @@ local function tnt_explode(pos, radius, ignore_protection, ignore_on_blast)
 		queued_data.fn(queued_data.pos)
 	end
 
+	minetest.log("action", "TNT owned by " .. owner .. " detonated at " ..
+		minetest.pos_to_string(pos) .. " with radius " .. radius)
+
 	return drops, radius
 end
 ]]
 
-local function tnt_explode(pos, def, radius, ignore_protection, ignore_on_blast)
+local function tnt_explode(pos, def, radius, ignore_protection, ignore_on_blast, owner)
 	local pos = vector.round(pos)
 	local pr = PseudoRandom(os.time())
 	local p1 = vector.subtract(pos, radius)
@@ -521,12 +526,12 @@ local function tnt_explode(pos, def, radius, ignore_protection, ignore_on_blast)
 
 						if math.abs(p.x)<2 and math.abs(p.y)<2 and math.abs(p.z)<2 then
 							--destroy(drops, np, dr == radius, radius > 7)
-							destroy(drops, np, cid, c_air, c_fire, on_blast_queue, on_construct_queue, ignore_protection, ignore_on_blast, last, fast)
+							destroy(drops, np, cid, c_air, c_fire, on_blast_queue, on_construct_queue, ignore_protection, ignore_on_blast, owner, last, fast)
 							destroyed = destroyed + 1
 						else
 							if math.random(1,5) <= 4 then
 								--destroy(drops, np, dr == radius, radius > 7)
-								destroy(drops, np, cid, c_air, c_fire, on_blast_queue, on_construct_queue, ignore_protection, ignore_on_blast, last, fast)
+								destroy(drops, np, cid, c_air, c_fire, on_blast_queue, on_construct_queue, ignore_protection, ignore_on_blast, owner, last, fast)
 								destroyed = destroyed + 1
 							end
 						end
@@ -546,7 +551,8 @@ local function tnt_explode(pos, def, radius, ignore_protection, ignore_on_blast)
 		end
 	end
 
-	core.log("action", "tnt:tnt : exploded=" .. tnts .. " radius=".. dr .." radius_want=" .. radius .. " destroyed="..destroyed .. " melted="..melted)
+	core.log("action", tnts .. " TNTs owned by " .. owner .. " detonated at " .. 
+	    minetest.pos_to_string(pos) .. "with radius=".. dr .." radius_want=" .. radius .. " destroyed="..destroyed .. " melted="..melted)
 
 	return drops, radius
 
@@ -554,10 +560,12 @@ end
 
 
 function tnt.boom(pos, def)
+	local meta = minetest.get_meta(pos)
+	local owner = meta:get_string("owner")
 	minetest.sound_play("tnt_explode", {pos = pos, gain = 1.5, max_hear_distance = 2*64})
 	minetest.set_node(pos, {name = "tnt:boom"})
 	local drops, radius = tnt_explode(pos, def, def.radius, def.ignore_protection,
-			def.ignore_on_blast)
+			def.ignore_on_blast, owner)
 	-- append entity drops
 	local damage_radius = (radius / def.radius) * def.damage_radius
 	damage_radius = radius * 3
@@ -684,15 +692,15 @@ minetest.register_node("tnt:gunpowder_burning", {
 	on_timer = function(pos, elapsed)
 		for dx = -1, 1 do
 		for dz = -1, 1 do
-		for dy = -1, 1 do
-			if not (dx == 0 and dz == 0) then
-				tnt.burn({
-					x = pos.x + dx,
-					y = pos.y + dy,
-					z = pos.z + dz,
-				})
+			if math.abs(dx) + math.abs(dz) == 1 then
+				for dy = -1, 1 do
+					tnt.burn({
+						x = pos.x + dx,
+						y = pos.y + dy,
+						z = pos.z + dz,
+					})
+				end
 			end
-		end
 		end
 		end
 		minetest.remove_node(pos)
@@ -755,9 +763,16 @@ function tnt.register_tnt(def)
 			is_ground_content = false,
 			groups = {dig_immediate = 2, mesecon = 2, tnt = 1, flammable = 5},
 			sounds = default.node_sound_wood_defaults(),
+			after_place_node = function(pos, placer)
+				if placer:is_player() then
+					local meta = minetest.get_meta(pos)
+					meta:set_string("owner", placer:get_player_name())
+				end
+			end,
 			on_punch = function(pos, node, puncher)
 				if puncher:get_wielded_item():get_name() == "default:torch" then
-					minetest.set_node(pos, {name = name .. "_burning"})
+					minetest.swap_node(pos, {name = name .. "_burning"})
+					minetest.registered_nodes[name .. "_burning"].on_construct(pos)
 					minetest.log("action", puncher:get_player_name() ..
 						" ignites " .. node.name .. " at " ..
 						minetest.pos_to_string(pos))
@@ -786,10 +801,12 @@ function tnt.register_tnt(def)
 				}
 			},
 			on_burn = function(pos)
-				minetest.set_node(pos, {name = name .. "_burning"})
+				minetest.swap_node(pos, {name = name .. "_burning"})
+				minetest.registered_nodes[name .. "_burning"].on_construct(pos)
 			end,
 			on_ignite = function(pos, igniter)
-				minetest.set_node(pos, {name = name .. "_burning"})
+				minetest.swap_node(pos, {name = name .. "_burning"})
+				minetest.registered_nodes[name .. "_burning"].on_construct(pos)
 			end,
 		})
 	end
