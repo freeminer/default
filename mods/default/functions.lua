@@ -208,7 +208,7 @@ function default.grow_cactus(pos, node)
 	if height == 4 or node.name ~= "air" then
 		return
 	end
-	if minetest.get_node_light(pos) < 13 then
+	if minetest.get_node_light(pos) < 11 then
 		return
 	end
 	minetest.set_node(pos, {name = "default:cactus"})
@@ -237,7 +237,7 @@ function default.grow_papyrus(pos, node)
 	if height == 4 or node.name ~= "air" then
 		return
 	end
-	if minetest.get_node_light(pos) < 13 then
+	if minetest.get_node_light(pos) < 10 then
 		return
 	end
 	minetest.set_node(pos, {name = "default:papyrus"})
@@ -434,7 +434,7 @@ minetest.register_abm({
 		-- Check for darkness: night, shadow or under a light-blocking node
 		-- Returns if ignore above
 		local above = {x = pos.x, y = pos.y + 1, z = pos.z}
-		if (minetest.get_node_light(above) or 0) < 13 then
+		if (minetest.get_node_light(above) or 0) < 6 then
 			return
 		end
 
