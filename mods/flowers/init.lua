@@ -124,7 +124,7 @@ function flowers.flower_spread(pos, node)
 	end
 
 	local light = minetest.get_node_light(pos)
-	if not light or light < 12 then
+	if not light or light < 8 then
 		return
 	end
 
@@ -144,7 +144,7 @@ function flowers.flower_spread(pos, node)
 		local seedling_above =
 			{x = seedling.x, y = seedling.y + 1, z = seedling.z}
 		light = minetest.get_node_light(seedling_above)
-		if not light or light < 13 or
+		if not light or light < 8 or
 				-- Desert sand is in the soil group
 				minetest.get_node(seedling).name == "default:desert_sand" then
 			return
