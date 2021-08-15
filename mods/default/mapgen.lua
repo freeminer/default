@@ -604,7 +604,7 @@ function default.register_ores()
 		ore            = "default:lava_source",
 		ore_param2     = 128,
 		wherein        = "default:stone",
-		clust_scarcity = 60*60*60,
+		clust_scarcity = 70*70*70,
 		clust_num_ores = 5,
 		clust_size     = 2,
 		y_min          = 10000,

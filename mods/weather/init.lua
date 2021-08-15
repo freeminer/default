@@ -47,10 +47,10 @@ end
 
 
 if default.weather then
-local grass_heat_max = 41
+local grass_heat_max = 51
 local grass_heat_max2 = 71
-local grass_humidity_min = 10
-local grass_humidity_min2 = 50
+local grass_humidity_min = 4
+local grass_humidity_min2 = 40
 local grass_light_min = 2
 
 core.register_abm({
@@ -96,7 +96,7 @@ core.register_abm({
 			core.set_node(pos, node, 2)
 		else
 			if node.name == "default:dirt_with_grass" and top_name == "air" and (default.weather and heat > 5 and heat < grass_heat_max and humidity > grass_humidity_min)
-				and math.random(1, 50) == 1 and light >= grass_light_min then
+				and math.random(1, 40) == 1 and light >= grass_light_min then
 				core.set_node(top_pos, {name = "default:grass_1"}, 2)
 			end
 		end
@@ -122,11 +122,11 @@ core.register_abm({
 		if heat < 5 or heat > grass_heat_max or (core.get_node_light(pos) or 0) < grass_light_min then return end
 		local rnd = math.random(1, 110-humidity)
 		if name == "default:grass_5" then
-				if rnd >= 2 then return end
-				if     humidity > 75 and heat > 25 then node.name = "default:junglesapling" 
+				if rnd >= 3 then return end
+				if     humidity > 70 and heat > 25 then node.name = "default:junglesapling"
 				elseif humidity < 20 and heat > 25 then node.name = "default:acacia_sapling"
-				elseif humidity > 30 and heat < 10 then node.name = "default:pine_sapling"
-				elseif humidity > 40 and heat < 40 then node.name = "default:sapling"
+				elseif humidity > 20 and heat < 10 then node.name = "default:pine_sapling"
+				elseif humidity > 30 and heat < 40 then node.name = "default:sapling"
 				else return end
 				core.set_node(pos, node, 2)
 		elseif name == "default:dry_shrub" then
