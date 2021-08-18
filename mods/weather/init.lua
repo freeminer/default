@@ -45,7 +45,6 @@ if default.weather then
 	dofile(core.get_modpath("weather").."/snow.lua")
 end
 
-
 if default.weather then
 local grass_heat_max = 51
 local grass_heat_max2 = 71
@@ -81,7 +80,6 @@ core.register_abm({
 				if node.name == "default:dirt_with_grass" and (light < grass_light_min or (heat > grass_heat_max and humidity < grass_humidity_min2) or humidity < 1 or heat > grass_heat_max2) then
 					new_name = "default:dirt_with_dry_grass"
 				elseif node.name == "default:dirt" and (light < grass_light_min or (heat > grass_heat_max and humidity < grass_humidity_min2) or humidity < grass_humidity_min or heat > grass_heat_max2) then
---
 					new_name = "default:dirt_dry"
 				end
 				if (default.weather and heat < -5 and humidity > 5) then
@@ -92,8 +90,25 @@ core.register_abm({
 			end
 		end
 
+		local fall = 0
+		local bottom_pos = {x=pos.x, y=pos.y-1, z=pos.z}
+		if core.get_node(bottom_pos).name == "air"
+			and core.get_node(top_pos).name == "air"
+			and core.get_node({x=pos.x-1, y=pos.y, z=pos.z}).name == "air"
+			and core.get_node({x=pos.x+1, y=pos.y, z=pos.z}).name == "air"
+			and core.get_node({x=pos.x, y=pos.y, z=pos.z-1}).name == "air"
+			and core.get_node({x=pos.x, y=pos.y, z=pos.z+1}).name == "air"
+			then
+			fall = 1
+			top_pos = pos
+			pos = bottom_pos
+			core.set_node(top_pos, {name = "air"}, 2)
+		end
+
 		if new_name and new_name ~= node.name then
 			node.name = new_name
+			core.set_node(pos, node, 2)
+		elseif fall == 1 then
 			core.set_node(pos, node, 2)
 		else
 			if node.name == "default:dirt_with_grass" and top_name == "air" and (default.weather and heat > 5 and heat < grass_heat_max and humidity > grass_humidity_min)

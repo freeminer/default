@@ -1250,7 +1250,9 @@ minetest.register_node("default:dry_shrub", {
 	walkable = false,
 	buildable_to = true,
 	groups = {snappy = 3, flammable = 3, attached_node = 1, dig_immediate = 3,
-				drop_by_liquid = 1, attached_node = 1},
+				drop_by_liquid = 1, attached_node = 1
+                , falling_node = 1,
+			 },
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
@@ -1271,7 +1273,7 @@ minetest.register_node("default:junglegrass", {
 	walkable = false,
 	buildable_to = true,
 	groups = {snappy = 3, flora = 1, attached_node = 1, flammable = 1
-		, dig_immediate = 3, drop_by_liquid = 1, melt = 50, },
+		, dig_immediate = 3, drop_by_liquid = 1, melt = 50, falling_node = 1, },
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
@@ -1294,7 +1296,7 @@ minetest.register_node("default:grass_1", {
 	walkable = false,
 	buildable_to = true,
 	groups = {snappy = 3, flora = 1, attached_node = 1, grass = 1, flammable = 1
-		, dig_immediate = 3, drop_by_liquid = 1, melt = 40, },
+		, dig_immediate = 3, drop_by_liquid = 1, melt = 40, falling_node = 1, },
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
@@ -1326,7 +1328,7 @@ for i = 2, 5 do
 		drop = "default:grass_1",
 		groups = {snappy = 3, flora = 1, attached_node = 1,
 			not_in_creative_inventory = 1, grass = 1, flammable = 1
-			, dig_immediate = 3, drop_by_liquid = 1, melt = 40, },
+			, dig_immediate = 3, drop_by_liquid = 1, melt = 40, falling_node = 1, },
 		sounds = default.node_sound_leaves_defaults(),
 		selection_box = {
 			type = "fixed",
@@ -1350,7 +1352,9 @@ minetest.register_node("default:dry_grass_1", {
 	buildable_to = true,
 	groups = {snappy = 3, flammable = 3, flora = 1,
 		attached_node = 1, dry_grass = 1 ,
-		dig_immediate = 3, drop_by_liquid = 1, },
+		dig_immediate = 3, drop_by_liquid = 1,
+        falling_node = 1,
+    },
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
@@ -1380,7 +1384,9 @@ for i = 2, 5 do
 		buildable_to = true,
 		groups = {snappy = 3, flammable = 3, flora = 1, attached_node = 1,
 			not_in_creative_inventory=1, dry_grass = 1,
-			dig_immediate = 3, drop_by_liquid = 1},
+			dig_immediate = 3, drop_by_liquid = 1
+			, falling_node = 1,
+        },
 		drop = "default:dry_grass_1",
 		sounds = default.node_sound_leaves_defaults(),
 		selection_box = {
