@@ -42,7 +42,7 @@ function default.grow_sapling(pos)
 	if mg_name == "indev" then mg_name = "v6" end
 	local node = minetest.get_node(pos)
 	if node.name == "default:sapling" then
-		if default.weather and (core.get_heat(pos) < 5 or core.get_humidity(pos) < 20) then return end
+		if default.weather and (core.get_heat(pos) < 5 or core.get_humidity(pos) < 10) then return end
 		minetest.log("action", "A sapling grows into a tree at "..
 			minetest.pos_to_string(pos))
 		if mg_name == "v6" then
@@ -60,7 +60,7 @@ function default.grow_sapling(pos)
 			default.grow_new_jungle_tree(pos)
 		end
 	elseif node.name == "default:pine_sapling" then
-		if default.weather and (core.get_heat(pos) < 3 or core.get_humidity(pos) < 10) then return end
+		if default.weather and (core.get_heat(pos) < 3 or core.get_humidity(pos) < 5) then return end
 		minetest.log("action", "A pine sapling grows into a tree at "..
 			minetest.pos_to_string(pos))
 		local snow = is_snow_nearby(pos)
@@ -72,12 +72,12 @@ function default.grow_sapling(pos)
 			default.grow_new_pine_tree(pos)
 		end
 	elseif node.name == "default:acacia_sapling" then
-		if default.weather and (core.get_heat(pos) < 20 or core.get_humidity(pos) < 20) then return end
+		if default.weather and (core.get_heat(pos) < 20 or core.get_humidity(pos) < 15) then return end
 		minetest.log("action", "An acacia sapling grows into a tree at "..
 			minetest.pos_to_string(pos))
 		default.grow_new_acacia_tree(pos)
 	elseif node.name == "default:aspen_sapling" then
-		if default.weather and (core.get_heat(pos) < 7 or core.get_humidity(pos) < 22) then return end
+		if default.weather and (core.get_heat(pos) < 7 or core.get_humidity(pos) < 16) then return end
 		minetest.log("action", "An aspen sapling grows into a tree at "..
 			minetest.pos_to_string(pos))
 		default.grow_new_aspen_tree(pos)

@@ -56,7 +56,7 @@ core.register_abm({
 	nodenames = {"default:dirt", "default:dirt_with_grass", "default:dirt_dry", "default:dirt_with_dry_grass" },
 	interval = 10,
 	chance = 30,
-	action = function(pos, node)
+	action = function(pos, node, active_object_count, active_object_count_wider, ndef, activate)
 		local top_pos = {x=pos.x, y=pos.y+1, z=pos.z}
 		local top_name = core.get_node(top_pos).name
 		local top_nodedef = core.registered_nodes[top_name]
@@ -112,7 +112,7 @@ core.register_abm({
 			core.set_node(pos, node, 2)
 		else
 			if node.name == "default:dirt_with_grass" and top_name == "air" and (default.weather and heat > 5 and heat < grass_heat_max and humidity > grass_humidity_min)
-				and math.random(1, 40) == 1 and light >= grass_light_min then
+				and (activate or math.random(1, 40) == 1) and light >= grass_light_min then
 				core.set_node(top_pos, {name = "default:grass_1"}, 2)
 			end
 		end
@@ -124,8 +124,8 @@ core.register_abm({
 	nodenames = {"default:grass_1", "default:grass_2", "default:grass_3", "default:grass_4", "default:grass_5", "default:dry_shrub"},
 	neighbors = {"default:dirt_with_grass", "default:dirt"},
 	interval = 20,
-	chance = 30,
-	action = function(pos, node)
+	chance = 10,
+	action = function(pos, node, active_object_count, active_object_count_wider, ndef, activate)
 		local humidity = core.get_humidity(pos)
 		local heat = core.get_heat(pos)
 		--local node = core.get_node(pos)
@@ -136,7 +136,7 @@ core.register_abm({
 			return
 		end
 		if heat < 5 or heat > grass_heat_max or (core.get_node_light(pos) or 0) < grass_light_min then return end
-		local rnd = math.random(1, 110-humidity)
+		local rnd = activate and 1 or math.random(1, 110-humidity)
 		if name == "default:grass_5" then
 				if rnd >= 3 then return end
 				if     humidity > 70 and heat > 25 then node.name = "default:junglesapling"

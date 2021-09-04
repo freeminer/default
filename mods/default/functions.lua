@@ -149,7 +149,7 @@ minetest.register_abm({
 
 core.register_abm({
 	nodenames = {"default:lava_source", "default:lava_flowing"},
-	interval = 100,
+	interval = 50,
 	chance = 10,
 	--catch_up = false,
 	action = function(pos, node, active_object_count, active_object_count_wider)
