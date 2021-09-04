@@ -36,8 +36,24 @@ core.register_abm({
     nodenames = {"spring:lava"},
     interval = 2,
     chance = 2,
+    groups = { wield_light = 6 },
     action = function(pos,node)
         core.set_node(pos,{name = "default:lava_source", param2=128})
+    end
+})
+
+core.register_node("spring:lava_compressed",{
+    description = "Lava spring compressed",
+    tiles = {"default_lava.png"},
+})
+
+core.register_abm({
+    nodenames = {"spring:lava_compressed"},
+    interval = 2,
+    chance = 2,
+    groups = { wield_light = 7 },
+    action = function(pos,node)
+        core.set_node(pos,{name = "default:lava_source", param2=128+31})
     end
 })
 
