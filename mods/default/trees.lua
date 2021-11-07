@@ -20,6 +20,11 @@ function default.can_grow(pos)
 	if not light_level or light_level < 2 then
 		return false
 	end
+
+	if core.find_node_near(pos, (4-5*humidity/100), {"group:tree"}) then
+		return false
+	end
+
 	return true
 end
 

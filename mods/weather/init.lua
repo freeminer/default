@@ -144,6 +144,7 @@ core.register_abm({
 				elseif humidity > 20 and heat < 10 then node.name = "default:pine_sapling"
 				elseif humidity > 30 and heat < 40 then node.name = "default:sapling"
 				else return end
+				if core.find_node_near(pos, (4-5*humidity/100), {"group:tree", "group:sapling"}) then return end
 				core.set_node(pos, node, 2)
 		elseif name == "default:dry_shrub" then
 			node.name = "default:grass_" .. 1
