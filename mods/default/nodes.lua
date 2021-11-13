@@ -435,7 +435,7 @@ minetest.register_node("default:dirt_with_grass", {
 	tiles = {"default_grass.png", "default_dirt.png",
 		{name = "default_dirt.png^default_grass_side.png",
 			tileable_vertical = false}},
-	groups = {crumbly = 3, soil = 1, spreading_dirt_type = 1, melt = 40, freeze = -5},
+	groups = {crumbly = 3, soil = 1, spreading_dirt_type = 1, melt = 51, freeze = -5},
 	drop = 'default:dirt',
 	sounds = default.node_sound_dirt_defaults({
 		footstep = {name = "default_grass_footstep", gain = 0.25},
@@ -450,7 +450,7 @@ minetest.register_node("default:dirt_with_grass_footsteps", {
 	tiles = {"default_grass.png^default_footprint.png", "default_dirt.png",
 		{name = "default_dirt.png^default_grass_side.png",
 			tileable_vertical = false}},
-	groups = {crumbly = 3, soil = 1, not_in_creative_inventory = 1, melt = 40, freeze = -5},
+	groups = {crumbly = 3, soil = 1, not_in_creative_inventory = 1, melt = 51, freeze = -5},
 	drop = 'default:dirt',
 	sounds = default.node_sound_dirt_defaults({
 		footstep = {name = "default_grass_footstep", gain = 0.25},
@@ -466,7 +466,7 @@ minetest.register_node("default:dirt_with_dry_grass", {
 		"default_dirt.png",
 		{name = "default_dirt.png^default_dry_grass_side.png",
 			tileable_vertical = false}},
-	groups = {crumbly = 3, soil = 1, spreading_dirt_type = 1, melt = 50, freeze = -5},
+	groups = {crumbly = 3, soil = 1, spreading_dirt_type = 1, melt = 71, freeze = -5},
 	drop = 'default:dirt',
 	sounds = default.node_sound_dirt_defaults({
 		footstep = {name = "default_grass_footstep", gain = 0.4},
@@ -495,7 +495,7 @@ minetest.register_node("default:dirt_dry", {
 	description = "Dry dirt",
 	tiles = {"default_dirt_dry.png"},
 	is_ground_content = true,
-	groups = {crumbly = 3, soil = 1, melt = 65},
+	groups = {crumbly = 3, soil = 1, melt = 81},
 	drowning = 1,
 	sounds = default.node_sound_dirt_defaults(),
 	melt = "default:sand",
@@ -1272,7 +1272,9 @@ minetest.register_node("default:dry_shrub", {
 	walkable = false,
 	buildable_to = true,
 	groups = {snappy = 3, flammable = 3, attached_node = 1, dig_immediate = 3,
-				drop_by_liquid = 1, attached_node = 1},
+				drop_by_liquid = 1, attached_node = 1
+                , falling_node = 1,
+			 },
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
@@ -1293,7 +1295,7 @@ minetest.register_node("default:junglegrass", {
 	walkable = false,
 	buildable_to = true,
 	groups = {snappy = 3, flora = 1, attached_node = 1, flammable = 1
-		, dig_immediate = 3, drop_by_liquid = 1, melt = 50, },
+		, dig_immediate = 3, drop_by_liquid = 1, melt = 50, falling_node = 1, },
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
@@ -1316,7 +1318,7 @@ minetest.register_node("default:grass_1", {
 	walkable = false,
 	buildable_to = true,
 	groups = {snappy = 3, flora = 1, attached_node = 1, grass = 1, flammable = 1
-		, dig_immediate = 3, drop_by_liquid = 1, melt = 40, },
+		, dig_immediate = 3, drop_by_liquid = 1, melt = 40, falling_node = 1, },
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
@@ -1348,7 +1350,7 @@ for i = 2, 5 do
 		drop = "default:grass_1",
 		groups = {snappy = 3, flora = 1, attached_node = 1,
 			not_in_creative_inventory = 1, grass = 1, flammable = 1
-			, dig_immediate = 3, drop_by_liquid = 1, melt = 40, },
+			, dig_immediate = 3, drop_by_liquid = 1, melt = 40, falling_node = 1, },
 		sounds = default.node_sound_leaves_defaults(),
 		selection_box = {
 			type = "fixed",
@@ -1372,7 +1374,9 @@ minetest.register_node("default:dry_grass_1", {
 	buildable_to = true,
 	groups = {snappy = 3, flammable = 3, flora = 1,
 		attached_node = 1, dry_grass = 1 ,
-		dig_immediate = 3, drop_by_liquid = 1, },
+		dig_immediate = 3, drop_by_liquid = 1,
+        falling_node = 1,
+    },
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
 		type = "fixed",
@@ -1402,7 +1406,9 @@ for i = 2, 5 do
 		buildable_to = true,
 		groups = {snappy = 3, flammable = 3, flora = 1, attached_node = 1,
 			not_in_creative_inventory=1, dry_grass = 1,
-			dig_immediate = 3, drop_by_liquid = 1},
+			dig_immediate = 3, drop_by_liquid = 1
+			, falling_node = 1,
+        },
 		drop = "default:dry_grass_1",
 		sounds = default.node_sound_leaves_defaults(),
 		selection_box = {
