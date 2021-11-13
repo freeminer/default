@@ -21,7 +21,7 @@ function default.can_grow(pos)
 		return false
 	end
 
-	if core.find_node_near(pos, (4-5*humidity/100), {"group:tree"}) then
+	if core.find_node_near(pos, (4-5*core.get_humidity(pos)/100), {"group:tree"}) then
 		return false
 	end
 
