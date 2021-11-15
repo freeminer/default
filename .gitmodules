@@ -25,3 +25,6 @@
 [submodule "mods/pbj_pup"]
 	path = mods/pbj_pup
 	url = https://notabug.org/TenPlus1/pbj_pup.git
+[submodule "mods/mob_horse"]
+	path = mods/mob_horse
+	url = https://notabug.org/TenPlus1/mob_horse.git
