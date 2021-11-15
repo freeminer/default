@@ -6,4 +6,7 @@ intllib = {
 	end
 }
 
+core.get_translator = intllib.Getter
+minetest.get_translator = intllib.Getter
+
 return intllib.Getter()
