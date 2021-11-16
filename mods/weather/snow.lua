@@ -92,11 +92,14 @@ core.register_abm({
 		local amount = get_snow(pos)
 		if amount == 0 then return end
 		local add = 1 + (amount * 2);
-		if core.registered_nodes[node.name].drawtype ~= "normal"
-			and core.registered_nodes[node.name].drawtype ~= "nodebox"
-			and core.registered_nodes[node.name].drawtype ~= "allfaces_optional" then return end
+		local drawtype = core.registered_nodes[node.name].drawtype
+		if drawtype ~= "normal"
+			and drawtype ~= "nodebox"
+			and drawtype ~= "allfaces_optional"
+			and drawtype ~= "glasslike"
+			then return end
 		local np = addvectors(pos, {x=0, y=1, z=0})
-		if core.get_node_light(np, 0.5) ~= default.LIGHT_SUN then return end
+		if core.get_node_light(np, 0.5) < default.LIGHT_SUN - 2 then return end
 		if core.get_node(pos).name == "default:snow" then
 			local min_level = core.get_node_level(pos)
 			local min_pos = pos
