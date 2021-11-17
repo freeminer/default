@@ -100,7 +100,7 @@ core.register_abm({
 			then return end
 		local np = addvectors(pos, {x=0, y=1, z=0})
 		local light = core.get_node_light(np, 0.5)
-		if not light or light < default.LIGHT_SUN - 2 then return end
+		if not light or light < default.LIGHT_SUN - 1 then return end
 		if core.get_node(pos).name == "default:snow" then
 			local min_level = core.get_node_level(pos)
 			local min_pos = pos
