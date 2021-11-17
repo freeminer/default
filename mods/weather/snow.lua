@@ -105,6 +105,7 @@ core.register_abm({
 			local min_level = core.get_node_level(pos)
 			local min_pos = pos
 
+			local update_falling
 			-- smooth
 			--local rnd = math.random(1, 4)
 			for rnd = 1, 4 do
@@ -116,7 +117,16 @@ core.register_abm({
 				elseif rnd == 4 then addv.z = 1 end
 				local ngp = addvectors(min_pos, addv)
 				local lev = core.get_node_level(ngp)
-				if core.get_node(ngp).name == "default:snow" and lev < min_level then
+
+				local test_name = core.get_node(ngp).name
+				if test_name == "air" then
+					min_pos = ngp
+					core.set_node(min_pos, {name="snow"})
+					update_falling = 1
+					break
+				end
+
+				if test_name == "default:snow" and lev < min_level then
 					min_level = lev
 					min_pos = ngp
 				end
@@ -128,6 +138,8 @@ core.register_abm({
 			if default.time_speed <= 0 then add = 0 end
 			if add > 0 then
 				core.set_node(pos, {name="default:ice"})
+			elseif update_falling then
+				core.nodeupdate(pos, 0)
 			end
 		end
 		if add > 0 and core.get_node(np).name == "air" then
