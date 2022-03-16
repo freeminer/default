@@ -148,4 +148,19 @@ core.register_abm({
 		end
 	end
 })
+
+core.register_abm({
+	nodenames = {"default:snow"},
+	neighbors = {"default:snow", "default:ice"},
+	interval = 200,
+	chance = 1,
+	action = function (pos, node, active_object_count, active_object_count_wider)
+		local np = addvectors(pos, {x=0, y=1, z=0})
+        local topname = core.get_node(np).name
+		if topname == "default:snow" or topname == "default:ice" then
+			core.set_node(pos, {name="default:ice"})
+		end
+	end
+})
+
 --]]
