@@ -2,7 +2,7 @@
 core.register_globalstep(function(dtime)
 	for _, player in ipairs(core.get_connected_players()) do
 		local ppos = player:getpos()
-		local strength = get_rain(ppos)
+		local strength = get_rain(ppos, 1)
 		if strength > 0 and core.get_node(ppos).name == "air" then
 --print("rain he=".. core.get_heat(ppos).." hu=".. core.get_humidity(ppos) .. " s=" .. strength)
 		-- Make sure player is not in a cave/house...

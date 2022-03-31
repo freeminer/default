@@ -14,9 +14,9 @@ local cloud_height = tonumber(core.setting_get("cloud_height"));
 local snow_humidity = 65
 local rain_humidity = 75
 
-get_snow = function (p)
+get_snow = function (p, visible)
 	if not p then return 0 end
-	if p.y > cloud_height then return 0 end
+	if visible and p.y > cloud_height then return 0 end
 	local heat = core.get_heat(p)
 	if heat >= 0 then return 0 end
 	local humidity = core.get_humidity(p)
@@ -25,9 +25,9 @@ get_snow = function (p)
 	return (humidity-snow_humidity)/(100-snow_humidity)
 end
 
-get_rain = function (p)
+get_rain = function (p, visible)
 	if not p then return 0 end
-	if p.y > cloud_height then return 0 end
+	if visible and p.y > cloud_height then return 0 end
 	local heat = core.get_heat(p)
 	if heat <= 0 then return 0 end
 	if heat > 50 then return 0 end
