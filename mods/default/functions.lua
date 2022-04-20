@@ -146,24 +146,30 @@ if minetest.settings:get_bool("enable_lavacooling") ~= false then
 			default.cool_lava(...)
 		end,
 	})
-end
 
 core.register_abm({
 	nodenames = {"default:lava_source", "default:lava_flowing"},
 	interval = 50,
-	chance = 10,
+	chance = 20,
 	--catch_up = false,
 	action = function(pos, node, active_object_count, active_object_count_wider)
-		-- bad place: to not freeze lava in caves
+		-- bad place: to not freeze lava in deep caves
 		if not pos.y or pos.y < -100 then return end
 		-- skip springs
 		if node.param2 >= 128 then return end
 		local light = core.get_node_light({x=pos.x,y=pos.y+1, z=pos.z}, 0.5)
-		if not light or light < default.LIGHT_MAX then return end
-		--core.freeze_melt(pos, -1);
-		default.cool_lava(pos, node)
+		if light and light >= default.LIGHT_MAX then
+			core.freeze_melt(pos, -1);
+		end
+		if math.random(1, 30) ~= 1 then return end
+		node_top = minetest.get_node({x=pos.x,y=pos.y+1, z=pos.z})
+		if not node_top then return end
+		if node_top.name == minetest.registered_nodes["default:lava_source"].freeze or node_top.name == minetest.registered_nodes["default:lava_flowing"].freeze then
+			core.freeze_melt(pos, -1);
+		end
 	end,
 })
+end
 
 
 --
