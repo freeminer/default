@@ -162,7 +162,7 @@ core.register_abm({
 			core.freeze_melt(pos, -1);
 		end
 		if math.random(1, 30) ~= 1 then return end
-		node_top = minetest.get_node({x=pos.x,y=pos.y+1, z=pos.z})
+		local node_top = minetest.get_node({x=pos.x,y=pos.y+1, z=pos.z})
 		if not node_top then return end
 		if node_top.name == minetest.registered_nodes["default:lava_source"].freeze or node_top.name == minetest.registered_nodes["default:lava_flowing"].freeze then
 			core.freeze_melt(pos, -1);
