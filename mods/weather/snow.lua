@@ -159,7 +159,7 @@ core.register_abm({
 		if bottom_name == "ignore" or bottom_name == "air" then return end
 
         local top_name = core.get_node(addvectors(pos, {x=0, y=1, z=0})).name
-		if topname == "default:snow" or topname == "default:ice" then
+		if top_name == "default:snow" or top_name == "default:ice" then
 			core.set_node(pos, {name="default:ice"})
 		end
 	end

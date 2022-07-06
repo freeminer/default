@@ -29,7 +29,7 @@ get_rain = function (p, visible)
 	if not p then return 0 end
 	if visible and p.y > cloud_height then return 0 end
 	local heat = core.get_heat(p)
-	if heat <= 0 then return 0 end
+	if heat < 0 then return 0 end
 	if heat > 50 then return 0 end
 	local humidity = core.get_humidity(p)
 	if humidity < rain_humidity then return 0 end
