@@ -789,11 +789,13 @@ stairs.register_stair_and_slab(
 stairs.register_stair_and_slab(
 	"ice",
 	"default:ice",
-	{cracky = 3, puts_out_fire = 1, cools_lava = 1},
+	{cracky = 3, puts_out_fire = 1, cools_lava = 1
+		, melt = 3, slippery = 90},
 	{"default_ice.png"},
 	"Ice Stair",
 	"Ice Slab",
 	default.node_sound_glass_defaults()
+	, "default:water_source"
 )
 
 stairs.register_stair_and_slab(

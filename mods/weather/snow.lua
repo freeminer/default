@@ -1,3 +1,11 @@
+minetest.register_craft({
+	output = 'default:ice',
+	recipe = {
+		{'default:snow', 'default:snow'},
+		{'default:snow', 'default:snow'},
+	}
+})
+
 -- Snow
 core.register_globalstep(function(dtime)
 	for _, player in ipairs(core.get_connected_players()) do
