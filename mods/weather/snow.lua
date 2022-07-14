@@ -89,6 +89,13 @@ local snow_box =
 
 default.time_speed = tonumber(core.setting_get("time_speed"))
 
+local function shuffle(t)
+	for i = #t, 2, -1 do
+		local j = math.random(i)
+		t[i], t[j] = t[j], t[i]
+	end
+end
+
 -- -[[ Enable this section if you have a very fast PC
 core.register_abm({
 	nodenames = {"group:crumbly", "group:snappy", "group:cracky", "group:choppy", "group:melts"},
@@ -116,21 +123,28 @@ core.register_abm({
 			local update_falling
 			-- smooth
 			--local rnd = math.random(1, 4)
-			for rnd = 1, 4 do
+			local arr = {1, 2, 3, 4, 5}
+			shuffle(arr)
+			for _,rnd in ipairs(arr) do
 				if min_level <= 1 then break end
 				local addv = {x=0, y=0, z=0}
 				if     rnd == 1 then addv.x = 1
 				elseif rnd == 2 then addv.x = -1
 				elseif rnd == 3 then addv.z = -1
-				elseif rnd == 4 then addv.z = 1 end
+				elseif rnd == 4 then addv.z = 1
+				elseif rnd == 5 then break
+				end
+
 				local ngp = addvectors(min_pos, addv)
 				local lev = core.get_node_level(ngp)
 
 				local test_name = core.get_node(ngp).name
 				if test_name == "air" then
 					min_pos = ngp
-					core.set_node(min_pos, {name="snow"})
-					update_falling = 1
+					core.set_node(min_pos, {name="snow"}, 2)
+					if math.random(3) ~= 1 then
+						update_falling = 1
+					end
 					break
 				end
 
@@ -145,13 +159,13 @@ core.register_abm({
 			add = core.add_node_level(pos, add);
 			if default.time_speed <= 0 then add = 0 end
 			if add > 0 then
-				core.set_node(pos, {name="default:ice"})
+				core.set_node(pos, {name="default:ice"}, 2)
 			elseif update_falling then
 				core.nodeupdate(pos, 0)
 			end
 		end
 		if add > 0 and core.get_node(np).name == "air" then
-			core.set_node(np, {name="snow"})
+			core.set_node(np, {name="snow"}, 2)
 			core.add_node_level(np, add)
 		end
 	end
@@ -168,7 +182,7 @@ core.register_abm({
 
         local top_name = core.get_node(addvectors(pos, {x=0, y=1, z=0})).name
 		if top_name == "default:snow" or top_name == "default:ice" then
-			core.set_node(pos, {name="default:ice"})
+			core.set_node(pos, {name="default:ice"}, 2)
 		end
 	end
 })
