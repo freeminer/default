@@ -123,7 +123,7 @@ core.register_abm({
 			local update_falling
 			-- smooth
 			--local rnd = math.random(1, 4)
-			local arr = {1, 2, 3, 4, 5}
+			local arr = {1, 2, 3, 4} -- , 5}
 			shuffle(arr)
 			for _,rnd in ipairs(arr) do
 				if min_level <= 1 then break end

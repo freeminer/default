@@ -54,7 +54,7 @@ local grass_humidity_min2 = 40
 local grass_light_min = 2
 
 core.register_abm({
-	nodenames = {"default:dirt", "default:dirt_with_grass", "default:dirt_dry", "default:dirt_with_dry_grass" },
+	nodenames = {"default:dirt", "default:dirt_with_grass", "default:dirt_dry", "default:dirt_with_dry_grass"},
 	interval = 10,
 	chance = 30,
 	action = function(pos, node, active_object_count, active_object_count_wider, ndef, activate)
@@ -119,6 +119,7 @@ core.register_abm({
 					set_moonflower(top_pos, "flowers:moonflower_closed")
 				elseif rnd1000 <= 10 then
 					local num = math.random(#flowers.datas)
+					if not flowers.datas[num][1] then return end -- why?
 					flowers.flower_spread(top_pos, "flowers:" .. flowers.datas[num][1])
 				else
 					core.set_node(top_pos, {name = "default:grass_1"}, 2)
@@ -129,7 +130,7 @@ core.register_abm({
 })
 
 core.register_abm({
-	nodenames = {"default:grass_1", "default:grass_2", "default:grass_3", "default:grass_4", "default:grass_5", "default:dry_shrub"},
+	nodenames = {"default:grass_1", "default:grass_2", "default:grass_3", "default:grass_4", "default:grass_5", "default:dry_shrub", "default:dry_grass_1", "default:dry_grass_2", "default:dry_grass_3", "default:dry_grass_4", "default:dry_grass_5"},
 	neighbors = {"default:dirt_with_grass", "default:dirt"},
 	interval = 20,
 	chance = 10,
@@ -160,8 +161,12 @@ core.register_abm({
 		else
 			for i=1,4 do
 				if rnd >= i+5 then return end
-				if name == "default:grass_"..i then
-					node.name = "default:grass_"..(i+1)
+				if name == "default:grass_" .. i then
+					node.name = "default:grass_" .. (i+1)
+					core.set_node(pos, node, 2)
+				end
+				if name == "default:dry_grass_" .. i then
+					node.name = "default:grass_" .. i
 					core.set_node(pos, node, 2)
 				end
 			end
