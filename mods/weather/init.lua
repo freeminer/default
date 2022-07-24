@@ -63,6 +63,9 @@ core.register_abm({
 		local top_nodedef = core.registered_nodes[top_name]
 		if top_name == "ignore" or not top_nodedef then return end
 
+		local bottom_pos = {x=pos.x, y=pos.y-1, z=pos.z}
+		local bottom_name = core.get_node(bottom_pos).name
+
 		local light = core.get_node_light(top_pos) or 0
 		local heat = core.get_heat(pos)
 		local humidity = core.get_humidity(pos)
@@ -83,27 +86,46 @@ core.register_abm({
 				elseif node.name == "default:dirt" and (light < grass_light_min or (heat > grass_heat_max and humidity < grass_humidity_min2) or humidity < grass_humidity_min or heat > grass_heat_max2) then
 					new_name = "default:dirt_dry"
 				end
-				if (default.weather and heat < -5 and humidity > 5) then
-					new_name = "default:dirt_with_snow"
-				elseif (not default.weather or (heat > 5 and heat < grass_heat_max and humidity > grass_humidity_min)) and light >= grass_light_min then
-					new_name = "default:dirt_with_grass"
+
+				-- dont freeze falling blocks
+				if not ((bottom_name == "air" or bottom_name == "ignore") and node.name == "default:dirt") then
+					if (default.weather and heat < -5 and humidity > 5) then
+						new_name = "default:dirt_with_snow"
+					elseif (not default.weather or (heat > 5 and heat < grass_heat_max and humidity > grass_humidity_min)) and light >= grass_light_min then
+						new_name = "default:dirt_with_grass"
+					end
 				end
 			end
 		end
 
+		local air_sides = 0
+		if core.get_node({x=pos.x-1, y=pos.y, z=pos.z}).name == "air" then air_sides = air_sides + 1 end
+		if core.get_node({x=pos.x+1, y=pos.y, z=pos.z}).name == "air" then air_sides = air_sides + 1 end
+		if core.get_node({x=pos.x, y=pos.y, z=pos.z-1}).name == "air" then air_sides = air_sides + 1 end
+		if core.get_node({x=pos.x, y=pos.y, z=pos.z+1}).name == "air" then air_sides = air_sides + 1 end
+
 		local fall = 0
-		local bottom_pos = {x=pos.x, y=pos.y-1, z=pos.z}
-		if core.get_node(bottom_pos).name == "air"
-			and core.get_node(top_pos).name == "air"
-			and core.get_node({x=pos.x-1, y=pos.y, z=pos.z}).name == "air"
-			and core.get_node({x=pos.x+1, y=pos.y, z=pos.z}).name == "air"
-			and core.get_node({x=pos.x, y=pos.y, z=pos.z-1}).name == "air"
-			and core.get_node({x=pos.x, y=pos.y, z=pos.z+1}).name == "air"
+--[[
+		if bottom_name == "air"
+			and top_name == "air"
+			air_sides >= 4
 			then
 			fall = 1
 			top_pos = pos
 			pos = bottom_pos
 			core.set_node(top_pos, {name = "air"}, 2)
+		end
+]]
+
+		local rnd1000 = math.random(1000)
+
+		if rnd1000 < 10
+			and node.name ~= "default:dirt"
+			and bottom_name == "air"
+			and top_name == "air"
+			and air_sides >= 2
+			then
+			new_name = "default:dirt"
 		end
 
 		if new_name and new_name ~= node.name then
@@ -114,13 +136,12 @@ core.register_abm({
 		else
 			if node.name == "default:dirt_with_grass" and top_name == "air" and (default.weather and heat > 5 and heat < grass_heat_max and humidity > grass_humidity_min)
 				and (activate or math.random(1, 40) == 1) and light >= grass_light_min then
-				local rnd1000 = math.random(1000)
 				if rnd1000 <= 1 then
 					set_moonflower(top_pos, "flowers:moonflower_closed")
 				elseif rnd1000 <= 10 then
 					local num = math.random(#flowers.datas)
 					if not flowers.datas[num][1] then return end -- why?
-					flowers.flower_spread(top_pos, "flowers:" .. flowers.datas[num][1])
+					flowers.flower_spread(top_pos, {name = "flowers:" .. flowers.datas[num][1]})
 				else
 					core.set_node(top_pos, {name = "default:grass_1"}, 2)
 				end
