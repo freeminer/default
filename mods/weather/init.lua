@@ -65,6 +65,7 @@ core.register_abm({
 
 		local bottom_pos = {x=pos.x, y=pos.y-1, z=pos.z}
 		local bottom_name = core.get_node(bottom_pos).name
+		local bottom_air = (bottom_name == "air" or bottom_name == "ignore")
 
 		local light = core.get_node_light(top_pos) or 0
 		local heat = core.get_heat(pos)
@@ -72,12 +73,12 @@ core.register_abm({
 		local new_name
 
 		if not ((top_nodedef.sunlight_propagates or top_nodedef.paramtype == "light") and top_nodedef.liquidtype == "none") then
-			if node.name == "default:dirt_with_dry_grass" then
+			if not bottom_air and node.name == "default:dirt_with_dry_grass" then
 				new_name = "default:dirt_dry"
 			elseif node.name == "default:dirt_with_grass" then
 				new_name = "default:dirt"
 			end
-		else
+		elseif not bottom_air then
 			if top_name == "default:snow" or top_name == "default:snowblock" or top_name == "default:ice" then
 					new_name = "default:dirt_with_snow"
 			elseif top_name == "air" then
@@ -88,7 +89,7 @@ core.register_abm({
 				end
 
 				-- dont freeze falling blocks
-				if not ((bottom_name == "air" or bottom_name == "ignore") and node.name == "default:dirt") then
+				if node.name == "default:dirt" then
 					if (default.weather and heat < -5 and humidity > 5) then
 						new_name = "default:dirt_with_snow"
 					elseif (not default.weather or (heat > 5 and heat < grass_heat_max and humidity > grass_humidity_min)) and light >= grass_light_min then
