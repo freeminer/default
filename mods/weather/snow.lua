@@ -9,7 +9,7 @@ minetest.register_craft({
 -- Snow
 core.register_globalstep(function(dtime)
 	for _, player in ipairs(core.get_connected_players()) do
-		local ppos = player:getpos()
+		local ppos = player:get_pos()
 		local strength = get_snow(ppos, 1)
 		if strength > 0 and core.get_node(ppos).name == "air" then
 --print("snow he=".. core.get_heat(ppos).." hu=".. core.get_humidity(ppos) .. " s=" .. strength)
@@ -50,8 +50,8 @@ core.register_globalstep(function(dtime)
 			player=player:get_player_name()
 		})
 ]]
-	       local minpos = addvectors(player:getpos(), {x = -30, y = 20, z = -30})
-	       local maxpos = addvectors(player:getpos(), {x = 30, y = 15, z = 30})
+	       local minpos = addvectors(player:get_pos(), {x = -30, y = 20, z = -30})
+	       local maxpos = addvectors(player:get_pos(), {x = 30, y = 15, z = 30})
 	       local vel = {x = 16.0, y = -8, z = 13.0}
 	       local acc = {x = -16.0, y = -8, z = -13.0}
 	       core.add_particlespawner(

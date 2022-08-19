@@ -204,7 +204,7 @@ end
 local function entity_physics(pos, radius, drops)
 	local objs = minetest.get_objects_inside_radius(pos, radius)
 	for _, obj in pairs(objs) do
-		local obj_pos = obj:getpos()
+		local obj_pos = obj:get_pos()
 		local dist = math.max(1, vector.distance(pos, obj_pos))
 
 		local damage = (4 / dist) * radius

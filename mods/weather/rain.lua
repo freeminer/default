@@ -1,7 +1,7 @@
 -- Rain
 core.register_globalstep(function(dtime)
 	for _, player in ipairs(core.get_connected_players()) do
-		local ppos = player:getpos()
+		local ppos = player:get_pos()
 		local strength = get_rain(ppos, 1)
 		if strength > 0 and core.get_node(ppos).name == "air" then
 --print("rain he=".. core.get_heat(ppos).." hu=".. core.get_humidity(ppos) .. " s=" .. strength)
@@ -29,8 +29,8 @@ core.register_globalstep(function(dtime)
 		})
 ]]
 
-	       local minpos = addvectors(player:getpos(), {x = -15, y = 15, z = -15})
-	       local maxpos = addvectors(player:getpos(), {x = 15, y = 10, z = 15})
+	       local minpos = addvectors(player:get_pos(), {x = -15, y = 15, z = -15})
+	       local maxpos = addvectors(player:get_pos(), {x = 15, y = 10, z = 15})
 	       core.add_particlespawner(
 		  {
 		     amount = 30*strength,
