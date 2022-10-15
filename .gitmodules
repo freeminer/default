@@ -7,9 +7,6 @@
 [submodule "mods/protector"]
 	path = mods/protector
 	url = https://notabug.org/TenPlus1/protector.git
-[submodule "mods/dungeon_loot"]
-	path = mods/dungeon_loot
-	url = https://github.com/BlockMen/dungeon_loot.git
 [submodule "mods/mobs_redo"]
 	path = mods/mobs_redo
 	url = https://notabug.org/TenPlus1/mobs_redo.git
