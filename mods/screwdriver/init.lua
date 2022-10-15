@@ -1,4 +1,10 @@
+-- screwdriver/init.lua
+
 screwdriver = {}
+
+-- Load support for MT game translation.
+local S = minetest.get_translator("screwdriver")
+
 
 screwdriver.ROTATE_FACE = 1
 screwdriver.ROTATE_AXIS = 2
@@ -85,9 +91,10 @@ screwdriver.handler = function(itemstack, user, pointed_thing, mode, uses)
 	end
 
 	local pos = pointed_thing.under
+	local player_name = user and user:get_player_name() or ""
 
-	if minetest.is_protected(pos, user:get_player_name()) then
-		minetest.record_protection_violation(pos, user:get_player_name())
+	if minetest.is_protected(pos, player_name) then
+		minetest.record_protection_violation(pos, player_name)
 		return
 	end
 
@@ -133,9 +140,8 @@ screwdriver.handler = function(itemstack, user, pointed_thing, mode, uses)
 		minetest.check_for_falling(pos)
 	end
 
-	if not (creative and creative.is_enabled_for
-			and creative.is_enabled_for(user:get_player_name())) then
-		itemstack:add_wear(65535 / ((uses or 200) - 1))
+	if not minetest.is_creative_enabled(player_name) then
+		itemstack:add_wear_by_uses(uses or 200)
 	end
 
 	return itemstack
@@ -143,8 +149,9 @@ end
 
 -- Screwdriver
 minetest.register_tool("screwdriver:screwdriver", {
-	description = "Screwdriver (left-click rotates face, right-click rotates axis)",
+	description = S("Screwdriver") .. "\n" .. S("(left-click rotates face, right-click rotates axis)"),
 	inventory_image = "screwdriver.png",
+	groups = {tool = 1},
 	on_use = function(itemstack, user, pointed_thing)
 		screwdriver.handler(itemstack, user, pointed_thing, screwdriver.ROTATE_FACE, 200)
 		return itemstack

@@ -68,11 +68,20 @@ end
 function beds.set_spawns()
 	for name,_ in pairs(beds.player) do
 		local player = minetest.get_player_by_name(name)
-		local p = player:getpos()
+		local p = player:get_pos()
 		-- but don't change spawn location if borrowing a bed
 		if not minetest.is_protected(p, name) then
 			beds.spawn[name] = p
 			core.kv_put('p_' .. name .. '_beds', {spawn = p})
+		end
+	end
+	beds.save_spawns()
+end
+
+function beds.remove_spawns_at(pos)
+	for name, p in pairs(beds.spawn) do
+		if vector.equals(vector.round(p), pos) then
+			beds.spawn[name] = nil
 		end
 	end
 	beds.save_spawns()

@@ -1,5 +1,12 @@
+-- bones/init.lua
+
 -- Minetest 0.4 mod: bones
 -- See README.txt for licensing and other information.
+
+-- Load support for MT game translation.
+local S = minetest.get_translator("bones")
+
+bones = {}
 
 local function is_owner(pos, name)
 	local owner = minetest.get_meta(pos):get_string("owner")
@@ -11,9 +18,6 @@ end
 
 local bones_formspec =
 	"size[8,9]" ..
-	default.gui_bg ..
-	default.gui_bg_img ..
-	default.gui_slots ..
 	"list[current_name;main;0,0.3;8,4;]" ..
 	"list[current_player;main;0,4.85;8,1;]" ..
 	"list[current_player;main;0,6.08;8,3;8]" ..
@@ -25,7 +29,7 @@ local share_bones_time = tonumber(minetest.settings:get("share_bones_time")) or 
 local share_bones_time_early = tonumber(minetest.settings:get("share_bones_time_early")) or share_bones_time / 4
 
 minetest.register_node("bones:bones", {
-	description = "Bones",
+	description = S("Bones"),
 	tiles = {
 		"bones_top.png^[transform2",
 		"bones_bottom.png",
@@ -68,6 +72,12 @@ minetest.register_node("bones:bones", {
 	on_metadata_inventory_take = function(pos, listname, index, stack, player)
 		local meta = minetest.get_meta(pos)
 		if meta:get_inventory():is_empty("main") then
+			local inv = player:get_inventory()
+			if inv:room_for_item("main", {name = "bones:bones"}) then
+				inv:add_item("main", {name = "bones:bones"})
+			else
+				minetest.add_item(pos, "bones:bones")
+			end
 			minetest.remove_node(pos)
 		end
 	end,
@@ -110,7 +120,7 @@ minetest.register_node("bones:bones", {
 	on_timer = function(pos, elapsed)
 		local meta = minetest.get_meta(pos)
 		if minetest.get_gametime() >= meta:get_int("time") + share_bones_time then
-			meta:set_string("infotext", meta:get_string("owner") .. "'s old bones")
+			meta:set_string("infotext", S("@1's old bones", meta:get_string("owner")))
 			meta:set_string("owner", "")
 		else
 			return true
@@ -129,8 +139,18 @@ local function may_replace(pos, player)
 		return false
 	end
 
-	-- allow replacing air and liquids
-	if node_name == "air" or node_definition.liquidtype ~= "none" then
+	-- allow replacing air
+	if node_name == "air" then
+		return true
+	end
+
+	-- don't replace nodes inside protections
+	if minetest.is_protected(pos, player:get_player_name()) then
+		return false
+	end
+
+	-- allow replacing liquids
+	if node_definition.liquidtype ~= "none" then
 		return true
 	end
 
@@ -146,14 +166,13 @@ local function may_replace(pos, player)
 
 	-- default to each nodes buildable_to; if a placed block would replace it, why shouldn't bones?
 	-- flowers being squished by bones are more realistical than a squished stone, too
-	-- exception are of course any protected buildable_to
-	return node_definition.buildable_to and not minetest.is_protected(pos, player:get_player_name())
+	return node_definition.buildable_to
 end
 
 local drop = function(pos, itemstack)
 	local obj = minetest.add_item(pos, itemstack:take_item(itemstack:get_count()))
 	if obj then
-		obj:setvelocity({
+		obj:set_velocity({
 			x = math.random(-10, 10) / 9,
 			y = 5,
 			z = math.random(-10, 10) / 9,
@@ -161,27 +180,48 @@ local drop = function(pos, itemstack)
 	end
 end
 
-minetest.register_on_dieplayer(function(player)
+local player_inventory_lists = { "main", "craft" }
+bones.player_inventory_lists = player_inventory_lists
 
+local function is_all_empty(player_inv)
+	for _, list_name in ipairs(player_inventory_lists) do
+		if not player_inv:is_empty(list_name) then
+			return false
+		end
+	end
+	return true
+end
+
+minetest.register_on_dieplayer(function(player)
 	local bones_mode = minetest.settings:get("bones_mode") or "bones"
 	if bones_mode ~= "bones" and bones_mode ~= "drop" and bones_mode ~= "keep" then
 		bones_mode = "bones"
 	end
 
+	local bones_position_message = minetest.settings:get_bool("bones_position_message") == true
+	local player_name = player:get_player_name()
+	local pos = vector.round(player:get_pos())
+	local pos_string = minetest.pos_to_string(pos)
+
 	-- return if keep inventory set or in creative mode
-	if bones_mode == "keep" or (creative and creative.is_enabled_for
-			and creative.is_enabled_for(player:get_player_name())) then
+	if bones_mode == "keep" or minetest.is_creative_enabled(player_name) then
+		minetest.log("action", player_name .. " dies at " .. pos_string ..
+			". No bones placed")
+		if bones_position_message then
+			minetest.chat_send_player(player_name, S("@1 died at @2.", player_name, pos_string))
+		end
 		return
 	end
 
 	local player_inv = player:get_inventory()
-	if player_inv:is_empty("main") and
-		player_inv:is_empty("craft") then
+	if is_all_empty(player_inv) then
+		minetest.log("action", player_name .. " dies at " .. pos_string ..
+			". No bones placed")
+		if bones_position_message then
+			minetest.chat_send_player(player_name, S("@1 died at @2.", player_name, pos_string))
+		end
 		return
 	end
-
-	local pos = vector.round(player:getpos())
-	local player_name = player:get_player_name()
 
 	-- check if it's possible to place bones, if not find space near player
 	if bones_mode == "bones" and not may_replace(pos, player) then
@@ -194,49 +234,51 @@ minetest.register_on_dieplayer(function(player)
 	end
 
 	if bones_mode == "drop" then
-
-		-- drop inventory items
-		for i = 1, player_inv:get_size("main") do
-			drop(pos, player_inv:get_stack("main", i))
+		for _, list_name in ipairs(player_inventory_lists) do
+			for i = 1, player_inv:get_size(list_name) do
+				drop(pos, player_inv:get_stack(list_name, i))
+			end
+			player_inv:set_list(list_name, {})
 		end
-		player_inv:set_list("main", {})
-
-		-- drop crafting grid items
-		for i = 1, player_inv:get_size("craft") do
-			drop(pos, player_inv:get_stack("craft", i))
-		end
-		player_inv:set_list("craft", {})
-
 		drop(pos, ItemStack("bones:bones"))
+		minetest.log("action", player_name .. " dies at " .. pos_string ..
+			". Inventory dropped")
+		if bones_position_message then
+			minetest.chat_send_player(player_name, S("@1 died at @2, and dropped their inventory.", player_name, pos_string))
+		end
 		return
 	end
 
 	local param2 = minetest.dir_to_facedir(player:get_look_dir())
 	minetest.set_node(pos, {name = "bones:bones", param2 = param2})
 
+	minetest.log("action", player_name .. " dies at " .. pos_string ..
+		". Bones placed")
+	if bones_position_message then
+		minetest.chat_send_player(player_name, S("@1 died at @2, and bones were placed.", player_name, pos_string))
+	end
+
 	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
 	inv:set_size("main", 8 * 4)
-	inv:set_list("main", player_inv:get_list("main"))
 
-	for i = 1, player_inv:get_size("craft") do
-		local stack = player_inv:get_stack("craft", i)
-		if inv:room_for_item("main", stack) then
-			inv:add_item("main", stack)
-		else
-			--drop if no space left
-			drop(pos, stack)
+	for _, list_name in ipairs(player_inventory_lists) do
+		for i = 1, player_inv:get_size(list_name) do
+			local stack = player_inv:get_stack(list_name, i)
+			if inv:room_for_item("main", stack) then
+				inv:add_item("main", stack)
+			else -- no space left
+				drop(pos, stack)
+			end
 		end
+		player_inv:set_list(list_name, {})
 	end
-
-	player_inv:set_list("main", {})
-	player_inv:set_list("craft", {})
 
 	meta:set_string("formspec", bones_formspec)
 	meta:set_string("owner", player_name)
 
 	if share_bones_time ~= 0 then
-		meta:set_string("infotext", player_name .. "'s fresh bones")
+		meta:set_string("infotext", S("@1's fresh bones", player_name))
 
 		if share_bones_time_early == 0 or not minetest.is_protected(pos, player_name) then
 			meta:set_int("time", minetest.get_gametime())
@@ -246,6 +288,6 @@ minetest.register_on_dieplayer(function(player)
 
 		minetest.get_node_timer(pos):start(10)
 	else
-		meta:set_string("infotext", player_name.."'s bones")
+		meta:set_string("infotext", S("@1's bones", player_name))
 	end
 end)

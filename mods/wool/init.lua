@@ -1,30 +1,15 @@
--- This uses a trick: you can first define the recipes using all of the base
--- colors, and then some recipes using more specific colors for a few non-base
--- colors available. When crafting, the last recipes will be checked first.
+-- wool/init.lua
 
-local dyes = {
-	{"white",      "White",      "basecolor_white"},
-	{"grey",       "Grey",       "basecolor_grey"},
-	{"black",      "Black",      "basecolor_black"},
-	{"red",        "Red",        "basecolor_red"},
-	{"yellow",     "Yellow",     "basecolor_yellow"},
-	{"green",      "Green",      "basecolor_green"},
-	{"cyan",       "Cyan",       "basecolor_cyan"},
-	{"blue",       "Blue",       "basecolor_blue"},
-	{"magenta",    "Magenta",    "basecolor_magenta"},
-	{"orange",     "Orange",     "excolor_orange"},
-	{"violet",     "Violet",     "excolor_violet"},
-	{"brown",      "Brown",      "unicolor_dark_orange"},
-	{"pink",       "Pink",       "unicolor_light_red"},
-	{"dark_grey",  "Dark Grey",  "unicolor_darkgrey"},
-	{"dark_green", "Dark Green", "unicolor_dark_green"},
-}
+-- Load support for MT game translation.
+local S = minetest.get_translator("wool")
+
+local dyes = dye.dyes
 
 for i = 1, #dyes do
-	local name, desc, craft_color_group = unpack(dyes[i])
+	local name, desc = unpack(dyes[i])
 
 	minetest.register_node("wool:" .. name, {
-		description = desc .. " Wool",
+		description = S(desc .. " Wool"),
 		tiles = {"wool_" .. name .. ".png"},
 		is_ground_content = false,
 		groups = {snappy = 2, choppy = 2, oddly_breakable_by_hand = 3,
@@ -35,13 +20,33 @@ for i = 1, #dyes do
 	minetest.register_craft{
 		type = "shapeless",
 		output = "wool:" .. name,
-		recipe = {"group:dye," .. craft_color_group, "group:wool"},
+		recipe = {"group:dye,color_" .. name, "group:wool"},
 	}
 end
 
-
--- legacy
-
+-- Legacy
 -- Backwards compatibility with jordach's 16-color wool mod
 minetest.register_alias("wool:dark_blue", "wool:blue")
 minetest.register_alias("wool:gold", "wool:yellow")
+
+-- Dummy calls to S() to allow translation scripts to detect the strings.
+-- To update this run:
+-- for _,e in ipairs(dye.dyes) do print(("S(%q)"):format(e[2].." Wool")) end
+
+--[[
+S("White Wool")
+S("Grey Wool")
+S("Dark Grey Wool")
+S("Black Wool")
+S("Violet Wool")
+S("Blue Wool")
+S("Cyan Wool")
+S("Dark Green Wool")
+S("Green Wool")
+S("Yellow Wool")
+S("Brown Wool")
+S("Orange Wool")
+S("Red Wool")
+S("Magenta Wool")
+S("Pink Wool")
+--]]

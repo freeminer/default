@@ -35,3 +35,9 @@ Created by Gambit (CC BY 3.0):
   farming_flour.png
   farming_cotton_seed.png
   farming_wheat_seed.png
+
+Created by Napiophelios (CC BY-SA 3.0):
+  farming_cotton.png
+
+Created by Extex101 (CC BY-SA 3.0):
+  farming_cotton_wild.png

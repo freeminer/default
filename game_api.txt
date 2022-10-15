@@ -2,10 +2,11 @@ Minetest Game API
 =================
 GitHub Repo: https://github.com/minetest/minetest_game
 
+
 Introduction
 ------------
 
-The Minetest Game subgame offers multiple new possibilities in addition to the Minetest engine's built-in API,
+The Minetest Game game offers multiple new possibilities in addition to the Minetest engine's built-in API,
 allowing you to add new plants to farming mod, buckets for new liquids, new stairs and custom panes.
 For information on the Minetest API, visit https://github.com/minetest/minetest/blob/master/doc/lua_api.txt
 Please note:
@@ -13,6 +14,7 @@ Please note:
  * [XYZ] refers to a section the Minetest API
  * [#ABC] refers to a section in this document
  * [pos] refers to a position table `{x = -5, y = 0, z = 200}`
+
 
 Bucket API
 ----------
@@ -34,6 +36,7 @@ The bucket API allows registering new types of buckets for non-default liquids.
 The filled bucket item is returned to the player that uses an empty bucket pointing to the given liquid source.
 When punching with an empty bucket pointing to an entity or a non-liquid node, the on_punch of the entity or node will be triggered.
 
+
 Beds API
 --------
 
@@ -42,6 +45,7 @@ Beds API
 		def            -- See [#Bed definition]
 	)
 
+ * `beds.can_dig(bed_pos)` Returns a boolean whether the bed at `bed_pos` may be dug
  * `beds.read_spawns() `   Returns a table containing players respawn positions
  * `beds.kick_players()`  Forces all players to leave bed
  * `beds.skip_night()`   Sets world time to morning and saves respawn position of all players currently sleeping
@@ -67,6 +71,17 @@ Beds API
 		}
 	}
 
+
+Bones API
+---------
+
+An ordered list of listnames (default: "main", "craft") of the player inventory,
+that will be placed into bones or dropped on player death can be looked up or changed
+in `bones.player_inventory_lists`.
+
+e.g. `table.insert(bones.player_inventory_lists, "backpack")`
+
+
 Creative API
 ------------
 
@@ -78,20 +93,83 @@ For example,
 is used to show all tools. Name is used in the sfinv page name, title is the
 human readable title.
 
-`is_enabled_for` is used to check whether a player is in creative mode:
-
-    creative.is_enabled_for(name)
-
-Override this to allow per-player game modes.
+Creative provides `creative.is_enabled_for(name)`, which is identical in
+functionality to the engine's `minetest.creative_is_enabled(name)`.
+Its use is deprecated and it should also not be overriden.
 
 The contents of `creative.formspec_add` is appended to every creative inventory
 page. Mods can use it to add additional formspec elements onto the default
 creative inventory formspec to be drawn after each update.
 
+Group overrides can be used for any registered item, node or tool. Use one of
+the groups stated below to pick which category it will appear in.
+
+	node = 1      -- Appears in the Nodes category
+	tool = 1      -- Appears in the Tools category
+	craftitem = 1 -- Appears in the Items category
+
+
+Chests API
+----------
+
+The chests API allows the creation of chests, which have their own inventories for holding items.
+
+`default.chest.get_chest_formspec(pos)`
+
+ * Returns a formspec for a specific chest.
+ * `pos` Location of the chest node, e.g `{x = 1, y = 1, z = 1}`
+
+`default.chest.chest_lid_obstructed(pos)`
+
+ * Returns a boolean depending on whether or not a chest has its top obstructed by a solid node.
+ * `pos` Location of the chest node, e.g `{x = 1, y = 1, z = 1}`
+
+`default.chest.chest_lid_close(pn)`
+
+ * Closes the chest that a player is currently looking in.
+ * `pn` The name of the player whose chest is going to be closed
+
+`default.chest.open_chests`
+
+ * A table indexed by player name to keep track of who opened what chest.
+ * Key: The name of the player.
+ * Value: A table containing information about the chest the player is looking at.
+   e.g `{ pos = {1, 1, 1}, sound = null, swap = "default:chest" }`
+
+`default.chest.register_chest(name, def)`
+
+ * Registers new chest
+ * `name` Name for chest e.g. "default:chest"
+ * `def`  See [#Chest Definition]
+
+### Chest Definition
+
+	description = "Chest",
+	tiles = {
+		"default_chest_top.png",
+		"default_chest_top.png",
+		"default_chest_side.png",
+		"default_chest_side.png",
+		"default_chest_front.png",
+		"default_chest_inside.png"
+	}, -- Textures which are applied to the chest model.
+	sounds = default.node_sound_wood_defaults(),
+	sound_open = "default_chest_open",
+	sound_close = "default_chest_close",
+	groups = {choppy = 2, oddly_breakable_by_hand = 2},
+	protected = false, -- If true, only placer can modify chest.
+
+
 Doors API
 ---------
 
 The doors mod allows modders to register custom doors and trapdoors.
+
+`doors.registered_doors[name] = Door definition` 
+ * Table of registered doors, indexed by door name 
+
+`doors.registered_trapdoors[name] = Trapdoor definition` 
+ * Table of registered trap doors, indexed by trap door name 
 
 `doors.register_door(name, def)`
 
@@ -128,29 +206,58 @@ The doors mod allows modders to register custom doors and trapdoors.
     has the permissions needed to open this door. If omitted then no
     permission checks are performed.
 
+`doors.door_toggle(pos, node, clicker)`
+
+ * Toggle door open or shut
+ * `pos` Position of the door
+ * `node` Node definition
+ * `clicker` Player definition for the player that clicked on the door
+ 
 ### Door definition
 
 	description = "Door description",
 	inventory_image = "mod_door_inv.png",
 	groups = {choppy = 2},
+	model = "mod_door", -- (optional)
+	-- Model name without a suffix ("big_door" not "big_door_a.obj", "big_door_b.obj")
 	tiles = {"mod_door.png"}, -- UV map.
+	-- The front and back of the door must be identical in appearence as they swap on
+	-- open/close.
 	recipe = craftrecipe,
 	sounds = default.node_sound_wood_defaults(), -- optional
 	sound_open = sound play for open door, -- optional
 	sound_close = sound play for close door, -- optional
+	gain_open = 0.3, -- optional, defaults to 0.3
+	gain_close = 0.3, -- optional, defaults to 0.3
 	protected = false, -- If true, only placer can open the door (locked for others)
+	on_rightclick = function(pos, node, clicker, itemstack, pointed_thing), 
+	-- optional function containing the on_rightclick callback, defaults to a doors.door_toggle-wrapper
+	use_texture_alpha = "clip",
 
 ### Trapdoor definition
 
 	description = "Trapdoor description",
 	inventory_image = "mod_trapdoor_inv.png",
+	nodebox_closed = {} -- Nodebox for closed model
+	nodebox_opened = {} -- Nodebox for opened model
+	-- (optional) both nodeboxes must be used, not one only
 	groups = {choppy = 2},
 	tile_front = "doors_trapdoor.png", -- the texture for the front and back of the trapdoor
-	tile_side = "doors_trapdoor_side.png", -- the tiles of the four side parts of the trapdoor
+	tile_side = "doors_trapdoor_side.png",
+	-- The texture for the four sides of the trapdoor.
+	-- The texture should have the trapdoor side drawn twice, in the lowest and highest
+	-- 1/8ths of the texture, both upright. The area between is not used.
+	-- The lower 1/8th will be used for the closed trapdoor, the higher 1/8th will be used
+	-- for the open trapdoor.
 	sounds = default.node_sound_wood_defaults(), -- optional
 	sound_open = sound play for open door, -- optional
 	sound_close = sound play for close door, -- optional
+	gain_open = 0.3, -- optional, defaults to 0.3
+	gain_close = 0.3, -- optional, defaults to 0.3
 	protected = false, -- If true, only placer can open the door (locked for others)
+	on_rightclick = function(pos, node, clicker, itemstack, pointed_thing) ,
+	-- function containing the on_rightclick callback
+	use_texture_alpha = "clip",
 
 ### Fence gate definition
 
@@ -160,6 +267,43 @@ The doors mod allows modders to register custom doors and trapdoors.
 	material = "default:wood",
 	groups = {choppy = 2, oddly_breakable_by_hand = 2, flammable = 2},
 	sounds = default.node_sound_wood_defaults(), -- optional
+	on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
+	-- function containing the on_rightclick callback
+
+
+Dungeon Loot API
+----------------
+
+The mod that places chests with loot in dungeons provides an API to register additional loot.
+
+`dungeon_loot.register(def)`
+
+ * Registers one or more loot items
+ * `def` Can be a single [#Loot definition] or a list of them
+
+`dungeon_loot.registered_loot`
+
+ * Table of all registered loot, not to be modified manually
+
+### Loot definition
+
+	name = "item:name",
+	chance = 0.5,
+	-- ^ chance value from 0.0 to 1.0 that the item will appear in the chest when chosen
+	--   Due to an extra step in the selection process, 0.5 does not(!) mean that
+	--   on average every second chest will have this item
+	count = {1, 4},
+	-- ^ table with minimum and maximum amounts of this item
+	--   optional, defaults to always single item
+	y = {-32768, -512},
+	-- ^ table with minimum and maximum heights this item can be found at
+	--   optional, defaults to no height restrictions
+	types = {"desert"},
+	-- ^ table with types of dungeons this item can be found in
+	--   supported types: "normal" (the cobble/mossycobble one), "sandstone"
+	--   "desert" and "ice"
+	--   optional, defaults to no type restrictions
+
 
 Fence API
 ---------
@@ -182,6 +326,7 @@ Allows creation of new fences with "fencelike" drawtype.
 	groups = {choppy = 2, oddly_breakable_by_hand = 2, flammable = 2},
 	sounds = default.node_sound_wood_defaults(),
 
+
 Walls API
 ---------
 
@@ -193,6 +338,7 @@ walls.register(name, desc, texture, mat, sounds)
 ^ texture = "default_stone.png"
 ^ mat = "default:stone". Used to auto-generate crafting recipe.
 ^ sounds = sounds: see [#Default sounds]
+
 
 Farming API
 -----------
@@ -227,6 +373,8 @@ The farming API allows you to easily register plants and hoes.
 
 	{
 		description = "",                      -- Description of seed item
+		harvest_description = "",              -- Description of harvest item
+		                                       -- (optional, derived automatically if not provided)
 		inventory_image = "unknown_item.png",  -- Image to be used as seed's wield- and inventory image
 		steps = 8,                             -- How many steps the plant has to grow, until it can be harvested
 		-- ^ Always provide a plant texture for each step, format: modname_plantname_i.png (i = stepnumber)
@@ -234,9 +382,12 @@ The farming API allows you to easily register plants and hoes.
 		maxlight = default.LIGHT_MAX           -- Maximum light to grow
 	}
 
+
 Fire API
 --------
 
+Add group flammable when registering a node to make fire seek for it.
+Add it to an item to make it burn up when dropped in lava or fire.
 New node def property:
 
 `on_burn(pos)`
@@ -284,53 +435,83 @@ Give Initial Stuff API
 ^ Adds items to the list of items to be given
 
 
-Players API
------------
+Player API
+----------
 
-The player API can register player models and update the player's appearence
+The player API can register player models and update the player's appearance.
+
+* `player_api.globalstep(dtime, ...)`
+	* The function called by the globalstep that controls player animations.
+	  You can override this to replace the globalstep with your own implementation.
+	* Receives all args that minetest.register_globalstep() passes
 
 * `player_api.register_model(name, def)`
 	* Register a new model to be used by players
-	* name: model filename such as "character.x", "foo.b3d", etc.
-	* def: See [#Model definition]
-    * saved to player_api.registered_models
+	* `name`: model filename such as "character.x", "foo.b3d", etc.
+	* `def`: see [#Model definition]
+	* Saved to player_api.registered_models
 
-* `player_api.registered_player_models[name]`
-	 * Get a model's definition
-	 * see [#Model definition]
+* `player_api.registered_models[name]`
+	* Get a model's definition
+	* `name`: model filename
+	* See [#Model definition]
 
 * `player_api.set_model(player, model_name)`
 	* Change a player's model
 	* `player`: PlayerRef
-	* `model_name`: model registered with player_api.register_model()
+	* `model_name`: model registered with `player_api.register_model`
 
-* `player_api.set_animation(player, anim_name [, speed])`
-	* Applies an animation to a player
-	* anim_name: name of the animation.
-	* speed: frames per second. If nil, default from the model is used
+* `player_api.set_animation(player, anim_name, speed)`
+	* Applies an animation to a player if speed or anim_name differ from the currently playing animation
+	* `player`: PlayerRef
+	* `anim_name`: name of the animation
+	* `speed`: keyframes per second. If nil, the default from the model def is used
 
 * `player_api.set_textures(player, textures)`
 	* Sets player textures
 	* `player`: PlayerRef
-	* `textures`: array of textures, If `textures` is nil, the default textures from the model def are used
+	* `textures`: array of textures. If nil, the default from the model def is used
+
+* `player_api.set_textures(player, index, texture)`
+	* Sets one of the player textures
+	* `player`: PlayerRef
+	* `index`: Index into array of all textures
+	* `texture`: the texture string
 
 * `player_api.get_animation(player)`
-	* Returns a table containing fields `model`, `textures` and `animation`.
-	* Any of the fields of the returned table may be nil.
-	* player: PlayerRef
+	* Returns a table containing fields `model`, `textures` and `animation`
+	* Any of the fields of the returned table may be nil
+	* `player`: PlayerRef
+
+* `player_api.player_attached`
+	* A table that maps a player name to a boolean
+	* If the value for a given player is set to true, the default player animations
+	  (walking, digging, ...) will no longer be updated, and knockback from damage is
+	  prevented for that player
+	* Example of usage: A mod sets a player's value to true when attached to a vehicle
 
 ### Model Definition
 
 	{
-		animation_speed = 30,            -- Default animation speed, in FPS.
-		textures = {"character.png", },  -- Default array of textures.
-		visual_size = {x = 1, y = 1},    -- Used to scale the model.
+		animation_speed = 30,           -- Default animation speed, in keyframes per second
+		textures = {"character.png"},   -- Default array of textures
 		animations = {
-			-- <anim_name> = {x = <start_frame>, y = <end_frame>},
-			foo = {x = 0, y = 19},
-			bar = {x = 20, y = 39},
-		-- ...
+			-- [anim_name] = {
+			--   x = <start_frame>,
+			--   y = <end_frame>,
+			--   collisionbox = <model collisionbox>, -- (optional)
+			--   eye_height = <model eye height>,     -- (optional)
+			--   -- suspend client side animations while this one is active (optional)
+			--   override_local = <true/false>
+			-- },
+			stand = ..., lay = ..., walk = ..., mine = ..., walk_mine = ..., -- required animations
+			sit = ... -- used by boats and other MTG mods
 		},
+		-- Default object properties, see lua_api.txt
+		visual_size = {x = 1, y = 1},
+		collisionbox = {-0.3, 0.0, -0.3, 0.3, 1.7, 0.3},
+		stepheight = 0.6,
+		eye_height = 1.47
 	}
 
 
@@ -345,6 +526,7 @@ TNT API
  * `description` A description for your TNT.
  * `radius` The radius within which the TNT can destroy nodes. The default is 3.
  * `damage_radius` The radius within which the TNT can damage players and mobs. By default it is twice the `radius`.
+ * `sound` The sound played when explosion occurs. By default it is `tnt_explode`.
  * `disable_drops` Disable drops. By default it is set to false.
  * `ignore_protection` Don't check `minetest.is_protected` before removing a node.
  * `ignore_on_blast` Don't call `on_blast` even if a node has one.
@@ -354,12 +536,13 @@ TNT API
   * `bottom` Bottom tile. By default the name of the tnt with a suffix of `_bottom.png`.
   * `burning` Top tile when lit. By default the name of the tnt with a suffix of `_top_burning_animated.png".
 
-`tnt.boom(position, definition)`
+`tnt.boom(position[, definition])`
 
 ^ Create an explosion.
 
 * `position` The center of explosion.
-* `definition` The TNT definion as passed to `tnt.register`
+* `definition` The TNT definion as passed to `tnt.register` with the following addition:
+ * `explode_center` false by default which removes TNT node on blast, when true will explode center node.
 
 `tnt.burn(position, [nodename])`
 
@@ -451,11 +634,15 @@ set a players home position and teleport a player to home position.
 Sfinv API
 ---------
 
+It is recommended that you read this link for a good introduction to the
+sfinv API by its author: https://rubenwardy.com/minetest_modding_book/en/chapters/sfinv.html
+
 ### sfinv Methods
 
 **Pages**
 
 * sfinv.set_page(player, pagename) - changes the page
+* sfinv.get_page(player) - get the current page name. Will never return nil
 * sfinv.get_homepage_name(player) - get the page name of the first page to show to a player
 * sfinv.register_page(name, def) - register a page, see section below
 * sfinv.override_page(name, def) - overrides fields of an page registered with register_page.
@@ -552,38 +739,78 @@ And override this function to change the layout:
 		return table.concat(tmp, "")
 	end
 
+
 Stairs API
 ----------
 
 The stairs API lets you register stairs and slabs and ensures that they are registered the same way as those
 delivered with Minetest Game, to keep them compatible with other mods.
 
-`stairs.register_stair(subname, recipeitem, groups, images, description, sounds)`
+The following node attributes are sourced from the recipeitem:
+ * use_texture_alpha
+ * sunlight_propagates
+ * light_source
+ * If the recipeitem is a fuel, the stair/slab is also registered as a fuel of proportionate burntime.
 
- * Registers a stair.
+`stairs.register_stair(subname, recipeitem, groups, images, description, sounds, worldaligntex)`
+
+ * Registers a stair
  * `subname`: Basically the material name (e.g. cobble) used for the stair name. Nodename pattern: "stairs:stair_subname"
  * `recipeitem`: Item used in the craft recipe, e.g. "default:cobble", may be `nil`
- * `groups`: see [Known damage and digging time defining groups]
- * `images`: see [Tile definition]
- * `description`: used for the description field in the stair's definition
- * `sounds`: see [#Default sounds]
+ * `groups`: See [Known damage and digging time defining groups]
+ * `images`: See [Tile definition]
+ * `description`: Used for the description field in the stair's definition
+ * `sounds`: See [#Default sounds]
+ * `worldaligntex`: A bool to set all textures world-aligned. Default false. See [Tile definition]
 
-`stairs.register_slab(subname, recipeitem, groups, images, description, sounds)`
+`stairs.register_slab(subname, recipeitem, groups, images, description, sounds, worldaligntex)`
 
- * Registers a slabs
- * `subname`: Basically the material name (e.g. cobble) used for the stair name. Nodename pattern: "stairs:stair_subname"
+ * Registers a slab
+ * `subname`: Basically the material name (e.g. cobble) used for the slab name. Nodename pattern: "stairs:slab_subname"
  * `recipeitem`: Item used in the craft recipe, e.g. "default:cobble"
- * `groups`: see [Known damage and digging time defining groups]
- * `images`: see [Tile definition]
- * `description`: used for the description field in the stair's definition
- * `sounds`: see [#Default sounds]
+ * `groups`: See [Known damage and digging time defining groups]
+ * `images`: See [Tile definition]
+ * `description`: Used for the description field in the slab's definition
+ * `sounds`: See [#Default sounds]
+ * `worldaligntex`: A bool to set all textures world-aligned. Default false. See [Tile definition]
 
-`stairs.register_stair_and_slab(subname, recipeitem, groups, images, desc_stair, desc_slab, sounds)`
+`stairs.register_stair_inner(subname, recipeitem, groups, images, description, sounds, worldaligntex, full_description)`
 
- * A wrapper for stairs.register_stair and stairs.register_slab
+ * Registers an inner corner stair
+ * `subname`: Basically the material name (e.g. cobble) used for the stair name. Nodename pattern: "stairs:stair_inner_subname"
+ * `recipeitem`: Item used in the craft recipe, e.g. "default:cobble", may be `nil`
+ * `groups`: See [Known damage and digging time defining groups]
+ * `images`: See [Tile definition]
+ * `description`: Used for the description field in the stair's definition with "Inner" prepended
+ * `sounds`: See [#Default sounds]
+ * `worldaligntex`: A bool to set all textures world-aligned. Default false. See [Tile definition]
+ * `full_description`: Overrides the description, bypassing string concatenation. This is useful for translation. (optional)
+
+`stairs.register_stair_outer(subname, recipeitem, groups, images, description, sounds, worldaligntex, full_description)`
+
+ * Registers an outer corner stair
+ * `subname`: Basically the material name (e.g. cobble) used for the stair name. Nodename pattern: "stairs:stair_outer_subname"
+ * `recipeitem`: Item used in the craft recipe, e.g. "default:cobble", may be `nil`
+ * `groups`: See [Known damage and digging time defining groups]
+ * `images`: See [Tile definition]
+ * `description`: Used for the description field in the stair's definition with "Outer" prepended
+ * `sounds`: See [#Default sounds]
+ * `worldaligntex`: A bool to set all textures world-aligned. Default false. See [Tile definition]
+ * `full_description`: Overrides the description, bypassing string concatenation. This is useful for translation. (optional)
+
+```
+stairs.register_stair_and_slab(subname, recipeitem, groups, images, desc_stair, desc_slab,
+	sounds, worldaligntex, desc_stair_inner, desc_stair_outer)
+```
+
+ * A wrapper for stairs.register_stair, stairs.register_slab, stairs.register_stair_inner, stairs.register_stair_outer
  * Uses almost the same arguments as stairs.register_stair
- * `desc_stair`: Description for stair node
+ * `desc_stair`: Description for stair nodes. For corner stairs 'Inner' or 'Outer' will be prefixed unless
+ 	`desc_stair_inner` or `desc_stair_outer` are specified, which are used instead.
  * `desc_slab`: Description for slab node
+ * `desc_stair_inner`: Description for inner stair node
+ * `desc_stair_outer`: Description for outer stair node
+
 
 Xpanes API
 ----------
@@ -598,11 +825,17 @@ Creates panes that automatically connect to each other
 ### Pane definition
 
 	{
-		textures = {"texture for sides", (unused), "texture for top and bottom"}, -- More tiles aren't supported
+		textures = {
+			"texture for front and back",
+			(unused),
+			"texture for the 4 edges"
+		}, -- More tiles aren't supported
 		groups = {group = rating}, -- Uses the known node groups, see [Known damage and digging time defining groups]
 		sounds = SoundSpec,        -- See [#Default sounds]
 		recipe = {{"","","","","","","","",""}}, -- Recipe field only
+		use_texture_alpha = true, -- Optional boolean (default: `false`) for colored glass panes
 	}
+
 
 Raillike definitions
 --------------------
@@ -637,6 +870,7 @@ Sounds inside the default table can be used within the sounds field of node defi
  * `default.node_sound_glass_defaults()`
  * `default.node_sound_metal_defaults()`
 
+
 Default constants
 -----------------
 
@@ -654,24 +888,19 @@ GUI and formspecs
 
 `default.gui_bg`
 
- * Background color formspec element
+ * Deprecated, remove from mods.
 
 `default.gui_bg_img`
 
- * Image overlay formspec element for the background to use in formspecs
+ * Deprecated, remove from mods.
 
 `default.gui_slots`
 
- * `listcolors` formspec element that is used to format the slots in formspecs
+ * Deprecated, remove from mods.
 
 `default.gui_survival_form`
 
  * Entire formspec for the survival inventory
-
-`default.get_chest_formspec(pos)`
-
- * Get the chest formspec using the defined GUI elements
- * pos: Location of the node
 
 `default.get_furnace_active_formspec(fuel_percent, item_percent)`
 
@@ -721,70 +950,39 @@ callback overridden. All the nodes listed in `leaves` have their
 Dyes
 ----
 
-To make recipes that will work with any dye ever made by anybody, define
-them based on groups. You can select any group of groups, based on your need for
-amount of colors.
+Minetest Game dyes are registered with:
 
-### Color groups
+    groups = {dye = 1, color_<color> = 1},
 
-Base color groups:
+To make recipes that will work with dyes from many mods, define them using the
+dye group and the color groups.
 
- * `basecolor_white`
- * `basecolor_grey`
- * `basecolor_black`
- * `basecolor_red`
- * `basecolor_yellow`
- * `basecolor_green`
- * `basecolor_cyan`
- * `basecolor_blue`
- * `basecolor_magenta`
+Dye color groups:
 
-Extended color groups ( * means also base color )
+ * `color_white`
+ * `color_grey`
+ * `color_dark_grey`
+ * `color_black`
+ * `color_red`
+ * `color_pink`
+ * `color_orange`
+ * `color_brown`
+ * `color_yellow`
+ * `color_green`
+ * `color_dark_green`
+ * `color_blue`
+ * `color_cyan`
+ * `color_violet`
+ * `color_magenta`
 
- * `excolor_white` *
- * `excolor_lightgrey`
- * `excolor_grey` *
- * `excolor_darkgrey`
- * `excolor_black` *
- * `excolor_red` *
- * `excolor_orange`
- * `excolor_yellow` *
- * `excolor_lime`
- * `excolor_green` *
- * `excolor_aqua`
- * `excolor_cyan` *
- * `excolor_sky_blue`
- * `excolor_blue` *
- * `excolor_violet`
- * `excolor_magenta` *
- * `excolor_red_violet`
-
-The whole unifieddyes palette as groups:
-
- * `unicolor_<excolor>`
-
-For the following, no white/grey/black is allowed:
-
- * `unicolor_medium_<excolor>`
- * `unicolor_dark_<excolor>`
- * `unicolor_light_<excolor>`
- * `unicolor_<excolor>_s50`
- * `unicolor_medium_<excolor>_s50`
- * `unicolor_dark_<excolor>_s50`
-
-Example of one shapeless recipe using a color group:
+Example of one shapeless recipe using the dye group and a color group:
 
 	minetest.register_craft({
 		type = "shapeless",
-		output = '<mod>:item_yellow',
-		recipe = {'<mod>:item_no_color', 'group:basecolor_yellow'},
+		output = "<mod>:item_yellow",
+		recipe = {"<mod>:item_no_color", "group:dye,color_yellow"},
 	})
 
-### Color lists
-
- * `dye.basecolors` are an array containing the names of available base colors
-
- * `dye.excolors` are an array containing the names of the available extended colors
 
 Trees
 -----
@@ -822,6 +1020,13 @@ Trees
  * `default.grow_acacia_bush(pos)`
   * Grows an acaia bush at pos
 
+ * `default.grow_pine_bush(pos)`
+  * Grows a pine bush at pos
+
+ * `default.grow_blueberry_bush(pos)`
+  * Grows a blueberry bush at pos
+
+
 Carts
 -----
 
@@ -843,6 +1048,7 @@ Carts
 	like speed, acceleration, player attachment. The handler will
 	likely be called many times per second, so the function needs
 	to make sure that the event is handled properly.
+
 
 Key API
 -------
@@ -901,3 +1107,41 @@ for the wielded skeleton key.
 
 if `nil` is returned, it is assumed that the wielder did not have
 permissions to create a key for this node, and no key is created.
+
+`default.register_craft_metadata_copy(ingredient, result)`
+----------------------------------------------------------
+
+This function registers a shapeless recipe that takes `ingredient`
+and `result` as input and outputs `result`.
+
+The metadata of the input `result` is copied to the output `result`.
+
+
+Log API
+-------
+
+Logs action of the player with a node at a certain position.
+By default only actions of real players are logged.
+Actions of non-players (usually machines) are logged only when
+setting `log_non_player_actions` is enabled.
+A player is considered non-player if `player:is_player()` returns
+`false` or `player.is_fake_player` is truthy. The use of
+`is_fake_player` is an unofficial standard between mods.
+These non-players are marked by the content of `is_fake_player`
+(if it is a string) or a "*" in brackets after the player name in
+the log.
+
+`default.log_player_action(player, ...)`
+
+ * `player`        The player who performed the action
+ * `message_parts` Any mumber of message parts describing the action
+                   in 3rd person singular present tense. It can also
+                   contain a `pos` which is logged as "(X,Y,Z)"
+
+`default.set_inventory_action_loggers(def, name)`
+
+ * sets the callbacks `on_metadata_inventory_move`,
+   `on_metadata_inventory_put` and `on_metadata_inventory_take`
+   that log corresponding actions
+ * `def`     See [Node definition]
+ * `name`    Description of the node in the log message
