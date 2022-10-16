@@ -18,6 +18,8 @@ if  mg_name == "indev" or mg_name == "v6" or mg_name == "singlenode" then
 	return
 end
 
+local cloud_height = tonumber(core.setting_get("cloud_height"));
+
 -- Parameters
 
 local TSCALE = 600 -- Time scale of noise variation in seconds
@@ -99,8 +101,9 @@ local function update_clouds()
 	local n_speedz = nobj_speedz:get_2d({x = time, y = 0}) -- -1 to 1
 
 	for _, player in ipairs(minetest.get_connected_players()) do
+        local ppos = player:get_pos()
 		-- Fallback to mid-value 50 for very old worlds
-		local humid = minetest.get_humidity(player:get_pos()) or 50
+		local humid = minetest.get_humidity({x = ppos.x, y = cloud_height, z = ppos.z}) or 50
 		-- Default and classic density value is 0.4, make this happen
 		-- at humidity midvalue 50 when n_density is at midvalue 0.5.
 		-- density_max = 0.25 at humid = 0.
