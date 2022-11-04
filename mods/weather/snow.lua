@@ -123,10 +123,11 @@ core.register_abm({
 			local update_falling
 			-- smooth
 			--local rnd = math.random(1, 4)
-			local arr = {1, 2, 3, 4, 5}
+			local arr = {1, 2, 3, 4, 5, 6}
 			local heat = core.get_heat(pos)
 			-- smooth or wet snow
-			if heat > -10 then table.remove(arr) end
+			if heat < -10 then table.remove(arr) end
+			if heat < -20 then table.remove(arr) end
 			shuffle(arr)
 			for _,rnd in ipairs(arr) do
 				if min_level <= 1 then break end
@@ -135,7 +136,7 @@ core.register_abm({
 				elseif rnd == 2 then addv.x = -1
 				elseif rnd == 3 then addv.z = -1
 				elseif rnd == 4 then addv.z = 1
-				elseif rnd == 5 then break
+				elseif rnd >= 5 then break
 				end
 
 				local ngp = addvectors(min_pos, addv)

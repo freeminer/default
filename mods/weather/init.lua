@@ -137,9 +137,9 @@ core.register_abm({
 		else
 			if node.name == "default:dirt_with_grass" and top_name == "air" and (default.weather and heat > 5 and heat < grass_heat_max and humidity > grass_humidity_min)
 				and (activate or math.random(1, 40) == 1) and light >= grass_light_min then
-				if rnd1000 <= 1 then
+				if rnd1000 <= 10 then
 					set_moonflower(top_pos, "flowers:moonflower_closed")
-				elseif rnd1000 <= 10 then
+				elseif rnd1000 <= 100 then
 					local num = math.random(#flowers.datas)
 					if not flowers.datas[num][1] then return end -- why?
 					flowers.flower_spread(top_pos, {name = "flowers:" .. flowers.datas[num][1]})
