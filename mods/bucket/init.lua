@@ -112,7 +112,7 @@ function bucket.register_liquid(source, flowing, itemname, inventory_image, name
 					core.add_node(lpos, {name=source, param2=fullness})
 					return
 				elseif node.name == flowing or node.name == source then
-					core.add_node_level(lpos, fullness, 1)
+					core.add_node_level(lpos, fullness, 0, 1)
 				else
 					core.add_node(lpos, {name=flowing, param2=fullness})
 				end
