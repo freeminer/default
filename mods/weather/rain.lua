@@ -79,10 +79,10 @@ core.register_abm({
 		local light = core.get_node_light(np, 0.5)
 		if not light or light < default.LIGHT_SUN - 1 then return end
 			if core.get_node(pos).name == "default:water_flowing" then
-				core.add_node_level(pos, 4*amount, 1)
+				core.add_node_level(pos, 4*amount, 2)
 			elseif core.get_node(np).name == "air" then
 				core.set_node(np, {name="water_flowing"})
-				core.set_node_level(np, amount, 1)
+				core.set_node_level(np, amount, 2)
 			end
 	end
 })
@@ -102,7 +102,7 @@ core.register_abm({
 		if core.get_node(np).name == "air" then
 		local amount = ((100-humidity)/20)
 		if amount < 1 then amount = 1 end
-			core.add_node_level(pos, -amount, 1)
+			core.add_node_level(pos, -amount, 2)
 		end
 	end
 })

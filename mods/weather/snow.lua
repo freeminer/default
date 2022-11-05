@@ -146,7 +146,7 @@ core.register_abm({
 				if test_name == "air" then
 					min_pos = ngp
 					core.set_node(min_pos, {name="snow"}, 2)
-					if math.random(3) ~= 1 then
+					if math.random(-heat) >= 10 then
 						update_falling = 1
 					end
 					break
@@ -160,7 +160,7 @@ core.register_abm({
 
 			pos = min_pos
 			np = addvectors(pos, {x=0, y=1, z=0})
-			add = core.add_node_level(pos, add, 1);
+			add = core.add_node_level(pos, add, 2);
 			if default.time_speed <= 0 then add = 0 end
 			if add > 0 then
 				core.set_node(pos, {name="default:ice"}, 2)
@@ -170,7 +170,7 @@ core.register_abm({
 		end
 		if add > 0 and core.get_node(np).name == "air" then
 			core.set_node(np, {name="snow"}, 2)
-			core.add_node_level(np, add, 1)
+			core.add_node_level(np, add, 2)
 		end
 	end
 })
