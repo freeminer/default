@@ -123,10 +123,11 @@ core.register_abm({
 			local update_falling
 			-- smooth
 			--local rnd = math.random(1, 4)
-			local arr = {1, 2, 3, 4, 5}
+			local arr = {1, 2, 3, 4, 5, 6}
 			local heat = core.get_heat(pos)
 			-- smooth or wet snow
-			if heat > -10 then table.remove(arr) end
+			if heat < -10 then table.remove(arr) end
+			if heat < -20 then table.remove(arr) end
 			shuffle(arr)
 			for _,rnd in ipairs(arr) do
 				if min_level <= 1 then break end
@@ -135,7 +136,7 @@ core.register_abm({
 				elseif rnd == 2 then addv.x = -1
 				elseif rnd == 3 then addv.z = -1
 				elseif rnd == 4 then addv.z = 1
-				elseif rnd == 5 then break
+				elseif rnd >= 5 then break
 				end
 
 				local ngp = addvectors(min_pos, addv)
@@ -145,7 +146,7 @@ core.register_abm({
 				if test_name == "air" then
 					min_pos = ngp
 					core.set_node(min_pos, {name="snow"}, 2)
-					if math.random(3) ~= 1 then
+					if math.random(-heat) >= 10 then
 						update_falling = 1
 					end
 					break
@@ -159,7 +160,7 @@ core.register_abm({
 
 			pos = min_pos
 			np = addvectors(pos, {x=0, y=1, z=0})
-			add = core.add_node_level(pos, add);
+			add = core.add_node_level(pos, add, 2);
 			if default.time_speed <= 0 then add = 0 end
 			if add > 0 then
 				core.set_node(pos, {name="default:ice"}, 2)
@@ -169,7 +170,7 @@ core.register_abm({
 		end
 		if add > 0 and core.get_node(np).name == "air" then
 			core.set_node(np, {name="snow"}, 2)
-			core.add_node_level(np, add)
+			core.add_node_level(np, add, 2)
 		end
 	end
 })
