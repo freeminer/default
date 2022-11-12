@@ -61,13 +61,13 @@ core.register_abm({
 	neighbors = {"air"},
 	interval = 15.0,
 	chance = 50,
-	action = function (pos, node, active_object_count, active_object_count_wider)
+	action = function (pos, node, active_object_count, active_object_count_wider, ndef, activate)
 		-- todo! chance must depend on rain value
 		local amount = get_rain(pos)
 		if amount == 0 then return end
 		amount = amount * 3
 		if amount < 1 then amount = 1 end
-		local drawtype = core.registered_nodes[node.name].drawtype
+		local drawtype = ndef.drawtype -- core.registered_nodes[node.name].drawtype
 		if drawtype ~= "normal"
 			and drawtype ~= "nodebox"
 			and drawtype ~= "flowingliquid"
