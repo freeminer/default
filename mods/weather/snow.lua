@@ -103,11 +103,11 @@ core.register_abm({
 	interval = 10.0,
 	chance = 50,
 
-	action = function (pos, node, active_object_count, active_object_count_wider)
+	action = function (pos, node, active_object_count, active_object_count_wider, ndef, activate)
 		local amount = get_snow(pos)
 		if amount == 0 then return end
-		local add = 1 + (amount * 2);
-		local drawtype = core.registered_nodes[node.name].drawtype
+		local add = 1 + (amount * 3);
+		local drawtype = ndef.drawtype -- core.registered_nodes[node.name].drawtype
 		if drawtype ~= "normal"
 			and drawtype ~= "nodebox"
 			and drawtype ~= "allfaces_optional"
@@ -146,7 +146,7 @@ core.register_abm({
 				if test_name == "air" then
 					min_pos = ngp
 					core.set_node(min_pos, {name="snow"}, 2)
-					if math.random(-heat) >= 10 then
+					if math.random(-heat) >= 6 then
 						update_falling = 1
 					end
 					break
@@ -164,7 +164,7 @@ core.register_abm({
 			if default.time_speed <= 0 then add = 0 end
 			if add > 0 then
 				core.set_node(pos, {name="default:ice"}, 2)
-			elseif update_falling then
+			elseif not activate and update_falling then
 				core.nodeupdate(pos, 0)
 			end
 		end
@@ -186,7 +186,7 @@ core.register_abm({
 
         local top_name = core.get_node(addvectors(pos, {x=0, y=1, z=0})).name
 		if top_name == "default:snow" or top_name == "default:ice" then
-			core.set_node(pos, {name="default:ice"}, 2)
+			core.set_node(pos, {name="default:ice"})
 		end
 	end
 })
