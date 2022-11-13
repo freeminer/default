@@ -98,16 +98,16 @@ end
 
 -- -[[ Enable this section if you have a very fast PC
 core.register_abm({
-	nodenames = {"group:crumbly", "group:snappy", "group:cracky", "group:choppy", "group:melts"},
+	nodenames = {"group:crumbly", "group:snappy", "group:cracky", "group:choppy", "group:melt", "group:snowy"},
 	neighbors = {"air"},
 	interval = 10.0,
 	chance = 50,
 
-	action = function (pos, node, active_object_count, active_object_count_wider, ndef, activate)
+	action = function (pos, node, active_object_count, active_object_count_wider, neighbor, activate)
 		local amount = get_snow(pos)
 		if amount == 0 then return end
 		local add = 1 + (amount * 3);
-		local drawtype = ndef.drawtype -- core.registered_nodes[node.name].drawtype
+		local drawtype = core.registered_nodes[node.name].drawtype
 		if drawtype ~= "normal"
 			and drawtype ~= "nodebox"
 			and drawtype ~= "allfaces_optional"
@@ -190,5 +190,3 @@ core.register_abm({
 		end
 	end
 })
-
---]]

@@ -57,7 +57,7 @@ core.register_abm({
 	nodenames = {"default:dirt", "default:dirt_with_grass", "default:dirt_dry", "default:dirt_with_dry_grass"},
 	interval = 10,
 	chance = 30,
-	action = function(pos, node, active_object_count, active_object_count_wider, ndef, activate)
+	action = function(pos, node, active_object_count, active_object_count_wider, neighbor, activate)
 		local top_pos = {x=pos.x, y=pos.y+1, z=pos.z}
 		local top_name = core.get_node(top_pos).name
 		local top_nodedef = core.registered_nodes[top_name]
@@ -156,7 +156,7 @@ core.register_abm({
 	neighbors = {"default:dirt_with_grass", "default:dirt"},
 	interval = 20,
 	chance = 10,
-	action = function(pos, node, active_object_count, active_object_count_wider, ndef, activate)
+	action = function(pos, node, active_object_count, active_object_count_wider, neighbor, activate)
 		local humidity = core.get_humidity(pos)
 		local heat = core.get_heat(pos)
 		--local node = core.get_node(pos)
