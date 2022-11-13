@@ -123,11 +123,11 @@ core.register_abm({
 			local update_falling
 			-- smooth
 			--local rnd = math.random(1, 4)
-			local arr = {1, 2, 3, 4, 5, 6}
+			local arr = {1, 2, 3, 4, 5, 6, 7}
 			local heat = core.get_heat(pos)
 			-- smooth or wet snow
 			if heat < -10 then table.remove(arr) end
-			if heat < -20 then table.remove(arr) end
+			-- if heat < -20 then table.remove(arr) end
 			shuffle(arr)
 			for _,rnd in ipairs(arr) do
 				if min_level <= 1 then break end
@@ -146,7 +146,7 @@ core.register_abm({
 				if test_name == "air" then
 					min_pos = ngp
 					core.set_node(min_pos, {name="snow"}, 2)
-					if math.random(-heat) >= 6 then
+					if math.random(-heat) >= 5 then
 						update_falling = 1
 					end
 					break
