@@ -146,7 +146,7 @@ core.register_abm({
 				if test_name == "air" then
 					min_pos = ngp
 					core.set_node(min_pos, {name="snow"}, 2)
-					if math.random(-heat) >= 5 then
+					if math.random(-heat) > 1 then
 						update_falling = 1
 					end
 					break
@@ -165,7 +165,8 @@ core.register_abm({
 			if add > 0 then
 				core.set_node(pos, {name="default:ice"}, 2)
 			elseif not activate and update_falling then
-				core.nodeupdate(pos, 0)
+				-- core.nodeupdate(pos, 0)
+				core.check_single_for_falling(pos)
 			end
 		end
 		if add > 0 and core.get_node(np).name == "air" then
