@@ -106,7 +106,7 @@ core.register_abm({
 	action = function (pos, node, active_object_count, active_object_count_wider, neighbor, activate)
 		local amount = get_snow(pos)
 		if amount == 0 then return end
-		local add = 1 + (amount * 3);
+		local add = 1 + (amount * 2);
 		local drawtype = core.registered_nodes[node.name].drawtype
 		if drawtype ~= "normal"
 			and drawtype ~= "nodebox"
