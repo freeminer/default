@@ -146,7 +146,8 @@ core.register_abm({
 				if test_name == "air" then
 					min_pos = ngp
 					core.set_node(min_pos, {name="snow"}, 2)
-					if math.random(-heat/3) > 1 then
+					local random_max = -heat/2
+					if random_max > 1 and math.random(random_max) > 1 then
 						update_falling = 1
 					end
 					break
