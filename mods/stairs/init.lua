@@ -523,15 +523,15 @@ end
 
 -- Local function so we can apply translations
 local function my_register_stair_and_slab(subname, recipeitem, groups, images,
-		desc_stair, desc_slab, sounds, worldaligntex)
+		desc_stair, desc_slab, sounds, worldaligntex, melt)
 	stairs.register_stair(subname, recipeitem, groups, images, S(desc_stair),
-		sounds, worldaligntex)
+		sounds, worldaligntex, melt)
 	stairs.register_stair_inner(subname, recipeitem, groups, images, "",
-		sounds, worldaligntex, T("Inner " .. desc_stair))
+		sounds, worldaligntex, T("Inner " .. desc_stair), melt)
 	stairs.register_stair_outer(subname, recipeitem, groups, images, "",
-		sounds, worldaligntex, T("Outer " .. desc_stair))
+		sounds, worldaligntex, T("Outer " .. desc_stair), melt)
 	stairs.register_slab(subname, recipeitem, groups, images, S(desc_slab),
-		sounds, worldaligntex)
+		sounds, worldaligntex, melt)
 end
 
 
