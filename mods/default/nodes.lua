@@ -2358,7 +2358,7 @@ minetest.register_node("default:water_source", {
 	paramtype2 = "leveled",
 	freeze = "default:ice",
 	melt = "air",
-
+	light_vertical_dimnish = 0.1,
 	sounds = default.node_sound_water_defaults(),
 })
 
