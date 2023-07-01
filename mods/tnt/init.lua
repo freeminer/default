@@ -12,9 +12,9 @@ if enable_tnt == nil then
 	enable_tnt = minetest.is_singleplayer()
 end
 
-tnt.radius_max = tonumber(core.setting_get("tnt_radius_max") or 25)
-tnt.time_max = tonumber(core.setting_get("tnt_time_max") or 3)
-tnt.liquid_real = core.setting_getbool("liquid_real")
+tnt.radius_max = tonumber(core.settings:get("tnt_radius_max") or 25)
+tnt.time_max = tonumber(core.settings:get("tnt_time_max") or 3)
+tnt.liquid_real = core.settings:get_bool("liquid_real")
 
 -- loss probabilities array (one in X will be lost)
 local loss_prob = {}
@@ -22,7 +22,7 @@ local loss_prob = {}
 loss_prob["default:cobble"] = 3
 loss_prob["default:dirt"] = 4
 
-local tnt_radius = tonumber(minetest.setting_get("tnt_radius") or 3)
+local tnt_radius = tonumber(minetest.settings:get("tnt_radius") or 3)
 local c_air = minetest.get_content_id("air")
 local c_fire = minetest.get_content_id("fire:basic_flame")
 

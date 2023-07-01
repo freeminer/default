@@ -18,7 +18,7 @@ if  mg_name == "indev" or mg_name == "v6" or mg_name == "singlenode" then
 	return
 end
 
-local cloud_height = tonumber(core.setting_get("cloud_height"));
+local cloud_height = tonumber(core.settings:get("cloud_height"));
 
 -- Parameters
 

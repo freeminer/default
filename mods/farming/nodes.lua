@@ -7,12 +7,12 @@ local flowing_sand_type = "flowing"
 local flowing_sand_leveled = 1
 local flowing_sand_paramtype2 = "leveled"
 local flowing_sand_liquid_drop = 1
-if tonumber(minetest.setting_get("flowing_sand_disable") or 0) == 1 then
+if tonumber(minetest.settings:get("flowing_sand_disable") or 0) == 1 then
 	flowing_sand_type = "none"
 	flowing_sand_leveled = 0
 	flowing_sand_paramtype2 = "none"
 end
-if tonumber(minetest.setting_get("flowing_sand_disable") or 0) >= 1 then
+if tonumber(minetest.settings:get("flowing_sand_disable") or 0) >= 1 then
 	flowing_sand_liquid_drop = 0
 end
 

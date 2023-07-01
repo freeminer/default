@@ -40,12 +40,12 @@ minetest.register_node("sponge:fake_air", {
 })
 
 local replacewith = "sponge:fake_air"
-if minetest.setting_get("liquid_real") and minetest.setting_get("liquid_relax") > "0" then
+if minetest.settings:get("liquid_real") and minetest.settings:get("liquid_relax") > "0" then
     replacewith = "air"
 end
 ]]
 
-if minetest.setting_get("liquid_real") then
+if minetest.settings:get("liquid_real") then
 
 local replacewith = "air"
 

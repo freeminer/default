@@ -10,7 +10,7 @@ addvectors = function (v1, v2)
 	return {x=v1.x+v2.x, y=v1.y+v2.y, z=v1.z+v2.z}
 end
 
-local cloud_height = tonumber(core.setting_get("cloud_height"));
+local cloud_height = tonumber(core.settings:get("cloud_height"));
 local snow_humidity = 65
 local rain_humidity = 75
 

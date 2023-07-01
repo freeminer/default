@@ -65,8 +65,8 @@ local mg_params = {
 	}
 }
 
-if core.setting_get("mg_params") == "" then
-	core.setting_set("mg_params", core.write_json(mg_params))
+if core.settings:get("mg_params") == "" then
+	core.settings:set("mg_params", core.write_json(mg_params))
 end
 
 
@@ -1018,7 +1018,7 @@ function default.register_ores()
 		y_min          = -31000,
 	})
 
---if minetest.setting_get("mg_name") == "indev" then
+--if minetest.settings:get("mg_name") == "indev" then
 	-- Floatlands and high mountains springs
 	minetest.register_ore({
 		ore_type       = "scatter",

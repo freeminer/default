@@ -87,7 +87,7 @@ local snow_box =
 }
 
 
-default.time_speed = tonumber(core.setting_get("time_speed"))
+default.time_speed = tonumber(core.settings:get("time_speed"))
 
 local function shuffle(t)
 	for i = #t, 2, -1 do
