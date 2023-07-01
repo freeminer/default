@@ -49,6 +49,8 @@ Beds API
  * `beds.read_spawns() `   Returns a table containing players respawn positions
  * `beds.kick_players()`  Forces all players to leave bed
  * `beds.skip_night()`   Sets world time to morning and saves respawn position of all players currently sleeping
+ * `beds.day_interval`   Is a table with keys "start" and "finish". Allows you
+   to set the period of the day (timeofday format). Default: `{ start = 0.2, finish = 0.805 }`.
 
 ### Bed definition
 
@@ -1140,8 +1142,9 @@ the log.
 
 `default.set_inventory_action_loggers(def, name)`
 
- * sets the callbacks `on_metadata_inventory_move`,
+ * hooks the callbacks `on_metadata_inventory_move`,
    `on_metadata_inventory_put` and `on_metadata_inventory_take`
    that log corresponding actions
+ * after logging the action, the original callback (if any) is called
  * `def`     See [Node definition]
  * `name`    Description of the node in the log message
