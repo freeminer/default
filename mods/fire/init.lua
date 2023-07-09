@@ -313,6 +313,19 @@ if fire_enabled then
 			end
 		end
 	})
+
+	minetest.register_abm({
+		label = "Remove stale flame",
+		nodenames = {"fire:basic_flame"},
+		neighbors = "air",
+		interval = 600,
+		chance = 10,
+		catch_up = false,
+		action = function(pos, node, active_object_count, active_object_count_wider)
+			minetest.remove_node(pos)
+		end
+	})
+
 end
 
 
