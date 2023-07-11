@@ -38,7 +38,7 @@ get_rain = function (p, visible)
 end
 
 if default.weather then
-	if core.setting_getbool("liquid_real") then
+	if core.settings:get_bool("liquid_real") then
 		dofile(core.get_modpath("weather").."/rain.lua")
 		dofile(core.get_modpath("weather").."/erosion.lua")
 	end

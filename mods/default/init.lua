@@ -11,7 +11,7 @@ local S = minetest.get_translator("default")
 -- Definitions made by this mod that other mods can use too
 default = {}
 
-default.weather = core.setting_getbool("weather")
+default.weather = core.settings:get_bool("weather")
 if default.weather == 0 then default.weather = nil end
 
 default.LIGHT_MAX = 14

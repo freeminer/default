@@ -113,7 +113,7 @@ function bucket.register_liquid(source, flowing, itemname, inventory_image, name
 				end
 
 				if math.floor(fullness/128) == 1 or
-					not core.setting_getbool("liquid_real") then
+					not core.settings:get_bool("liquid_real") then
 					core.add_node(lpos, {name=source, param2=fullness})
 					return
 				elseif node.name == flowing or node.name == source then
@@ -152,7 +152,7 @@ minetest.register_craftitem("bucket:bucket_empty", {
 		if liquiddef ~= nil and liquiddef.itemname ~= nil and
 			(node.name == liquiddef.source or
 			(node.name == liquiddef.flowing and
-				minetest.setting_getbool("liquid_real"))) then
+				minetest.settings:get_bool("liquid_real"))) then
 			if check_protection(pointed_thing.under,
 					user:get_player_name(),
 					"take ".. node.name) then
