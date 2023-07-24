@@ -943,7 +943,7 @@ minetest.register_node("default:jungletree", {
 	paramtype2 = "facedir",
 	is_ground_content = false,
 	groups = {tree = 1, choppy = 2, oddly_breakable_by_hand = 1, flammable = 2,
-		grow_tree = 1, tree_water_max = 65, tree_water_max = 40, leaves_grow_heat_max = 50, leaves_grow_heat_min = 20, leaves_die_heat_min = 60},
+		grow_tree = 1, tree_water_max = 65, tree_water_max = 40},
 	liquid_alternative_source = "default:jungleleaves",
 	sounds = default.node_sound_wood_defaults(),
 
@@ -969,7 +969,8 @@ minetest.register_node("default:jungleleaves", {
 	paramtype = "light",
 	is_ground_content = false,
 	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1
-		, grow_leaves = 1, fall_damage_add_percent = -40},
+		, grow_leaves = 1, leaves_grow_heat_max = 50, leaves_grow_heat_min = 20, leaves_die_heat_min = 60,
+		fall_damage_add_percent = -40},
 	drop = {
 		max_items = 1,
 		items = {
@@ -1086,7 +1087,8 @@ minetest.register_node("default:pine_needles",{
 	paramtype = "light",
 	is_ground_content = false,
 	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1
-		, grow_leaves = 1, fall_damage_add_percent = -20},
+		, grow_leaves = 1, leaves_water_max = 10, leaves_grow_prefer_top = 1, leaves_die_heat_max = 0, 
+		fall_damage_add_percent = -20},
 	drop = {
 		max_items = 1,
 		items = {
@@ -1169,7 +1171,8 @@ minetest.register_node("default:acacia_leaves", {
 	paramtype = "light",
 	is_ground_content = false,
 	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1
-		, grow_leaves = 1, fall_damage_add_percent = -30},
+		, grow_leaves = 1, leaves_water_max = 10, leaves_grow_light_min = 10, leaves_grow_water_min_top = 2, leaves_grow_water_min_side = 3, leaves_die_light_max = 9, leaves_die_heat_min = 0,
+		fall_damage_add_percent = -30},
 	drop = {
 		max_items = 1,
 		items = {
@@ -1251,7 +1254,7 @@ minetest.register_node("default:aspen_leaves", {
 	paramtype = "light",
 	is_ground_content = false,
 	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1
-		, grow_leaves = 1, },
+		, grow_leaves = 1, leaves_water_max = 8, leaves_grow_light_min = 9, leaves_die_light_max = 8},
 	drop = {
 		max_items = 1,
 		items = {
