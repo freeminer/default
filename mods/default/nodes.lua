@@ -470,7 +470,7 @@ minetest.register_node("default:dirt", {
 	groups = {crumbly = 3, soil = 1},
 	sounds = default.node_sound_dirt_defaults(),
 
-	groups = {crumbly = 3, soil = 1, melt = 50, liquid_drop = flowing_sand_liquid_drop, weight = 2000},
+	groups = {crumbly = 3, soil = 1, melt = 50, liquid_drop = flowing_sand_liquid_drop, weight = 2000, fall_damage_add_percent = -20,},
 	leveled = flowing_sand_leveled,
 	liquidtype = flowing_sand_type,
 	paramtype2 = flowing_sand_paramtype2,
@@ -483,7 +483,7 @@ minetest.register_node("default:dirt_with_grass", {
 	tiles = {"default_grass.png", "default_dirt.png",
 		{name = "default_dirt.png^default_grass_side.png",
 			tileable_vertical = false}},
-	groups = {crumbly = 3, soil = 1, spreading_dirt_type = 1, melt = 51, freeze = -5},
+	groups = {crumbly = 3, soil = 1, spreading_dirt_type = 1, melt = 51, freeze = -5, fall_damage_add_percent = -10},
 	drop = "default:dirt",
 	sounds = default.node_sound_dirt_defaults({
 		footstep = {name = "default_grass_footstep", gain = 0.25},
@@ -530,7 +530,7 @@ minetest.register_node("default:dirt_with_snow", {
 		{name = "default_dirt.png^default_snow_side.png",
 			tileable_vertical = false}},
 	groups = {crumbly = 3, soil = 1, spreading_dirt_type = 1, snowy = 1,
-		slippery = 2, melt = 2},
+		slippery = 2, melt = 2, fall_damage_add_percent = -10},
 	drop = "default:dirt",
 	sounds = default.node_sound_dirt_defaults({
 		footstep = {name = "default_snow_footstep", gain = 0.2},
@@ -632,7 +632,7 @@ minetest.register_node("default:sand", {
 	sounds = default.node_sound_sand_defaults(),
 
 	is_ground_content = true,
-	groups = {crumbly = 3, falling_node = 1, sand = 1, liquid_drop = flowing_sand_liquid_drop, weight = 2000},
+	groups = {crumbly = 3, falling_node = 1, sand = 1, liquid_drop = flowing_sand_liquid_drop, weight = 2000, fall_damage_add_percent = -30},
 	leveled = flowing_sand_leveled,
 	liquidtype = flowing_sand_type,
 	paramtype2 = flowing_sand_paramtype2,
@@ -650,7 +650,7 @@ minetest.register_node("default:desert_sand", {
 	liquidtype = flowing_sand_type,
 	paramtype2 = flowing_sand_paramtype2,
 	drowning = 1,
-	groups = {crumbly = 3, falling_node = 1, sand = 1, liquid_drop = flowing_sand_liquid_drop, weight = 2000},
+	groups = {crumbly = 3, falling_node = 1, sand = 1, liquid_drop = flowing_sand_liquid_drop, weight = 2001, fall_damage_add_percent = -30},
 })
 
 minetest.register_node("default:silver_sand", {
@@ -663,7 +663,7 @@ minetest.register_node("default:silver_sand", {
 	liquidtype = flowing_sand_type,
 	paramtype2 = flowing_sand_paramtype2,
 	drowning = 1,
-	groups = {crumbly = 3, falling_node = 1, sand = 1, liquid_drop = flowing_sand_liquid_drop, weight = 2000},
+	groups = {crumbly = 3, falling_node = 1, sand = 1, liquid_drop = flowing_sand_liquid_drop, weight = 2002, fall_damage_add_percent = -30},
 })
 
 
@@ -672,7 +672,7 @@ minetest.register_node("default:gravel", {
 	tiles = {"default_gravel.png"},
 	groups = {crumbly = 2, falling_node = 1},
 
-	groups = {crumbly = 2, falling_node = 1, liquid_drop = flowing_sand_liquid_drop, weight = 2000},
+	groups = {crumbly = 2, falling_node = 1, liquid_drop = flowing_sand_liquid_drop, weight = 2000, fall_damage_add_percent = -5},
 	leveled = flowing_sand_leveled,
 	liquidtype = flowing_sand_type,
 	paramtype2 = flowing_sand_paramtype2,
@@ -695,7 +695,7 @@ minetest.register_node("default:clay", {
 	drop = "default:clay_lump 4",
 	sounds = default.node_sound_dirt_defaults(),
 
-	groups = {crumbly=3, melt=1500},
+	groups = {crumbly = 3, melt = 1500, fall_damage_add_percent = -10},
 	drop = "default:clay",
 	melt = "default:stone",
 })
@@ -723,8 +723,7 @@ minetest.register_node("default:snow", {
 		},
 	},
 	groups = {crumbly = 3, falling_node = 1, snowy = 1,
-		melt = 1, float = 1, slippery = 2},
-
+		melt = 1, float = 1, slippery = 2, fall_damage_add_percent = -70,},
 	sounds = default.node_sound_snow_defaults(),
 
 	on_construct = function(pos)
@@ -742,7 +741,7 @@ minetest.register_node("default:snowblock", {
 	description = S("Snow Block"),
 	tiles = {"default_snow.png"},
 	groups = {crumbly = 3, cools_lava = 1, snowy = 1,
-		melt = 2, slippery = 2},
+		melt = 2, slippery = 2, fall_damage_add_percent = -30,},
 	melt = "default:water_source",
 	sounds = default.node_sound_snow_defaults(),
 
@@ -796,7 +795,9 @@ minetest.register_node("default:tree", {
 	tiles = {"default_tree_top.png", "default_tree_top.png", "default_tree.png"},
 	paramtype2 = "facedir",
 	is_ground_content = false,
-	groups = {tree = 1, choppy = 2, oddly_breakable_by_hand = 1, flammable = 2},
+	groups = {tree = 1, choppy = 2, oddly_breakable_by_hand = 1, flammable = 2,
+		grow_tree = 1, tree_water_max = 20},
+	liquid_alternative_source = "default:leaves",
 	sounds = default.node_sound_wood_defaults(),
 
 	on_place = minetest.rotate_node
@@ -856,7 +857,10 @@ minetest.register_node("default:leaves", {
 	special_tiles = {"default_leaves_simple.png"},
 	paramtype = "light",
 	is_ground_content = false,
-	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1},
+	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1
+		, fall_damage_add_percent = -40, grow_leaves = 1, },
+	liquid_alternative_source = "default:apple",
+
 	drop = {
 		max_items = 1,
 		items = {
@@ -938,7 +942,9 @@ minetest.register_node("default:jungletree", {
 		"default_jungletree.png"},
 	paramtype2 = "facedir",
 	is_ground_content = false,
-	groups = {tree = 1, choppy = 2, oddly_breakable_by_hand = 1, flammable = 2},
+	groups = {tree = 1, choppy = 2, oddly_breakable_by_hand = 1, flammable = 2,
+		grow_tree = 1, tree_water_max = 50, leaves_grow_heat_max = 50, leaves_grow_heat_min = 20, leaves_die_heat_min = 60},
+	liquid_alternative_source = "default:jungleleaves",
 	sounds = default.node_sound_wood_defaults(),
 
 	on_place = minetest.rotate_node
@@ -962,7 +968,8 @@ minetest.register_node("default:jungleleaves", {
 	special_tiles = {"default_jungleleaves_simple.png"},
 	paramtype = "light",
 	is_ground_content = false,
-	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1},
+	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1
+		, grow_leaves = 1, fall_damage_add_percent = -40},
 	drop = {
 		max_items = 1,
 		items = {
@@ -1053,7 +1060,9 @@ minetest.register_node("default:pine_tree", {
 		"default_pine_tree.png"},
 	paramtype2 = "facedir",
 	is_ground_content = false,
-	groups = {tree = 1, choppy = 3, oddly_breakable_by_hand = 1, flammable = 3},
+	groups = {tree = 1, choppy = 3, oddly_breakable_by_hand = 1, flammable = 3
+		, grow_tree = 1, tree_water_max = 50, tree_grow_heat_min = 3, leaves_water_max = 10, leaves_grow_prefer_top = 1, leaves_die_heat_max = 0},
+	liquid_alternative_source = "default:pine_needles",
 	sounds = default.node_sound_wood_defaults(),
 
 	on_place = minetest.rotate_node
@@ -1076,7 +1085,8 @@ minetest.register_node("default:pine_needles",{
 	waving = 1,
 	paramtype = "light",
 	is_ground_content = false,
-	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1},
+	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1
+		, grow_leaves = 1, fall_damage_add_percent = -20},
 	drop = {
 		max_items = 1,
 		items = {
@@ -1132,7 +1142,9 @@ minetest.register_node("default:acacia_tree", {
 		"default_acacia_tree.png"},
 	paramtype2 = "facedir",
 	is_ground_content = false,
-	groups = {tree = 1, choppy = 2, oddly_breakable_by_hand = 1, flammable = 2},
+	groups = {tree = 1, choppy = 2, oddly_breakable_by_hand = 1, flammable = 2,
+		grow_tree = 1, tree_water_max = 20, tree_grow_water_min = 3, tree_grow_light_max= 13, leaves_water_max = 10, leaves_grow_light_min = 10, leaves_grow_water_min_top = 2, leaves_grow_water_min_side = 3, leaves_die_light_max = 9, leaves_die_heat_min = 0},
+	liquid_alternative_source = "default:acacia_leaves",
 	sounds = default.node_sound_wood_defaults(),
 
 	on_place = minetest.rotate_node
@@ -1156,7 +1168,8 @@ minetest.register_node("default:acacia_leaves", {
 	waving = 1,
 	paramtype = "light",
 	is_ground_content = false,
-	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1},
+	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1
+		, grow_leaves = 1, fall_damage_add_percent = -30},
 	drop = {
 		max_items = 1,
 		items = {
@@ -1211,7 +1224,10 @@ minetest.register_node("default:aspen_tree", {
 		"default_aspen_tree.png"},
 	paramtype2 = "facedir",
 	is_ground_content = false,
-	groups = {tree = 1, choppy = 3, oddly_breakable_by_hand = 1, flammable = 3},
+	groups = {tree = 1, choppy = 3, oddly_breakable_by_hand = 1, flammable = 3,
+		grow_tree = 1, tree_water_max = 30, leaves_water_max = 8, leaves_grow_light_min = 9, leaves_die_light_max = 8},
+	liquid_alternative_source = "default:aspen_leaves",
+
 	sounds = default.node_sound_wood_defaults(),
 
 	on_place = minetest.rotate_node
@@ -1234,7 +1250,8 @@ minetest.register_node("default:aspen_leaves", {
 	waving = 1,
 	paramtype = "light",
 	is_ground_content = false,
-	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1},
+	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1
+		, grow_leaves = 1, },
 	drop = {
 		max_items = 1,
 		items = {
@@ -1560,7 +1577,8 @@ minetest.register_node("default:junglegrass", {
 	walkable = false,
 	buildable_to = true,
 	groups = {snappy = 3, flora = 1, attached_node = 1, grass = 1, junglegrass = 1, flammable = 1
-		, dig_immediate = 3, drop_by_liquid = 1, melt = 50, falling_node = 1,
+		, dig_immediate = 3, drop_by_liquid = 1, melt = 50, falling_node = 1, fall_damage_add_percent = -20,
+
 	},
 	sounds = default.node_sound_leaves_defaults(),
 	selection_box = {
