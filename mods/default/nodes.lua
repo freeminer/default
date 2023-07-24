@@ -943,7 +943,7 @@ minetest.register_node("default:jungletree", {
 	paramtype2 = "facedir",
 	is_ground_content = false,
 	groups = {tree = 1, choppy = 2, oddly_breakable_by_hand = 1, flammable = 2,
-		grow_tree = 1, tree_water_max = 50, leaves_grow_heat_max = 50, leaves_grow_heat_min = 20, leaves_die_heat_min = 60},
+		grow_tree = 1, tree_water_max = 65, tree_water_max = 40, leaves_grow_heat_max = 50, leaves_grow_heat_min = 20, leaves_die_heat_min = 60},
 	liquid_alternative_source = "default:jungleleaves",
 	sounds = default.node_sound_wood_defaults(),
 
@@ -1061,7 +1061,7 @@ minetest.register_node("default:pine_tree", {
 	paramtype2 = "facedir",
 	is_ground_content = false,
 	groups = {tree = 1, choppy = 3, oddly_breakable_by_hand = 1, flammable = 3
-		, grow_tree = 1, tree_water_max = 50, tree_grow_heat_min = 3, leaves_water_max = 10, leaves_grow_prefer_top = 1, leaves_die_heat_max = 0},
+		, grow_tree = 1, tree_water_max = 45, tree_grow_heat_min = 3, leaves_water_max = 10, leaves_grow_prefer_top = 1, leaves_die_heat_max = 0},
 	liquid_alternative_source = "default:pine_needles",
 	sounds = default.node_sound_wood_defaults(),
 
