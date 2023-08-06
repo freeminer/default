@@ -796,7 +796,7 @@ minetest.register_node("default:tree", {
 	paramtype2 = "facedir",
 	is_ground_content = false,
 	groups = {tree = 1, choppy = 2, oddly_breakable_by_hand = 1, flammable = 2,
-		grow_tree = 1, tree_water_max = 20},
+		grow_tree = 1, },
 	liquid_alternative_source = "default:leaves",
 	sounds = default.node_sound_wood_defaults(),
 
@@ -943,7 +943,7 @@ minetest.register_node("default:jungletree", {
 	paramtype2 = "facedir",
 	is_ground_content = false,
 	groups = {tree = 1, choppy = 2, oddly_breakable_by_hand = 1, flammable = 2,
-		grow_tree = 1, tree_water_max = 65, tree_water_max = 40},
+		grow_tree = 1, tree_water_max = 65, leaves_water_max = 30, },
 	liquid_alternative_source = "default:jungleleaves",
 	sounds = default.node_sound_wood_defaults(),
 
@@ -1062,7 +1062,7 @@ minetest.register_node("default:pine_tree", {
 	paramtype2 = "facedir",
 	is_ground_content = false,
 	groups = {tree = 1, choppy = 3, oddly_breakable_by_hand = 1, flammable = 3
-		, grow_tree = 1, tree_water_max = 45, tree_grow_heat_min = 3, leaves_water_max = 10, leaves_grow_prefer_top = 1, leaves_die_heat_max = 0},
+		, grow_tree = 1, tree_water_max = 45+20, tree_grow_heat_min = 3, leaves_water_max = 10, leaves_grow_prefer_top = 1, leaves_die_heat_max = 0},
 	liquid_alternative_source = "default:pine_needles",
 	sounds = default.node_sound_wood_defaults(),
 
@@ -1145,7 +1145,7 @@ minetest.register_node("default:acacia_tree", {
 	paramtype2 = "facedir",
 	is_ground_content = false,
 	groups = {tree = 1, choppy = 2, oddly_breakable_by_hand = 1, flammable = 2,
-		grow_tree = 1, tree_water_max = 20, tree_grow_water_min = 3, tree_grow_light_max= 13, leaves_water_max = 10, leaves_grow_light_min = 10, leaves_grow_water_min_top = 2, leaves_grow_water_min_side = 3, leaves_die_light_max = 9, leaves_die_heat_min = 0},
+		grow_tree = 1, tree_water_max = 20+20, tree_grow_water_min = 3, tree_grow_light_max= 13, leaves_water_max = 10, leaves_grow_light_min = 10, leaves_grow_water_min_top = 2, leaves_grow_water_min_side = 3, leaves_die_light_max = 9, leaves_die_heat_min = 0},
 	liquid_alternative_source = "default:acacia_leaves",
 	sounds = default.node_sound_wood_defaults(),
 
@@ -1228,7 +1228,7 @@ minetest.register_node("default:aspen_tree", {
 	paramtype2 = "facedir",
 	is_ground_content = false,
 	groups = {tree = 1, choppy = 3, oddly_breakable_by_hand = 1, flammable = 3,
-		grow_tree = 1, tree_water_max = 30, leaves_water_max = 8, leaves_grow_light_min = 9, leaves_die_light_max = 8},
+		grow_tree = 1, tree_water_max = 30+20, leaves_water_max = 8, leaves_grow_light_min = 9, leaves_die_light_max = 8},
 	liquid_alternative_source = "default:aspen_leaves",
 
 	sounds = default.node_sound_wood_defaults(),
@@ -2427,8 +2427,7 @@ minetest.register_node("default:water_flowing", {
 	post_effect_color = {a = 103, r = 30, g = 60, b = 90},
 	groups = {water = 3, liquid = 3, not_in_creative_inventory = 1,
 		not_in_creative_inventory = 1, cools_lava = 1,
-		freeze = -5, melt = 100, liquid_drop = 1, weight = 1000
-		, cools_lava = 1},
+		freeze = -5, melt = 100, liquid_drop = 1, weight = 1000},
 	leveled = 8,
 	paramtype2 = "leveled",
 	freeze = "default:snow",

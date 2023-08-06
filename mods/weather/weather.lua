@@ -17,9 +17,9 @@ local rain_humidity = 75
 get_snow = function (p, visible)
 	if not p then return 0 end
 	if visible and p.y > cloud_height then return 0 end
-	local heat = core.get_heat(p)
+	local heat = core.get_heat(p, 0)
 	if heat >= 0 then return 0 end
-	local humidity = core.get_humidity(p)
+	local humidity = core.get_humidity(p, 0)
 	if humidity < snow_humidity then return 0 end
 	--print('S h='..core.get_heat(p)..' h='..core.get_humidity(p))
 	return (humidity-snow_humidity)/(100-snow_humidity)
@@ -28,10 +28,10 @@ end
 get_rain = function (p, visible)
 	if not p then return 0 end
 	if visible and p.y > cloud_height then return 0 end
-	local heat = core.get_heat(p)
+	local heat = core.get_heat(p, 0)
 	if heat < 0 then return 0 end
 	if heat > 50 then return 0 end
-	local humidity = core.get_humidity(p)
+	local humidity = core.get_humidity(p, 0)
 	if humidity < rain_humidity then return 0 end
 	--print('R h='..core.get_heat(p)..' h='..core.get_humidity(p))
 	return (humidity-rain_humidity)/(100-rain_humidity)
