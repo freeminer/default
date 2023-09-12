@@ -51,7 +51,8 @@ local grass_heat_max = 51
 local grass_heat_max2 = 71
 local grass_humidity_min = 4
 local grass_humidity_min2 = 40
-local grass_light_min = 2
+local grass_light_min = 6
+local tree_light_min = 12
 
 core.register_abm({
 	nodenames = {"default:dirt", "default:dirt_with_grass", "default:dirt_dry", "default:dirt_with_dry_grass"},
@@ -166,7 +167,8 @@ core.register_abm({
 			core.set_node(pos, node, 2)
 			return
 		end
-		if heat < 5 or heat > grass_heat_max or (core.get_node_light(pos) or 0) < grass_light_min then return end
+		local light = core.get_node_light(pos) or 0
+		if heat < 5 or heat > grass_heat_max or light < grass_light_min then return end
 		local rnd = activate and 1 or math.random(1, 110-humidity)
 		if name == "default:grass_5" then
 				if rnd >= 3 then return end
@@ -175,7 +177,7 @@ core.register_abm({
 				elseif humidity > 20 and heat < 10 then node.name = "default:pine_sapling"
 				elseif humidity > 30 and heat < 40 then node.name = "default:sapling"
 				else return end
-				if core.find_node_near(pos, (4-5*humidity/100), {"group:tree", "group:sapling"}) then return end
+				if light < tree_light_min or core.find_node_near(pos, (7-5*humidity/100), {"group:tree", "group:sapling"}) then return end
 				core.set_node(pos, node, 2)
 		elseif name == "default:dry_shrub" then
 			node.name = "default:grass_" .. 1
