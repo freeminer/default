@@ -1172,7 +1172,7 @@ minetest.register_node("default:acacia_leaves", {
 	paramtype = "light",
 	is_ground_content = false,
 	groups = {snappy = 3, leafdecay = 3, flammable = 2, leaves = 1
-		, grow_leaves = 1, leaves_water_max = 14, leaves_grow_light_min = 10, leaves_grow_water_min_top = 2, leaves_grow_water_min_side = 3, leaves_die_light_max = 9, leaves_die_heat_min = 0,
+		, grow_leaves = 1, leaves_water_max = 14, leaves_grow_light_min = 10, leaves_grow_water_min_top = 4, leaves_grow_water_min_side = 2, leaves_die_light_max = 9, leaves_die_heat_min = 0,
 		fall_damage_add_percent = -30},
 	drop = {
 		max_items = 1,
