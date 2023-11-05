@@ -236,12 +236,19 @@ farming.grow_plant = function(pos, elapsed)
 		return
 	end
 
-	if default.weather and (
-		core.get_heat(pos) < def.heat_min or
-		core.get_heat(pos) > def.heat_max or
-		core.get_humidity(pos) > def.humidity_max or
-		core.get_humidity(pos) < def.humidity_min
-	) then return end
+	local pnamen = name:split(":")[2]
+	local pname = pnamen:split("_")[1]
+	local pdef = farming.registered_plants[pname]
+
+	if pdef and default.weather and (
+		core.get_heat(pos) < pdef.heat_min or
+		core.get_heat(pos) > pdef.heat_max or
+		core.get_humidity(pos) > pdef.humidity_max or
+		core.get_humidity(pos) < pdef.humidity_min
+	) then
+		tick_again(pos)
+		return
+	end
 
 	-- grow
 	local placenode = {name = def.next_plant}
@@ -285,10 +292,10 @@ farming.register_plant = function(name, def)
 		def.fertility = {}
 	end
 
-	if not def.heat_min	then def.heat_min	= 3 end
-	if not def.heat_max	then def.heat_max	= 45 end
-	if not def.humidity_min	then def.humidity_min	= 15 end
-	if not def.humidity_max	then def.humidity_max	= 100 end
+	if not def.heat_min	then def.heat_min	= 5  end
+	if not def.heat_max	then def.heat_max	= 40 end
+	if not def.humidity_min	then def.humidity_min	= 20 end
+	if not def.humidity_max	then def.humidity_max	= 99 end
 
 	farming.registered_plants[pname] = def
 
