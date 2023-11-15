@@ -176,8 +176,9 @@ minetest.register_craftitem("bucket:bucket_empty", {
 				end
 
 				-- set to return empty buckets minus 1
-				giving_back = "bucket:bucket_empty "..tostring(item_count-1)
-
+				-- mt: giving_back = "bucket:bucket_empty "..tostring(item_count-1)
+				giving_back = "bucket:bucket_empty"
+				item_count = item_count - 1
 			end
 
 			-- force_renew requires a source neighbour
@@ -193,7 +194,7 @@ minetest.register_craftitem("bucket:bucket_empty", {
 			if node.name == liquiddef.source then
 				node.param2 = LIQUID_MAX
 			end
-			return ItemStack({name = giving_back,
+			return ItemStack({name = giving_back, count = item_count,
 					metadata = tostring(node.param2)})
 		else
 			-- non-liquid nodes will have their on_punch triggered
