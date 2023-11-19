@@ -225,6 +225,7 @@ end
 --
 
 -- Wrapping the functions in ABM action is necessary to make overriding them possible
+--[[
 
 function default.grow_cactus(pos, node)
 	if node.param2 >= 4 then
@@ -234,7 +235,7 @@ function default.grow_cactus(pos, node)
 	if minetest.get_item_group(minetest.get_node(pos).name, "sand") == 0 then
 		return
 	end
-	if default.weather and core.get_heat(pos) < 3 then
+	if default.weather and core.get_heat(pos) < 20 then
 		return
 	end
 	pos.y = pos.y + 1
@@ -268,7 +269,7 @@ function default.grow_papyrus(pos, node)
 	if not minetest.find_node_near(pos, 3, {"group:water"}) then
 		return
 	end
-	if default.weather and core.get_heat(pos) < 3 then
+	if default.weather and core.get_heat(pos) < 17 then
 		return
 	end
 	pos.y = pos.y + 1
@@ -320,6 +321,7 @@ minetest.register_abm({
 	end
 })
 
+]]
 
 --
 -- Dig upwards
