@@ -477,7 +477,6 @@ local function tnt_explode(pos, def, radius, ignore_protection, ignore_on_blast,
 	local on_construct_queue = {}
 
 		local radius = 2
-		local list = {}
 		local dr = 0
 		local tnts = 1
 		local destroyed = 0
@@ -485,6 +484,7 @@ local function tnt_explode(pos, def, radius, ignore_protection, ignore_on_blast,
 		local end_ms = os.clock() + tnt.time_max
 		local last = nil;
 		while dr<radius do
+			local list = {}
 			dr=dr+1
 			if os.clock() > end_ms or dr>=radius then last=1 end
 			for dx=-dr,dr,dr*2 do
@@ -543,7 +543,7 @@ local function tnt_explode(pos, def, radius, ignore_protection, ignore_on_blast,
 						local fast = radius > 6
 						local cid = minetest.get_content_id(node.name)
 
-						if math.abs(p.x)<2 and math.abs(p.y)<2 and math.abs(p.z)<2 then
+						if (math.abs(p.x)<2 and math.abs(p.y)<2 and math.abs(p.z)<2) or dr < radius then
 							--destroy(drops, np, dr == radius, radius > 7)
 							destroy(drops, np, cid, c_air, c_fire, on_blast_queue, on_construct_queue, ignore_protection, ignore_on_blast, owner, last, fast)
 							destroyed = destroyed + 1
