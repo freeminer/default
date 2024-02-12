@@ -714,6 +714,7 @@ minetest.register_abm({
 	action = function(pos, node)
 		node.name = moss_correspondences[node.name]
 		if node.name then
+			if ((core.get_heat(pos) < 5 or core.get_heat(pos) > 50 or core.get_humidity(pos) < 15)) then return end
 			minetest.set_node(pos, node)
 		end
 	end
