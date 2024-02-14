@@ -174,6 +174,7 @@ core.register_abm({
 		if heat < 5 or heat > grass_heat_max or light < grass_light_min then return end
 		local rnd = activate and 1 or math.random(1, 110-humidity)
 		if name == "default:grass_5" then
+			    if activate > 1 then return end
 				if rnd >= 3 then return end
 				if     humidity > 70 and heat > 25 then node.name = "default:junglesapling"
 				elseif humidity < 20 and heat > 25 then node.name = "default:acacia_sapling"

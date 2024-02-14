@@ -13,7 +13,7 @@ local random = math.random
 
 function default.can_grow(pos)
 
-	if default.weather and (core.get_heat(pos) < 5 or core.get_humidity(pos) < 20) then return false end
+	if default.weather and (core.get_heat(pos) < 5 or core.get_heat(pos) > 50 or core.get_humidity(pos) < 20) then return false end
 
 	local node_under = minetest.get_node_or_nil({x = pos.x, y = pos.y - 1, z = pos.z})
 	if not node_under then
