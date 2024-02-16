@@ -77,7 +77,7 @@ core.register_abm({
             then return end
 		local np = addvectors(pos, {x=0, y=1, z=0})
 		local light = core.get_node_light(np, 0.5)
-		if not light or light < default.LIGHT_SUN - 1 then return end
+		if not light or light < default.LIGHT_SUN then return end
 			if core.get_node(pos).name == "default:water_flowing" then
 				core.add_node_level(pos, 4*amount, 2)
 			elseif core.get_node(np).name == "air" then

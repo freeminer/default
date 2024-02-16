@@ -278,7 +278,8 @@ if fire_enabled then
 
 			if default.weather then
 				local humidity = core.get_humidity(pos)
-				if humidity > 55 and math.random(55, humidity) >= 60 then
+				if math.random(0, humidity) >= 5 then
+				--if humidity > 55 and math.random(55, humidity) >= 60 then
 					return
 				end
 			end
