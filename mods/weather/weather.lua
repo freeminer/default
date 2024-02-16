@@ -137,7 +137,7 @@ core.register_abm({
 			core.set_node(pos, node, 2)
 		else
 			if node.name == "default:dirt_with_grass" and top_name == "air" and (default.weather and heat > 5 and heat < grass_heat_max and humidity > grass_humidity_min)
-				and (activate or math.random(1, 40) == 1) and light >= grass_light_min then
+				and (activate == 1 or math.random(1, 40) == 1) and light >= grass_light_min then
 
 				if core.find_node_near(pos, (6-5*humidity/100), {"group:flower", "group:tree", "group:sapling"}) then return end
 

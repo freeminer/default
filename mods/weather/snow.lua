@@ -165,7 +165,7 @@ core.register_abm({
 			if default.time_speed <= 0 then add = 0 end
 			if add > 0 then
 				core.set_node(pos, {name="default:ice"}, 2)
-			elseif not activate and update_falling then
+			elseif activate ~= 1 and update_falling then
 				-- core.nodeupdate(pos, 0)
 				core.check_single_for_falling(pos)
 			end
