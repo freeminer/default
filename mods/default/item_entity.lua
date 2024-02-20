@@ -58,6 +58,11 @@ local item = {
 					return
 				end
 
+				if core.get_heat(pos) > 444 then
+					self:burn_up()
+					return
+				end
+
 				-- Immediately burn up flammable items in lava
 				if minetest.get_item_group(node.name, "lava") > 0 then
 					self:burn_up()
