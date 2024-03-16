@@ -68,6 +68,7 @@ core.register_abm({
 		local bottom_name = core.get_node(bottom_pos).name
 		local bottom_air = (bottom_name == "air" or bottom_name == "ignore")
 
+		local light_day = core.get_node_light(top_pos, 0.5) or 0
 		local light = core.get_node_light(top_pos) or 0
 		local heat = core.get_heat(pos)
 		local humidity = core.get_humidity(pos)
@@ -83,9 +84,9 @@ core.register_abm({
 			if top_name == "default:snow" or top_name == "default:snowblock" or top_name == "default:ice" then
 					new_name = "default:dirt_with_snow"
 			elseif top_name == "air" then
-				if node.name == "default:dirt_with_grass" and (light < grass_light_min or (heat > grass_heat_max and humidity < grass_humidity_min2) or humidity < 1 or heat > grass_heat_max2) then
+				if node.name == "default:dirt_with_grass" and (light_day < grass_light_min or (heat > grass_heat_max and humidity < grass_humidity_min2) or humidity < 1 or heat > grass_heat_max2) then
 					new_name = "default:dirt_with_dry_grass"
-				elseif node.name == "default:dirt" and (light < grass_light_min or (heat > grass_heat_max and humidity < grass_humidity_min2) or humidity < grass_humidity_min or heat > grass_heat_max2) then
+				elseif node.name == "default:dirt" and (light_day < grass_light_min or (heat > grass_heat_max and humidity < grass_humidity_min2) or humidity < grass_humidity_min or heat > grass_heat_max2) then
 					new_name = "default:dirt_dry"
 				end
 
