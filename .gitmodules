@@ -31,3 +31,6 @@
 [submodule "mods/mobs_sky"]
 	path = mods/mobs_sky
 	url = https://codeberg.org/tenplus1/mobs_sky.git
+[submodule "mods/volumetric-lighting"]
+	path = mods/volumetric-lighting
+	url = https://github.com/rollerozxa/volumetric-lighting
