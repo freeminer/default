@@ -29,6 +29,7 @@ local biome_ids = {}
 
 function spawn.add_suitable_biome(biome)
 	local id = minetest.get_biome_id(biome)
+	if id == nil then return end
 	assert(id ~= nil)
 	biome_ids[id] = true
 end
