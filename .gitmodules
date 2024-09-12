@@ -6,25 +6,25 @@
 	url = https://github.com/stujones11/minetest-3d_armor.git
 [submodule "mods/protector"]
 	path = mods/protector
-	url = https://notabug.org/TenPlus1/protector.git
+	url = https://codeberg.org/tenplus1/protector.git
 [submodule "mods/dungeon_loot"]
 	path = mods/dungeon_loot
 	url = https://github.com/BlockMen/dungeon_loot.git
 [submodule "mods/mobs_redo"]
 	path = mods/mobs_redo
-	url = https://notabug.org/TenPlus1/mobs_redo.git
+	url = https://codeberg.org/tenplus1/mobs_redo.git
 [submodule "mods/mobs_animal"]
 	path = mods/mobs_animal
-	url = https://notabug.org/TenPlus1/mobs_animal.git
+	url = https://codeberg.org/tenplus1/mobs_animal.git
 [submodule "mods/mobs_monster"]
 	path = mods/mobs_monster
-	url = https://notabug.org/TenPlus1/mobs_monster.git
+	url = https://codeberg.org/tenplus1/mobs_monster.git
 [submodule "mods/mobs_npc"]
 	path = mods/mobs_npc
-	url = https://notabug.org/TenPlus1/mobs_npc.git
+	url = https://codeberg.org/tenplus1/mobs_npc.git
 [submodule "mods/pbj_pup"]
 	path = mods/pbj_pup
-	url = https://notabug.org/TenPlus1/pbj_pup.git
+	url = https://codeberg.org/tenplus1/pbj_pup.git
 [submodule "mods/mob_horse"]
 	path = mods/mob_horse
-	url = https://notabug.org/TenPlus1/mob_horse.git
+	url = https://codeberg.org/tenplus1/mob_horse.git
