@@ -154,7 +154,7 @@ core.register_abm({
 		elseif fall == 1 then
 			core.set_node(pos, node, 2)
 		else
-			if node.name == "default:dirt_with_grass" and top_name == "air" and (default.weather and heat > 5 and heat < grass_heat_max and humidity > grass_humidity_min)
+			if (node.name == "default:dirt_with_grass" or node.name == "default:dirt_with_grass_footsteps") and top_name == "air" and (default.weather and heat > 5 and heat < grass_heat_max and humidity > grass_humidity_min)
 				and (activate == 1 or math.random(1, 40) == 1) and light >= grass_light_min then
 
 				if core.find_node_near(pos, (6-5*humidity/100), {"group:flower", "group:tree", "group:sapling"}) then return end
@@ -175,7 +175,7 @@ core.register_abm({
 
 core.register_abm({
 	nodenames = {"default:grass_1", "default:grass_2", "default:grass_3", "default:grass_4", "default:grass_5", "default:dry_shrub", "default:dry_grass_1", "default:dry_grass_2", "default:dry_grass_3", "default:dry_grass_4", "default:dry_grass_5"},
-	neighbors = {"default:dirt_with_grass", "default:dirt"},
+	neighbors = {"default:dirt_with_grass", "default:dirt_with_grass_footsteps", "default:dirt"},
 	interval = 20,
 	chance = 10,
 	action = function(pos, node, active_object_count, active_object_count_wider, neighbor, activate)
