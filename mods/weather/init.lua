@@ -16,8 +16,6 @@ if mg_name == "indev" or mg_name == "v6" or mg_name == "singlenode" then
 	minetest.register_on_joinplayer(function(player)
 		player:set_lighting({ shadows = { intensity = 0.33 } })
 	end)
-
-	return
 end
 
 local cloud_height = tonumber(core.settings:get("cloud_height"));
@@ -128,3 +126,16 @@ function weather.get(player)
 		}
 	}
 end
+
+-- Bad place for footsteps
+core.register_globalstep(function(dtime)
+	for _, player in ipairs(core.get_connected_players()) do
+		local ppos = player:get_pos()
+		local pos = addvectors(ppos, {x=0, y=-1, z=0})
+		local node = core.get_node(pos)
+		if node.name == "default:dirt_with_grass" then
+			node.name = "default:dirt_with_grass_footsteps"
+			core.set_node(pos, node, 2)
+		end
+	end
+end)

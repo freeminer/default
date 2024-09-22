@@ -52,10 +52,23 @@ local grass_heat_max2 = 71
 local grass_humidity_min = 4
 local grass_humidity_min2 = 40
 local grass_light_min = 6
+local dirt_dry_humidity = 10
 local tree_light_min = 12
 
+--[[ all dirt types:
+default:dirt
+default:dirt_with_grass
+default:dirt_with_grass_footsteps
+default:dirt_with_dry_grass
+default:dirt_with_snow
+default:dirt_with_rainforest_litter
+default:dirt_with_coniferous_litter
+default:dry_dirt
+default:dry_dirt_with_dry_grass
+]]
+
 core.register_abm({
-	nodenames = {"default:dirt", "default:dirt_with_grass", "default:dirt_dry", "default:dirt_with_dry_grass"},
+	nodenames = {"default:dirt", "default:dirt_with_grass", "default:dirt_with_grass_footsteps", "default:dry_dirt", "default:dirt_with_dry_grass"},
 	interval = 10,
 	chance = 30,
 	action = function(pos, node, active_object_count, active_object_count_wider, neighbor, activate)
@@ -75,8 +88,8 @@ core.register_abm({
 		local new_name
 
 		if not ((top_nodedef.sunlight_propagates or top_nodedef.paramtype == "light") and top_nodedef.liquidtype == "none") then
-			if not bottom_air and node.name == "default:dirt_with_dry_grass" then
-				new_name = "default:dirt_dry"
+			if not bottom_air and (node.name == "default:dirt_with_dry_grass" or node.name == "default:dry_dirt_with_dry_grass") then
+				new_name = "default:dry_dirt"
 			elseif node.name == "default:dirt_with_grass" then
 				new_name = "default:dirt"
 			end
@@ -84,10 +97,14 @@ core.register_abm({
 			if top_name == "default:snow" or top_name == "default:snowblock" or top_name == "default:ice" then
 					new_name = "default:dirt_with_snow"
 			elseif top_name == "air" then
-				if node.name == "default:dirt_with_grass" and (light_day < grass_light_min or (heat > grass_heat_max and humidity < grass_humidity_min2) or humidity < 1 or heat > grass_heat_max2) then
-					new_name = "default:dirt_with_dry_grass"
+				if (node.name == "default:dirt_with_grass" or node.name == "default:dirt_with_grass_footsteps") and (light_day < grass_light_min or (heat > grass_heat_max and humidity < grass_humidity_min2) or humidity < 1 or heat > grass_heat_max2) then
+					if humidity < dirt_dry_humidity then
+						new_name = "default:dry_dirt_with_dry_grass"
+					else
+						new_name = "default:dirt_with_dry_grass"
+					end
 				elseif node.name == "default:dirt" and (light_day < grass_light_min or (heat > grass_heat_max and humidity < grass_humidity_min2) or humidity < grass_humidity_min or heat > grass_heat_max2) then
-					new_name = "default:dirt_dry"
+					new_name = "default:dry_dirt"
 				end
 
 				-- dont freeze falling blocks
@@ -204,14 +221,19 @@ core.register_abm({
 })
 
 core.register_abm({
-	nodenames = {"default:sand", "default:desert_sand", "default:dirt_dry", "default:dirt_with_dry_grass"},
+	nodenames = {"default:sand", "default:desert_sand", "default:dry_dirt", "default:dirt_with_dry_grass", "default:dry_dirt_with_dry_grass"},
 	neighbors = {"default:water_flowing"},
 	interval = 20,
 	neighbors_range = 3,
 	chance = 10,
 	action = function(pos, node)
 		if ((core.get_heat(pos) > grass_heat_max or core.get_humidity(pos) < grass_humidity_min)) then return end
-		if node.name == "default:dirt_with_dry_grass" then
+		if node.name == "default:dirt_with_dry_grass" or node.name == "default:dry_dirt_with_dry_grass" then
+			local top_pos = {x=pos.x, y=pos.y+1, z=pos.z}
+			local light_day = core.get_node_light(top_pos, 0.5) or 0
+			if light_day < grass_light_min then
+				return
+			end
 			node.name = "default:dirt_with_grass"
 		else
 			node.name = "default:dirt"

@@ -475,7 +475,7 @@ minetest.register_node("default:dirt", {
 	liquidtype = flowing_sand_type,
 	paramtype2 = flowing_sand_paramtype2,
 	drowning = 1,
-	melt = "default:dirt_dry",
+	melt = "default:dry_dirt",
 })
 
 minetest.register_node("default:dirt_with_grass", {
@@ -520,7 +520,7 @@ minetest.register_node("default:dirt_with_dry_grass", {
 		footstep = {name = "default_grass_footstep", gain = 0.4},
 	}),
 	drowning = 1,
-	melt = "default:dirt_dry",
+	melt = "default:dry_dirt",
 	freeze = "default:dirt_with_snow",
 })
 
@@ -537,16 +537,6 @@ minetest.register_node("default:dirt_with_snow", {
 	}),
 	drowning = 1,
 	melt = "default:dirt",
-})
-
-minetest.register_node("default:dirt_dry", {
-	description = "Dry dirt",
-	tiles = {"default_dirt_dry.png"},
-	is_ground_content = true,
-	groups = {crumbly = 3, soil = 1, melt = 81},
-	drowning = 1,
-	sounds = default.node_sound_dirt_defaults(),
-	melt = "default:sand",
 })
 
 minetest.register_node("default:dirt_with_rainforest_litter", {
@@ -584,6 +574,11 @@ minetest.register_node("default:dry_dirt", {
 	tiles = {"default_dry_dirt.png"},
 	groups = {crumbly = 3, soil = 1},
 	sounds = default.node_sound_dirt_defaults(),
+
+	-- is_ground_content = true,
+	groups = {crumbly = 3, soil = 1, melt = 81},
+	drowning = 1,
+	melt = "default:sand",
 })
 
 minetest.register_node("default:dry_dirt_with_dry_grass", {

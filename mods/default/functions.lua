@@ -292,7 +292,7 @@ end
 minetest.register_abm({
 	label = "Grow cactus",
 	nodenames = {"default:cactus"},
-	neighbors = {"group:sand", "default:dirt_dry", "default:dirt_with_dry_grass"},
+	neighbors = {"group:sand", "default:dry_dirt", "default:dirt_with_dry_grass"},
 	interval = 12,
 	chance = 83,
 	action = function(...)

@@ -2,13 +2,16 @@
 
 -- Aliases to support loading worlds using nodes following the old naming convention
 -- These can also be helpful when using chat commands, for example /giveme
+
+minetest.register_alias("default:dirt_dry", "default:dry_dirt")
+minetest.register_alias("default:dirt_dry_grass", "default:dirt_with_dry_grass")
+
 minetest.register_alias("stone", "default:stone")
 minetest.register_alias("stone_with_coal", "default:stone_with_coal")
 minetest.register_alias("stone_with_iron", "default:stone_with_iron")
 minetest.register_alias("dirt_with_grass", "default:dirt_with_grass")
 minetest.register_alias("dirt_with_grass_footsteps", "default:dirt_with_grass_footsteps")
 minetest.register_alias("dirt", "default:dirt")
-minetest.register_alias("default:dirt_dry_grass", "default:dirt_with_dry_grass")
 minetest.register_alias("sand", "default:sand")
 minetest.register_alias("gravel", "default:gravel")
 minetest.register_alias("sandstone", "default:sandstone")
