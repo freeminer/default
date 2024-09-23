@@ -221,7 +221,7 @@ core.register_abm({
 })
 
 core.register_abm({
-	nodenames = {"default:sand", "default:desert_sand", "default:dry_dirt", "default:dirt_with_dry_grass", "default:dry_dirt_with_dry_grass"},
+	nodenames = {"default:sand", "default:desert_sand", "default:silver_sand",  "default:dry_dirt", "default:dirt_with_dry_grass", "default:dry_dirt_with_dry_grass"},
 	neighbors = {"default:water_flowing"},
 	interval = 20,
 	neighbors_range = 3,
