@@ -1205,7 +1205,7 @@ Weather API
 -----------
 
 The weather mod will constantly adjust weather effects seen by the player
-(that is: cloud parameters and shadow intensity).
+(that is: cloud parameters, shadow intensity, bloom and volumetric lighting).
 These can be influenced using this API.
 
 #### `weather.get = function(player)`
@@ -1217,3 +1217,11 @@ These can be influenced using this API.
 * `player`: ObjectRef of the relevant player
 * You can override this function to change the weather effects by simply returning different values.
   Setting `clouds` or `lighting` in the result table to `nil` will *prevent* those from changing.
+
+Utilities
+---------
+
+`default.dig_up(pos, node, digger, max_height)`
+
+ * Find all nodes above `pos` that is the same, then dig them all
+ * `max_height`	Maximum number of nodes to iterate. Default: 100
