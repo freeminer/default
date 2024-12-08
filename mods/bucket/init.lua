@@ -1,4 +1,4 @@
--- Minetest 0.4 mod: bucket
+-- Minetest Game mod: bucket
 -- See README.txt for licensing and other information.
 
 local LIQUID_MAX = 8  --The number of water levels when liquid_real is enabled
