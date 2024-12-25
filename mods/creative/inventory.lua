@@ -124,6 +124,11 @@ function creative.update_creative_inventory(player_name, tab_content)
 	inv.size = #creative_list
 end
 
+minetest.register_on_leaveplayer(function(player)
+	local name = player:get_player_name()
+	player_inventory[name] = nil
+end)
+
 -- Create the trash field
 local trash = minetest.create_detached_inventory("trash", {
 	-- Allow the stack to be placed and remove it in on_put()
