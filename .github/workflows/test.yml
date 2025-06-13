@@ -1,11 +1,19 @@
-name: test
+name: Test
 on: [push, pull_request]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    strategy:
+      matrix:
+        cfg:
+          - { image: 'ghcr.io/minetest/minetest:5.9.0' }
+          - { image: 'ghcr.io/minetest/minetest:5.10.0' }
+          - { image: 'ghcr.io/luanti-org/luanti:master' } # latest git
     steps:
     - uses: actions/checkout@v4
 
     - run: ./utils/test/run.sh
+      env:
+        DOCKER_IMAGE: "${{ matrix.cfg.image }}"
