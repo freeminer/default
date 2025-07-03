@@ -140,7 +140,9 @@ function default.grow_tree(pos, is_apple_tree, bad)
 
 	vm:set_data(data)
 	vm:write_to_map()
-	vm:update_map()
+	if vm.close ~= nil then
+		vm:close()
+	end
 end
 
 -- Jungle tree
@@ -192,7 +194,9 @@ function default.grow_jungle_tree(pos, bad)
 
 	vm:set_data(data)
 	vm:write_to_map()
-	vm:update_map()
+	if vm.close ~= nil then
+		vm:close()
+	end
 end
 
 
@@ -318,7 +322,9 @@ function default.grow_pine_tree(pos, snow)
 
 	vm:set_data(data)
 	vm:write_to_map()
-	vm:update_map()
+	if vm.close ~= nil then
+		vm:close()
+	end
 end
 
 

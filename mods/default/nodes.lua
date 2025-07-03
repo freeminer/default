@@ -272,6 +272,7 @@ minetest.register_node("default:cobble", {
 	is_ground_content = false,
 	groups = {cracky = 3, stone = 2, melt = 3000},
 	sounds = default.node_sound_stone_defaults(),
+	_tnt_loss = 4,
 	melt = "default:lava_source",
 })
 
@@ -300,9 +301,9 @@ minetest.register_node("default:mossycobble", {
 	is_ground_content = false,
 	groups = {cracky = 3, stone = 1, melt = 200},
 	sounds = default.node_sound_stone_defaults(),
+	_tnt_loss = 4,
 	melt = "default:cobble",
 })
-
 
 minetest.register_node("default:desert_stone", {
 	description = S("Desert Stone"),
@@ -320,6 +321,7 @@ minetest.register_node("default:desert_cobble", {
 	is_ground_content = false,
 	groups = {cracky = 3, stone = 2, melt=3000},
 	sounds = default.node_sound_stone_defaults(),
+	_tnt_loss = 4,
 	melt = "default:lava_source",
 })
 
@@ -469,6 +471,7 @@ minetest.register_node("default:dirt", {
 	tiles = {"default_dirt.png"},
 	groups = {crumbly = 3, soil = 1},
 	sounds = default.node_sound_dirt_defaults(),
+	_tnt_loss = 3,
 
 	groups = {crumbly = 3, soil = 1, melt = 50, liquid_drop = flowing_sand_liquid_drop, weight = 2000, fall_damage_add_percent = -20,},
 	leveled = flowing_sand_leveled,
@@ -574,6 +577,7 @@ minetest.register_node("default:dry_dirt", {
 	tiles = {"default_dry_dirt.png"},
 	groups = {crumbly = 3, soil = 1},
 	sounds = default.node_sound_dirt_defaults(),
+	_tnt_loss = 3,
 
 	-- is_ground_content = true,
 	groups = {crumbly = 3, soil = 1, melt = 81},
@@ -625,6 +629,7 @@ minetest.register_node("default:sand", {
 	tiles = {"default_sand.png"},
 	groups = {crumbly = 3, falling_node = 1, sand = 1},
 	sounds = default.node_sound_sand_defaults(),
+	_tnt_loss = 2,
 
 	is_ground_content = true,
 	groups = {crumbly = 3, falling_node = 1, sand = 1, liquid_drop = flowing_sand_liquid_drop, weight = 2000, fall_damage_add_percent = -30},
@@ -639,6 +644,7 @@ minetest.register_node("default:desert_sand", {
 	tiles = {"default_desert_sand.png"},
 	groups = {crumbly = 3, falling_node = 1, sand = 1},
 	sounds = default.node_sound_sand_defaults(),
+	_tnt_loss = 2,
 
 	is_ground_content = true,
 	leveled = flowing_sand_leveled,
@@ -653,6 +659,7 @@ minetest.register_node("default:silver_sand", {
 	tiles = {"default_silver_sand.png"},
 	groups = {crumbly = 3, falling_node = 1, sand = 1},
 	sounds = default.node_sound_sand_defaults(),
+	_tnt_loss = 2,
 
 	leveled = flowing_sand_leveled,
 	liquidtype = flowing_sand_type,
@@ -680,7 +687,8 @@ minetest.register_node("default:gravel", {
 			{items = {"default:flint"}, rarity = 16},
 			{items = {"default:gravel"}}
 		}
-	}
+	},
+	_tnt_loss = 3,
 })
 
 minetest.register_node("default:clay", {
@@ -720,6 +728,7 @@ minetest.register_node("default:snow", {
 	groups = {crumbly = 3, falling_node = 1, snowy = 1,
 		melt = 1, float = 1, slippery = 2, fall_damage_add_percent = -70,},
 	sounds = default.node_sound_snow_defaults(),
+	_tnt_loss = 1, -- means it will disappear entirely
 
 	on_construct = function(pos)
 		pos.y = pos.y - 1
@@ -2853,6 +2862,9 @@ local function register_sign(material, desc, def)
 			meta:set_string("formspec", "field[text;;${text}]")
 		end,
 		on_receive_fields = function(pos, formname, fields, sender)
+			if not fields.quit then
+				return -- workaround for https://github.com/luanti-org/luanti/issues/16187
+			end
 			local player_name = sender:get_player_name()
 			if minetest.is_protected(pos, player_name) then
 				minetest.record_protection_violation(pos, player_name)
@@ -3065,6 +3077,7 @@ minetest.register_node("default:glass", {
 	is_ground_content = false,
 	groups = {cracky = 3, oddly_breakable_by_hand = 3, melt = 1500},
 	sounds = default.node_sound_glass_defaults(),
+	_tnt_loss = 2,
 
 	melt = "default:obsidian_glass",
 })
