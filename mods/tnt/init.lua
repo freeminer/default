@@ -2,14 +2,15 @@
 
 tnt = {}
 
--- Load support for MT game translation.
 local S = minetest.get_translator("tnt")
 
 
--- Default to enabled when in singleplayer
-local enable_tnt = minetest.settings:get_bool("enable_tnt")
-if enable_tnt == nil then
+-- Default to enabled in singleplayer
+local enable_tnt = minetest.settings:get("enable_tnt") or "auto"
+if enable_tnt == "auto" then
 	enable_tnt = minetest.is_singleplayer()
+else
+	enable_tnt = minetest.is_yes(enable_tnt)
 end
 
 tnt.radius_max = tonumber(core.settings:get("tnt_radius_max") or 25)
@@ -20,7 +21,7 @@ local tnt_radius = tonumber(minetest.settings:get("tnt_radius") or 3)
 local c_air = minetest.get_content_id("air")
 local c_fire = minetest.get_content_id("fire:basic_flame")
 
--- Fill a list with data for content IDs, after all nodes are registered
+-- Fill a table with data for all content IDs, after all nodes are registered
 local cid_data = {}
 minetest.register_on_mods_loaded(function()
 	for name, def in pairs(minetest.registered_nodes) do
