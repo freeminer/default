@@ -321,6 +321,13 @@ Allows creation of new fences with "fencelike" drawtype.
  nodedef fields here except drawtype. The fence group will always be added
  for this node.
 
+ All fences will be connected to any nodes with one of the following groups:
+ * `fence`
+ * `wood`
+ * `tree`
+ * `wall`
+ * `fence_connected`
+
 ### fence definition
 
 	name = "default:fence_wood",
