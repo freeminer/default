@@ -71,7 +71,7 @@ local function set_physics_override(player, put_to_bed)
 		if player_monoids then
 			for k, v in pairs(OVERRIDES) do
 				local monoid = player_monoids[k]
-				pdata["monoid_branch_" .. k] = monoid:get_active_branch(player)
+				pdata["monoid_branch_" .. k] = monoid:get_active_branch(player):get_name()
 				-- Change the "context" of the physics overrides
 				local branch = monoid:checkout_branch(player, IDENTIFIER)
 				branch:add_change(player, v)
@@ -250,6 +250,24 @@ local function schedule_update()
 			beds.kick_players()
 		end
 	end)
+end
+
+function beds.kick_player_at(kick_pos)
+	for name, bed_pos in pairs(beds.bed_position) do
+		if vector.equals(bed_pos, kick_pos) then
+			if beds.player[name] then
+				local player = core.get_player_by_name(name)
+				if not player then
+					return false
+				end
+				lay_down(player, nil, nil, false)
+				core.close_formspec(name, "beds_form")
+				core.log("info", "[beds] Kicked "..name.." out of bed at "..core.pos_to_string(kick_pos))
+				return true
+			end
+		end
+	end
+	return false
 end
 
 function beds.on_rightclick(pos, player)
