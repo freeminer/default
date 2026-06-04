@@ -54,6 +54,7 @@ local grass_humidity_min2 = 40
 local grass_light_min = 6
 local dirt_dry_humidity = 10
 local tree_light_min = 12
+local grow_debug = core.settings:get("grow_debug_fast") or 0
 
 --[[ all dirt types:
 default:dirt
@@ -69,8 +70,8 @@ default:dry_dirt_with_dry_grass
 
 core.register_abm({
 	nodenames = {"default:dirt", "default:dirt_with_grass", "default:dirt_with_grass_footsteps", "default:dry_dirt", "default:dirt_with_dry_grass"},
-	interval = 10,
-	chance = 30,
+	interval = grow_debug and 1 or 10,
+	chance = grow_debug and 1 or 30,
 	action = function(pos, node, active_object_count, active_object_count_wider, neighbor, activate)
 		local top_pos = {x=pos.x, y=pos.y+1, z=pos.z}
 		local top_name = core.get_node(top_pos).name
@@ -137,7 +138,7 @@ core.register_abm({
 		end
 ]]
 
-		local rnd1000 = math.random(1000)
+		local rnd1000 = math.random(grow_debug and 1 or 1000)
 
 		if rnd1000 < 10
 			and node.name ~= "default:dirt"
@@ -176,8 +177,8 @@ core.register_abm({
 core.register_abm({
 	nodenames = {"default:grass_1", "default:grass_2", "default:grass_3", "default:grass_4", "default:grass_5", "default:dry_shrub", "default:dry_grass_1", "default:dry_grass_2", "default:dry_grass_3", "default:dry_grass_4", "default:dry_grass_5"},
 	neighbors = {"default:dirt_with_grass", "default:dirt_with_grass_footsteps", "default:dirt"},
-	interval = 20,
-	chance = 10,
+	interval = grow_debug and 1 or  20,
+	chance = grow_debug and 1 or  10,
 	action = function(pos, node, active_object_count, active_object_count_wider, neighbor, activate)
 		local humidity = core.get_humidity(pos)
 		local heat = core.get_heat(pos)
@@ -190,13 +191,14 @@ core.register_abm({
 		end
 		local light = core.get_node_light(pos) or 0
 		if heat < 5 or heat > grass_heat_max or light < grass_light_min then return end
-		local rnd = activate and 1 or math.random(1, 110-humidity)
+		local rnd = (activate or grow_debug) and 1 or math.random(1, 110-humidity)
 		if name == "default:grass_5" then
 			    if activate > 1 then return end
 				if rnd >= 3 then return end
 				if     humidity > 70 and heat > 25 then node.name = "default:junglesapling"
-				elseif humidity < 20 and heat > 25 then node.name = "default:acacia_sapling"
+				elseif humidity >= 20 and humidity < 35 and heat > 25 then node.name = "default:acacia_sapling"
 				elseif humidity > 20 and heat < 10 then node.name = "default:pine_sapling"
+				elseif humidity > 45 and heat < 25 then node.name = "default:aspen_sapling"
 				elseif humidity > 30 and heat < 40 then node.name = "default:sapling"
 				else return end
 				if light < tree_light_min or core.find_node_near(pos, (7-5*humidity/100), {"group:tree", "group:sapling"}) then return end
@@ -223,9 +225,9 @@ core.register_abm({
 core.register_abm({
 	nodenames = {"default:sand", "default:desert_sand", "default:silver_sand",  "default:dry_dirt", "default:dirt_with_dry_grass", "default:dry_dirt_with_dry_grass"},
 	neighbors = {"default:water_flowing"},
-	interval = 20,
+	interval = grow_debug and 1 or  20,
+	chance = grow_debug and 1 or 10,
 	neighbors_range = 3,
-	chance = 10,
 	action = function(pos, node)
 		if ((core.get_heat(pos) > grass_heat_max or core.get_humidity(pos) < grass_humidity_min)) then return end
 		if node.name == "default:dirt_with_dry_grass" or node.name == "default:dry_dirt_with_dry_grass" then
