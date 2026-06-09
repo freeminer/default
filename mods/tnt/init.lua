@@ -94,7 +94,7 @@ end
 local function eject_drops(drops, pos, radius)
 	local drop_pos = vector.new(pos)
 	for _, item in pairs(drops) do
-		local count = math.min(item:get_count(), item:get_stack_max())
+		local count = item:get_count()
 		while count > 0 do
 			local take = math.max(1,math.min(radius * radius,
 					count,
@@ -173,6 +173,8 @@ end
 ]]
 
 local function calc_velocity(pos1, pos2, old_vel, power)
+	old_vel = old_vel or {x = 0, y = 0, z = 0}
+
 	-- Avoid errors caused by a vector of zero length
 	if vector.equals(pos1, pos2) then
 		return old_vel
@@ -902,7 +904,9 @@ tnt.register_tnt({
 	},
 })
 
-if enable_tnt then
+local enable_nuke = minetest.settings:get("enable_nuke") or nil
+
+if enable_nuke then
 	minetest.register_craft({
 		output = "tnt:nuke",
 		recipe = {
