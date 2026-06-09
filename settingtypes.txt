@@ -41,8 +41,33 @@ enable_fence_tall (Tall fences and walls) bool false
 #    If set to "auto", it will be enabled only in singleplayer.
 enable_tnt (TNT) enum auto auto,true,false
 
-#    The radius in which nodes will be destroyed by a TNT explosion.
+#    Default radius of one TNT.
+#    If TNT initial blast strength is unset, the node volume of this radius
+#    cube is used as the integral blast strength.
 tnt_radius (TNT radius) int 3 0
+
+#    Optional override for the initial blast strength.
+#    If unset, node volume of TNT radius cube is used as the initial strength.
+tnt_blast_strength (TNT initial blast strength) float 0 0
+
+#    Optional override for the strength added by each chained TNT.
+#    If unset, the initial blast strength is added for each chained TNT.
+tnt_blast_tnt_strength (TNT chained blast strength) float 0 0
+
+#    Maximum time in seconds spent processing one TNT explosion.
+#    Set to 0 to disable the time limit.
+tnt_time_max (TNT processing time limit) float 5 0
+
+#    Strength consumed by each air or blast-transparent node step.
+tnt_blast_distance_loss (TNT air blast loss) float 0.02 0.01
+
+#    Multiplier applied to node blast resistance before it is consumed from
+#    the global TNT strength pool.
+tnt_blast_resistance_scale (TNT resistance scale) float 1 0
+
+#    Raw fallback resistance for nodes without material groups or explicit
+#    TNT resistance fields.
+tnt_blast_default_resistance (TNT default node resistance) float 1 0
 
 #    Sets the behaviour of the inventory items when a player dies.
 #    bones: Store items in a bone node but drop items if inside protected area.

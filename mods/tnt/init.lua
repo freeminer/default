@@ -13,14 +13,9 @@ else
 	enable_tnt = minetest.is_yes(enable_tnt)
 end
 
-tnt.radius_max = tonumber(core.settings:get("tnt_radius_max") or 25)
-tnt.time_max = tonumber(core.settings:get("tnt_time_max") or 3)
-tnt.liquid_real = core.settings:get_bool("liquid_real")
-
 local tnt_radius = tonumber(minetest.settings:get("tnt_radius") or 3)
-local c_air = minetest.get_content_id("air")
-local c_fire = minetest.get_content_id("fire:basic_flame")
 
+--[[
 -- Fill a table with data for all content IDs, after all nodes are registered
 local cid_data = {}
 minetest.register_on_mods_loaded(function()
@@ -33,6 +28,32 @@ minetest.register_on_mods_loaded(function()
 		}
 	end
 end)
+]]
+
+
+-- fm:
+local function positive_setting(name)
+	local value = tonumber(core.settings:get(name) or "")
+	if value and value > 0 then
+		return value
+	end
+end
+
+tnt.time_max = tonumber(core.settings:get("tnt_time_max") or 5)
+tnt.liquid_real = core.settings:get_bool("liquid_real")
+tnt.fast_radius = tonumber(core.settings:get("tnt_fast_radius") or 6)
+tnt.melt_chance = tonumber(core.settings:get("tnt_melt_chance") or 15)
+tnt.melt_min_radius = tonumber(core.settings:get("tnt_melt_min_radius") or 10)
+tnt.blast_strength = positive_setting("tnt_blast_strength")
+tnt.blast_tnt_strength = positive_setting("tnt_blast_tnt_strength")
+tnt.blast_distance_loss = tonumber(core.settings:get("tnt_blast_distance_loss") or 0.02)
+tnt.blast_resistance_scale = tonumber(core.settings:get("tnt_blast_resistance_scale") or 1)
+tnt.blast_default_resistance = tonumber(core.settings:get("tnt_blast_default_resistance") or 1)
+tnt.blast_min_strength = tonumber(core.settings:get("tnt_blast_min_strength") or 0.15)
+local tnt_radius = tonumber(minetest.settings:get("tnt_radius") or 4)
+-- ===
+
+
 
 local function particle_texture(name)
 	local ret = {name = name}
@@ -140,45 +161,6 @@ local function destroy(drops, npos, cid, c_air, c_fire,
 end
 ]]
 
-local function destroy(drops, npos, cid, c_air, c_fire,
-		on_blast_queue, on_construct_queue,
-		ignore_protection, ignore_on_blast, owner
-		, last, fast
-		)
-
-	if not ignore_protection and minetest.is_protected(npos, owner) then
-		return cid
-	end
-
-	local nodename = core.get_node(npos).name
-
-	if nodename == "air" then return end
-
-		local def = core.registered_nodes[nodename]
-		if def and not ignore_on_blast and def.on_blast then
-			on_blast_queue[#on_blast_queue + 1] = {pos = vector.new(npos), on_blast = def.on_blast}
-			return
-		end
-
-		core.remove_node(npos, (fast and 1 or 0))
-		if last then
-			core.check_for_falling(npos)
-		end
-		if not def or not def.groups then
-			-- broken map and unknown nodes
-			return
-		end
-		if def.groups.flammable then
-			core.set_node(npos, {name="fire:basic_flame"}, (fast and 2 or 0))
-			return
-		end
-
-		local node_drops = minetest.get_node_drops(def.name, "")
-		for _, item in ipairs(node_drops) do
-			add_drop(drops, item)
-		end
-end
-
 local function calc_velocity(pos1, pos2, old_vel, power)
 	-- Avoid errors caused by a vector of zero length
 	if vector.equals(pos1, pos2) then
@@ -206,7 +188,6 @@ local function calc_velocity(pos1, pos2, old_vel, power)
 
 	-- Limit to terminal velocity
 	dist = vector.length(vel)
---print("cacl velocity=" .. dist .. " power=" .. power)
 	if dist > 250 then
 		vel = vector.divide(vel, dist / 250)
 	end
@@ -492,116 +473,63 @@ local function tnt_explode(pos, radius, ignore_protection, ignore_on_blast, owne
 end
 ]]
 
-local function tnt_explode(pos, def, radius, ignore_protection, ignore_on_blast, owner)
-	local pos = vector.round(pos)
-	local pr = PseudoRandom(os.time())
-	local p1 = vector.subtract(pos, radius)
-	local p2 = vector.add(pos, radius)
-
-	local drops = {}
-	local on_blast_queue = {}
-	-- TODO: not implemented!
-	local on_construct_queue = {}
-
-		local radius = 2
-		local dr = 0
-		local tnts = 1
-		local destroyed = 0
-		local melted = 0
-		local end_ms = os.clock() + tnt.time_max
-		local last = nil;
-		while dr<radius do
-			local list = {}
-			dr=dr+1
-			if os.clock() > end_ms or dr>=radius then last=1 end
-			for dx=-dr,dr,dr*2 do
-				for dy=-dr,dr,1 do
-					for dz=-dr,dr,1 do
-						table.insert(list, {x=dx, y=dy, z=dz})
-					end
-				end
-			end
-			for dy=-dr,dr,dr*2 do
-				for dx=-dr+1,dr-1,1 do
-					for dz=-dr,dr,1 do
-						table.insert(list, {x=dx, y=dy, z=dz})
-					end
-				end
-			end
-			for dz=-dr,dr,dr*2 do
-				for dx=-dr+1,dr-1,1 do
-					for dy=-dr+1,dr-1,1 do
-						table.insert(list, {x=dx, y=dy, z=dz})
-					end
-				end
-			end
-				for _,p in ipairs(list) do
-					local np = {x=pos.x+p.x, y=pos.y+p.y, z=pos.z+p.z}
-					
-					local node =  core.get_node(np)
-					if node.name == "air" then
-					elseif node.name == "tnt:tnt" or node.name == "tnt:tnt_burning" then
-						if radius < tnt.radius_max and not last and dr < radius then
-							if radius <= 5 then
-								radius = radius + 1
-							elseif radius <= 10 then
-								radius = radius + 0.5
-							elseif radius <= 20 then
-								radius = radius + 0.3
-							else
-								radius = radius + 0.2
-							end
-							core.remove_node(np, 2)
-						tnts = tnts + 1
-						else
-						core.set_node(np, {name="tnt:tnt_burning"}, 2)
-						tnt.boom(np, def)
-						end
-					elseif node.name == "fire:basic_flame"
-						--or string.find(node.name, "default:water_") 
-						--or string.find(node.name, "default:lava_") 
-						or node.name == "tnt:boom"
-						then
-						
-					elseif tnt.liquid_real and last and radius > 10 and math.random(1,15) <= 1 then
-						melted = melted + core.freeze_melt(np, 1)
-					else
-						local last = dr == radius
-						local fast = radius > 6
-						local cid = minetest.get_content_id(node.name)
-
-						if (math.abs(p.x)<2 and math.abs(p.y)<2 and math.abs(p.z)<2) or dr < radius then
-							--destroy(drops, np, dr == radius, radius > 7)
-							destroy(drops, np, cid, c_air, c_fire, on_blast_queue, on_construct_queue, ignore_protection, ignore_on_blast, owner, last, fast)
-							destroyed = destroyed + 1
-						else
-							if math.random(1,5) <= 4 then
-								--destroy(drops, np, dr == radius, radius > 7)
-								destroy(drops, np, cid, c_air, c_fire, on_blast_queue, on_construct_queue, ignore_protection, ignore_on_blast, owner, last, fast)
-								destroyed = destroyed + 1
-							end
-						end
-					end
-				end
-			if last then break end
-		end
-
-	for _, data in ipairs(on_blast_queue) do
-		local dist = math.max(1, vector.distance(data.pos, pos))
-		local intensity = (radius * radius) / (dist * dist)
-		local node_drops = data.on_blast(data.pos, intensity)
-		if node_drops then
+local function add_core_drops(drops, dropped_nodes)
+	for name, count in pairs(dropped_nodes or {}) do
+		for _ = 1, count do
+			local node_drops = minetest.get_node_drops(name, "")
 			for _, item in ipairs(node_drops) do
 				add_drop(drops, item)
 			end
 		end
 	end
+end
 
-	core.log("action", tnts .. " TNTs owned by " .. owner .. " detonated at " .. 
-	    minetest.pos_to_string(pos) .. " with radius=".. dr .." radius_want=" .. radius .. " destroyed="..destroyed .. " melted="..melted)
+local function tnt_explode(pos, def, radius, ignore_protection, ignore_on_blast, owner)
+	pos = vector.round(pos)
+	owner = owner or ""
 
-	return drops, radius
+	local drops = {}
+		local result = core.tnt_explode(pos, {
+			radius = radius or def.radius or tnt_radius,
+			time_max = def.time_max or tnt.time_max,
+			liquid_real = tnt.liquid_real,
+			ignore_protection = ignore_protection,
+			ignore_on_blast = ignore_on_blast,
+			owner = owner,
+			fast_radius = def.fast_radius or tnt.fast_radius,
+		melt_chance = def.melt_chance or tnt.melt_chance,
+		melt_min_radius = def.melt_min_radius or tnt.melt_min_radius,
+		blast_strength = def.blast_strength or tnt.blast_strength,
+		blast_tnt_strength = def.blast_tnt_strength or tnt.blast_tnt_strength,
+		blast_distance_loss = def.blast_distance_loss or tnt.blast_distance_loss,
+		blast_resistance_scale = def.blast_resistance_scale or tnt.blast_resistance_scale,
+		blast_default_resistance = def.blast_default_resistance or tnt.blast_default_resistance,
+		blast_min_strength = def.blast_min_strength or tnt.blast_min_strength,
+		fire_node = def.fire_node or "fire:basic_flame",
+		boom_node = def.boom_node or "tnt:boom",
+		tnt_node = def.tnt_node or "tnt:tnt",
+		tnt_burning_node = def.tnt_burning_node or "tnt:tnt_burning",
+	})
 
+	add_core_drops(drops, result.drops)
+
+	for _, data in ipairs(result.on_blast or {}) do
+		local node_def = minetest.registered_nodes[data.name]
+		if node_def and node_def.on_blast then
+			local node_drops = node_def.on_blast(data.pos, data.intensity)
+			if node_drops then
+				for _, item in ipairs(node_drops) do
+					add_drop(drops, item)
+				end
+			end
+		end
+	end
+
+	for _, chain_pos in ipairs(result.chained_tnt or {}) do
+		tnt.boom(chain_pos, def)
+	end
+
+	return drops, result.radius or radius
 end
 
 
