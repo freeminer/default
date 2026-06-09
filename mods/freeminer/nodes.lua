@@ -227,6 +227,7 @@ update_node("default:apple", {fruit = 1})
 update_node("default:jungletree", {
 	grow_tree = 1,
 	tree_water_max = 65,
+	tree_get_water_max_from_humidity = 36,
 	tree_grow_heat_min = 19,
 	tree_grow_heat_max = 49,
 	leaves_water_max = 30,
@@ -271,12 +272,22 @@ update_node("default:pine_needles", {
 update_node("default:acacia_tree", {
 	grow_tree = 1,
 	tree_water_max = 40,
+	tree_get_water_from_humidity = 15,
+	tree_get_water_max_from_humidity = 12,
 	tree_grow_water_min = 3,
+	tree_grow_heat_min = 18,
+	tree_grow_heat_max = 55,
 	tree_grow_light_max = 13,
+	tree_branch_chance = 12,
+	tree_branch_water_min = 8,
+	tree_branch_spacing = 2,
+	tree_branch_cost = 2,
 	leaves_water_max = 14,
 	leaves_grow_light_min = 10,
 	leaves_grow_water_min_top = 4,
 	leaves_grow_water_min_side = 2,
+	leaves_grow_heat_min = 18,
+	leaves_grow_heat_max = 55,
 	leaves_die_light_max = 9,
 	leaves_die_heat_min = 0,
 }, {
@@ -285,10 +296,13 @@ update_node("default:acacia_tree", {
 
 update_node("default:acacia_leaves", {
 	grow_leaves = 1,
+	tree_get_water_from_humidity = 15,
 	leaves_water_max = 14,
 	leaves_grow_light_min = 10,
 	leaves_grow_water_min_top = 4,
 	leaves_grow_water_min_side = 2,
+	leaves_grow_heat_min = 18,
+	leaves_grow_heat_max = 55,
 	leaves_die_light_max = 9,
 	leaves_die_heat_min = 0,
 	fall_damage_add_percent = -30,
@@ -297,9 +311,14 @@ update_node("default:acacia_leaves", {
 update_node("default:aspen_tree", {
 	grow_tree = 1,
 	tree_water_max = 50,
+	tree_grow_heat_min = 0,
+	tree_grow_heat_max = 35,
 	leaves_water_max = 10,
 	leaves_grow_light_min = 9,
+	leaves_grow_heat_min = 0,
+	leaves_grow_heat_max = 35,
 	leaves_die_light_max = 8,
+	leaves_die_heat_min = 45,
 }, {
 	liquid_alternative_source = "default:aspen_leaves",
 })
@@ -308,7 +327,10 @@ update_node("default:aspen_leaves", {
 	grow_leaves = 1,
 	leaves_water_max = 10,
 	leaves_grow_light_min = 9,
+	leaves_grow_heat_min = 0,
+	leaves_grow_heat_max = 35,
 	leaves_die_light_max = 8,
+	leaves_die_heat_min = 45,
 })
 
 update_node("default:stone_with_mese", nil, {
@@ -323,7 +345,7 @@ update_node("default:mese", nil, {
 update_node("default:cactus", {
 	grow_tree = 1,
 	tree_get_water_from_humidity = 40,
-	leaves_grow_light_min = 0,
+	leaves_grow_light_min = 13,
 	tree_grow_light_max = 15,
 	tree_grow_chance = 30,
 	tree_water_max = 6,
@@ -339,7 +361,7 @@ update_node("default:papyrus", {
 	dig_immediate = 3,
 	grow_tree = 1,
 	tree_get_water_from_humidity = 0,
-	leaves_grow_light_min = 0,
+	leaves_grow_light_min = 12,
 	tree_grow_light_max = 15,
 	tree_grow_chance = 20,
 	tree_water_max = 8,
@@ -473,9 +495,9 @@ local tnt_resistance_by_node = {
 	["default:silver_sandstone"] = 4.0,
 	["default:silver_sandstone_brick"] = 4.5,
 	["default:silver_sandstone_block"] = 5.0,
-	["default:obsidian"] = 80.0,
-	["default:obsidianbrick"] = 85.0,
-	["default:obsidian_block"] = 95.0,
+	["default:obsidian"] = 35.0,
+	["default:obsidianbrick"] = 40.0,
+	["default:obsidian_block"] = 45.0,
 
 	["default:dirt"] = 1.2,
 	["default:dirt_with_grass"] = 1.2,
