@@ -39,7 +39,18 @@ local function positive_setting(name)
 	end
 end
 
-tnt.time_max = tonumber(core.settings:get("tnt_time_max") or 5)
+local function merge_groups(base, extra)
+	local groups = {}
+	for name, value in pairs(base) do
+		groups[name] = value
+	end
+	for name, value in pairs(extra or {}) do
+		groups[name] = value
+	end
+	return groups
+end
+
+tnt.time_max = tonumber(core.settings:get("tnt_time_max") or 10)
 tnt.liquid_real = core.settings:get_bool("liquid_real")
 tnt.fast_radius = tonumber(core.settings:get("tnt_fast_radius") or 6)
 tnt.melt_chance = tonumber(core.settings:get("tnt_melt_chance") or 15)
@@ -746,6 +757,12 @@ function tnt.register_tnt(def)
 	local tnt_bottom = def.tiles.bottom or def.name .. "_bottom.png"
 	local tnt_side = def.tiles.side or def.name .. "_side.png"
 	local tnt_burning = def.tiles.burning or def.name .. "_top_burning_animated.png"
+	if def.groups then
+		def.radius = def.radius or def.groups.tnt_radius
+		def.blast_strength = def.blast_strength or def.groups.tnt_blast_strength
+		def.blast_tnt_strength = def.blast_tnt_strength or
+			def.groups.tnt_blast_tnt_strength or def.groups.tnt_blast_strength
+	end
 	if not def.damage_radius then def.damage_radius = def.radius * 2 end
 
 	if enable_tnt then
@@ -753,7 +770,12 @@ function tnt.register_tnt(def)
 			description = def.description,
 			tiles = {tnt_top, tnt_bottom, tnt_side},
 			is_ground_content = false,
-			groups = {dig_immediate = 2, mesecon = 2, tnt = 1, flammable = 5},
+			groups = merge_groups({
+				dig_immediate = 2,
+				mesecon = 2,
+				tnt = 1,
+				flammable = 5,
+			}, def.groups),
 			sounds = default.node_sound_wood_defaults(),
 			after_place_node = function(pos, placer)
 				if placer and placer:is_player() then
@@ -817,7 +839,10 @@ function tnt.register_tnt(def)
 		light_source = 5,
 		drop = "",
 		sounds = default.node_sound_wood_defaults(),
-		groups = {falling_node = 1, not_in_creative_inventory = 1},
+		groups = merge_groups({
+			falling_node = 1,
+			not_in_creative_inventory = 1,
+		}, def.burning_groups),
 		on_timer = function(pos, elapsed)
 			tnt.boom(pos, def)
 		end,
@@ -831,8 +856,59 @@ function tnt.register_tnt(def)
 	})
 end
 
+local function blast_strength_from_radius(radius)
+	local diameter = radius * 2 + 1
+	return diameter * diameter * diameter
+end
+
+local function tnt_power_groups(radius, strength, tnt_strength)
+	return {
+		tnt_radius = radius,
+		tnt_blast_strength = math.floor(strength + 0.5),
+		tnt_blast_tnt_strength = math.floor((tnt_strength or strength) + 0.5),
+	}
+end
+
+local nuke_radius = math.max(tnt_radius + 6, math.floor(tnt_radius * 2.5))
+local nuke_strength = math.max(
+	blast_strength_from_radius(nuke_radius),
+	(tnt.blast_strength or blast_strength_from_radius(tnt_radius)) * 10)
+local normal_tnt_strength = tnt.blast_strength or blast_strength_from_radius(tnt_radius)
+local normal_tnt_chain_strength = tnt.blast_tnt_strength or normal_tnt_strength
+local normal_tnt_groups = tnt_power_groups(
+	tnt_radius, normal_tnt_strength, normal_tnt_chain_strength)
+local nuke_groups = tnt_power_groups(nuke_radius, nuke_strength, nuke_strength)
+
 tnt.register_tnt({
 	name = "tnt:tnt",
 	description = S("TNT"),
 	radius = tnt_radius,
+	groups = normal_tnt_groups,
+	burning_groups = normal_tnt_groups,
 })
+
+tnt.register_tnt({
+	name = "tnt:nuke",
+	description = S("Nuke"),
+	groups = nuke_groups,
+	burning_groups = nuke_groups,
+	tnt_node = "tnt:nuke",
+	tnt_burning_node = "tnt:nuke_burning",
+	tiles = {
+		top = "tnt_top.png^[colorize:#5a32ff:90",
+		bottom = "tnt_bottom.png^[colorize:#5a32ff:90",
+		side = "tnt_side.png^[colorize:#5a32ff:90",
+		burning = "tnt_top_burning_animated.png^[colorize:#5a32ff:90",
+	},
+})
+
+if enable_tnt then
+	minetest.register_craft({
+		output = "tnt:nuke",
+		recipe = {
+			{"tnt:tnt", "tnt:tnt", "tnt:tnt"},
+			{"tnt:tnt", "default:diamondblock", "tnt:tnt"},
+			{"tnt:tnt", "tnt:tnt", "tnt:tnt"},
+		}
+	})
+end
