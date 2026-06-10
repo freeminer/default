@@ -333,11 +333,15 @@ update_node("default:aspen_leaves", {
 	leaves_die_heat_min = 45,
 })
 
-update_node("default:stone_with_mese", nil, {
+update_node("default:stone_with_mese", {
+	wield_light = 3,
+}, {
 	paramtype = "light",
 	light_source = 3,
 })
-update_node("default:mese", nil, {
+update_node("default:mese", {
+	wield_light = 5,
+}, {
 	paramtype = "light",
 	light_source = 5,
 })
@@ -473,6 +477,49 @@ update_node("default:meselamp", {
 	wield_light = default.LIGHT_MAX,
 	hot = 30,
 })
+
+for _, name in ipairs({
+	"default:mese_post_light",
+	"default:mese_post_light_acacia_wood",
+	"default:mese_post_light_junglewood",
+	"default:mese_post_light_pine_wood",
+	"default:mese_post_light_aspen_wood",
+}) do
+	update_node(name, {
+		wield_light = default.LIGHT_MAX,
+	})
+end
+
+for _, name in ipairs({
+	"default:torch",
+	"default:torch_wall",
+	"default:torch_ceiling",
+}) do
+	update_node(name, {
+		hot = 39,
+		wield_light = default.LIGHT_MAX - 1,
+		drop_by_liquid = 1,
+	})
+end
+
+local optional_wield_light_nodes = {
+	{"fireflies:firefly", 6},
+	{"fireflies:firefly_bottle", 9},
+	{"pbj_pup:pbj_pup", 14},
+	{"nyancat:nyancat", 14},
+	{"moognu:moognu", 14},
+	{"nyancat:nyancat_rainbow", 14},
+	{"protector:protect", 4},
+	{"protector:protect2", 4},
+}
+
+core.register_on_mods_loaded(function()
+	for _, def in ipairs(optional_wield_light_nodes) do
+		update_node(def[1], {
+			wield_light = def[2],
+		})
+	end
+end)
 
 -- Explicit TNT resistance for the C++ blast solver.  Values are the strength
 -- cost a blast ray pays when it crosses or destroys this node.

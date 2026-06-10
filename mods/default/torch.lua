@@ -38,9 +38,6 @@ minetest.register_node("default:torch", {
 	light_source = 12,
 	groups = {choppy=2, dig_immediate=3, flammable=1, attached_node=1, torch=1},
 
-	groups = {choppy = 2, dig_immediate = 3, flammable = 1, attached_node = 1, torch = 1,
-		hot = 39, wield_light = default.LIGHT_MAX-1, drop_by_liquid = 1},
-
 	drop = "default:torch",
 	selection_box = {
 		type = "wallmounted",
