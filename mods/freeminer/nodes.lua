@@ -1,5 +1,7 @@
 -- Freeminer-specific extensions for Minetest Game default nodes.
 
+local light_max = core.LIGHT_MAX or 14
+
 local function override_item(name, redefinition, del_fields)
 	if core.override_item_if_exists then
 		return core.override_item_if_exists(name, redefinition, del_fields)
@@ -474,7 +476,7 @@ update_node("default:brick", {melt = 3500}, {
 })
 
 update_node("default:meselamp", {
-	wield_light = default.LIGHT_MAX,
+	wield_light = light_max,
 	hot = 30,
 })
 
@@ -486,7 +488,7 @@ for _, name in ipairs({
 	"default:mese_post_light_aspen_wood",
 }) do
 	update_node(name, {
-		wield_light = default.LIGHT_MAX,
+		wield_light = light_max,
 	})
 end
 
@@ -497,7 +499,7 @@ for _, name in ipairs({
 }) do
 	update_node(name, {
 		hot = 39,
-		wield_light = default.LIGHT_MAX - 1,
+		wield_light = light_max - 1,
 		drop_by_liquid = 1,
 	})
 end
