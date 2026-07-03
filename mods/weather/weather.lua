@@ -1,7 +1,7 @@
 -- Weather:
 -- * rain
 -- * snow
--- * wind (not implemented)
+-- * wind
 
 assert(core.add_particlespawner, "I told you to run the latest GitHub!")
 assert(core.get_heat, "I told you to run the latest freeminer!")
@@ -10,31 +10,272 @@ addvectors = function (v1, v2)
 	return {x=v1.x+v2.x, y=v1.y+v2.y, z=v1.z+v2.z}
 end
 
-local cloud_height = tonumber(core.settings:get("cloud_height"));
+weather = weather or {}
+
+local cloud_height = tonumber(core.settings:get("cloud_height")) or 120
+weather.cloud_height = cloud_height
 local snow_humidity = 65
 local rain_humidity = 75
+local cloud_noise
+local cloud_detail_noise
+local terrain_cache = {}
+local terrain_cache_time = -1
+
+local function clamp(value, min_value, max_value)
+	return math.max(min_value, math.min(max_value, value))
+end
+
+local function precipitation_phase(heat, cold, warm)
+	if heat <= cold then return 0 end
+	if heat >= warm then return 1 end
+	return (heat - cold) / (warm - cold)
+end
+
+local function get_noise(noise_params)
+	local factory = core.get_value_noise or core.get_perlin
+	return factory and factory(noise_params)
+end
+
+local function cloud_motion(pos)
+	local time = core.get_gametime and core.get_gametime() or 0
+	local wind = weather.get_block_wind({
+		x = pos.x,
+		y = weather.cloud_height,
+		z = pos.z,
+	})
+	local wx = wind.x or 0
+	local wz = wind.z or 0
+	if math.abs(wx) + math.abs(wz) < 0.15 then
+		wx = 0.45
+		wz = 0.18
+	end
+	return {
+		x = pos.x - wx * time * 0.35,
+		z = pos.z - wz * time * 0.35,
+	}
+end
+
+local function cloud_value(pos)
+	cloud_noise = cloud_noise or get_noise({
+		offset = 0.5,
+		scale = 0.5,
+		spread = {x = 260, y = 260, z = 260},
+		seed = 7283,
+		octaves = 3,
+		persist = 0.55,
+		lacunarity = 2,
+	})
+	cloud_detail_noise = cloud_detail_noise or get_noise({
+		offset = 0.5,
+		scale = 0.5,
+		spread = {x = 80, y = 80, z = 80},
+		seed = 19351,
+		octaves = 2,
+		persist = 0.45,
+		lacunarity = 2,
+	})
+	if not cloud_noise or not cloud_detail_noise then return 1 end
+
+	local p = cloud_motion(pos)
+	local base = cloud_noise:get_2d({x = p.x, y = p.z})
+	local detail = cloud_detail_noise:get_2d({x = p.x, y = p.z})
+	return clamp(base * 0.75 + detail * 0.25, 0, 1)
+end
+
+function weather.cloud_cover(pos, humidity)
+	humidity = humidity or core.get_humidity(pos, 0) or 50
+	local moisture = clamp((humidity - 25) / 65, 0.05, 1.25)
+	return clamp(cloud_value(pos) * (0.45 + moisture), 0, 1)
+end
+
+function weather.cloud_speed(pos)
+	local wind = weather.get_block_wind({
+		x = pos.x,
+		y = weather.cloud_height,
+		z = pos.z,
+	})
+	local speed = {
+		x = (wind.x or 0) * 4,
+		z = (wind.z or 0) * 4,
+	}
+	if math.abs(speed.x) + math.abs(speed.z) < 0.1 then
+		speed.x = 1.8
+		speed.z = 0.7
+	end
+	return speed
+end
+
+function weather.get_block_wind(pos)
+	if not core.get_wind then return {x=0, y=0, z=0} end
+	return core.get_wind(pos) or {x=0, y=0, z=0}
+end
+
+function weather.random_amount(amount, max_amount)
+	local whole = math.floor(amount)
+	if math.random() < amount - whole then
+		whole = whole + 1
+	end
+	return clamp(whole, 0, max_amount)
+end
+
+local function rounded_offset(value, scale, limit)
+	local scaled = value * scale
+	local offset
+	if scaled >= 0 then
+		offset = math.floor(scaled + 0.5)
+	else
+		offset = math.ceil(scaled - 0.5)
+	end
+	return clamp(offset, -limit, limit)
+end
+
+function weather.wind_target(pos, scale, limit, chance_scale)
+	local wind = weather.get_block_wind(pos)
+	local wx = wind.x or 0
+	local wz = wind.z or 0
+	local speed = math.sqrt(wx * wx + wz * wz)
+	local chance = clamp(speed * (chance_scale or 0.25), 0, 0.85)
+	if speed < 0.25 or math.random() >= chance then
+		return pos
+	end
+
+	local dx = rounded_offset(wx, scale or 0.4, limit or 1)
+	local dz = rounded_offset(wz, scale or 0.4, limit or 1)
+	if dx == 0 and dz == 0 then
+		return pos
+	end
+	return {x = pos.x + dx, y = pos.y, z = pos.z + dz}
+end
+
+function weather.exposed_to_sky(pos, tolerance)
+	local light = core.get_node_light(pos, 0.5)
+	if not light or light < default.LIGHT_SUN - (tolerance or 0) then
+		return false
+	end
+
+	if core.get_node(pos).name ~= "air" then
+		return false
+	end
+
+	--[[
+	if core.line_of_sight then
+		local top = {
+			x = pos.x,
+			y = math.max(pos.y + 16, weather.cloud_height + 2),
+			z = pos.z,
+		}
+		return core.line_of_sight(pos, top)
+	end
+	]]
+
+	return true
+end
+
+local function blocks_moisture(node)
+	if node.name == "air" or node.name == "ignore" then return false end
+
+	local def = core.registered_nodes[node.name]
+	return def and def.walkable and def.liquidtype == "none"
+end
+
+local function highest_solid_y(x, z, min_y, max_y)
+	local time = core.get_gametime and math.floor(core.get_gametime() / 30) or 0
+	if terrain_cache_time ~= time then
+		terrain_cache = {}
+		terrain_cache_time = time
+	end
+
+	local key = math.floor(x / 8) .. ":" .. math.floor(z / 8)
+			.. ":" .. math.floor(min_y / 16) .. ":" .. math.floor(max_y / 16)
+	local cached = terrain_cache[key]
+	if cached ~= nil then return cached or nil end
+
+	for y = max_y, min_y, -4 do
+		local p = {x = math.floor(x), y = y, z = math.floor(z)}
+		local node = core.get_node_or_nil and core.get_node_or_nil(p) or core.get_node(p)
+		if node and blocks_moisture(node) then
+			terrain_cache[key] = y
+			return y
+		end
+	end
+
+	terrain_cache[key] = false
+	return nil
+end
+
+function weather.rain_shadow(pos)
+	local wind = weather.get_block_wind({
+		x = pos.x,
+		y = weather.cloud_height,
+		z = pos.z,
+	})
+	local wx = wind.x or 0
+	local wz = wind.z or 0
+	local speed = math.sqrt(wx * wx + wz * wz)
+	if speed < 0.2 then return 1 end
+
+	wx = wx / speed
+	wz = wz / speed
+
+	local max_y = math.floor(math.max(pos.y + 24, weather.cloud_height - 4))
+	local min_y = math.floor(pos.y + 4)
+	local shadow = 0
+	local lift = 0
+
+	for i, distance in ipairs({24, 48, 80, 120}) do
+		local weight = 1.0 / i
+		local upwind_y = highest_solid_y(
+				pos.x - wx * distance,
+				pos.z - wz * distance,
+				min_y,
+				max_y)
+		if upwind_y and upwind_y > pos.y + 8 then
+			shadow = shadow + ((upwind_y - pos.y - 8) / 80) * weight
+		end
+
+		local downwind_y = highest_solid_y(
+				pos.x + wx * distance,
+				pos.z + wz * distance,
+				min_y,
+				max_y)
+		if downwind_y and downwind_y > pos.y + 8 then
+			lift = lift + ((downwind_y - pos.y - 8) / 110) * weight
+		end
+	end
+
+	return clamp((1.0 + math.min(lift, 0.35)) * (1.0 - math.min(shadow, 0.8)),
+			0.2, 1.35)
+end
+
+function weather.precipitation_factor(pos, humidity)
+	local cover = weather.cloud_cover(pos, humidity)
+	local precip = clamp((cover - 0.38) / 0.62, 0, 1)
+	return precip * weather.rain_shadow(pos)
+end
 
 get_snow = function (p, visible)
 	if not p then return 0 end
 	if visible and p.y > cloud_height then return 0 end
 	local heat = core.get_heat(p, 0)
-	if heat >= 0 then return 0 end
+	if heat > 2 then return 0 end
 	local humidity = core.get_humidity(p, 0)
 	if humidity < snow_humidity then return 0 end
-	--print('S h='..core.get_heat(p)..' h='..core.get_humidity(p))
-	return (humidity-snow_humidity)/(100-snow_humidity)
+	local phase = 1 - precipitation_phase(heat, -2, 2)
+	local precip = weather.precipitation_factor(p, humidity)
+	return ((humidity-snow_humidity)/(100-snow_humidity)) * phase * precip
 end
 
 get_rain = function (p, visible)
 	if not p then return 0 end
 	if visible and p.y > cloud_height then return 0 end
 	local heat = core.get_heat(p, 0)
-	if heat < 0 then return 0 end
+	if heat < -2 then return 0 end
 	if heat > 50 then return 0 end
 	local humidity = core.get_humidity(p, 0)
 	if humidity < rain_humidity then return 0 end
-	--print('R h='..core.get_heat(p)..' h='..core.get_humidity(p))
-	return (humidity-rain_humidity)/(100-rain_humidity)
+	local phase = precipitation_phase(heat, -2, 2)
+	local precip = weather.precipitation_factor(p, humidity)
+	return ((humidity-rain_humidity)/(100-rain_humidity)) * phase * precip
 end
 
 if default.weather then

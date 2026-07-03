@@ -11,59 +11,41 @@ core.register_globalstep(function(dtime)
 	for _, player in ipairs(core.get_connected_players()) do
 		local ppos = player:get_pos()
 		local strength = get_snow(ppos, 1)
-		if strength > 0 and core.get_node(ppos).name == "air" then
---print("snow he=".. core.get_heat(ppos).." hu=".. core.get_humidity(ppos) .. " s=" .. strength)
-		-- Make sure player is not in a cave/house...
-		if core.get_node_light(ppos, 0.5) ~= default.LIGHT_SUN then return end
-
-		local minp = addvectors(ppos, {x=-9, y=7, z=-9})
-		local maxp = addvectors(ppos, {x= 9, y=7, z= 9})
-
-		local minp_deep = addvectors(ppos, {x=-10, y=3.2, z=-10})
-		local maxp_deep = addvectors(ppos, {x= 10, y=2.6, z= 10})
-
-		local vel = {x=0, y=   -0.5, z=0}
-		local acc = {x=0, y=   -0.5, z=0}
-
---[[
-		core.add_particlespawner({
-			amount=5*strength, time=0.5,
-			minpos=minp, maxpos=maxp,
-			minvel=vel, maxvel=vel,
-			minacc=acc, maxacc=acc,
-			minexptime=5, maxexptime=5,
-			minsize=25, maxsize=25,
-			collisiondetection=false,
-			texture="weather_snow.png",
-			player=player:get_player_name()
-		})
-
-		core.add_particlespawner({
-			amount=4*strength, time=0.5,
-			minpos=minp, maxpos=maxp,
-			minvel=vel, maxvel=vel,
-			minacc=acc, maxacc=acc,
-			minexptime=4, maxexptime=4,
-			minsize=25, maxsize=25,
-			collisiondetection=false,
-			texture="weather_snow.png",
-			player=player:get_player_name()
-		})
-]]
-	       local minpos = addvectors(player:get_pos(), {x = -30, y = 20, z = -30})
-	       local maxpos = addvectors(player:get_pos(), {x = 30, y = 15, z = 30})
-	       local vel = {x = 16.0, y = -8, z = 13.0}
-	       local acc = {x = -16.0, y = -8, z = -13.0}
+		if strength > 0
+				and core.get_node(ppos).name == "air"
+				and weather.exposed_to_sky(ppos, 1) then
+	       local minpos = addvectors(player:get_pos(), {x = -30, y = 15, z = -30})
+	       local maxpos = addvectors(player:get_pos(), {x = 30, y = 20, z = 30})
+	       local wind = weather.get_block_wind(ppos)
+	       local drift = {
+		  x = (wind.x or 0) * 1.5,
+		  y = (wind.y or 0) * 0.4,
+		  z = (wind.z or 0) * 1.5,
+	       }
+	       local spread = {x = 6.0, y = 1.0, z = 6.0}
+	       local acc = {
+		  x = (wind.x or 0) * 0.35,
+		  y = -2.0,
+		  z = (wind.z or 0) * 0.35,
+	       }
 	       core.add_particlespawner(
 		  {
 		     amount = 8*strength,
 		     time = 0.4,
 		     minpos = minpos,
 		     maxpos = maxpos,
-		     minvel = {x=-vel.x, y=vel.y, z=-vel.z},
-		     maxvel = vel,
-		     minacc = acc,
-		     maxacc = acc,
+		     minvel = {
+			x = drift.x - spread.x,
+			y = -5.0 + drift.y - spread.y,
+			z = drift.z - spread.z,
+		     },
+		     maxvel = {
+			x = drift.x + spread.x,
+			y = -2.0 + drift.y + spread.y,
+			z = drift.z + spread.z,
+		     },
+		     minacc = {x = acc.x - 1.0, y = -3.0, z = acc.z - 1.0},
+		     maxacc = {x = acc.x + 1.0, y = -1.0, z = acc.z + 1.0},
 		     minexptime = 1.0,
 		     maxexptime = 1.4,
 		     minsize = 3,
@@ -74,8 +56,6 @@ core.register_globalstep(function(dtime)
 		     playername = player:get_player_name()
 		  }
 	       )
-
-
 		end
 	end
 end)
@@ -96,6 +76,48 @@ local function shuffle(t)
 	end
 end
 
+local snow_drawtypes = {
+	normal = true,
+	nodebox = true,
+	allfaces_optional = true,
+	glasslike = true,
+}
+
+local function snow_fill_amount(pos, heat, humidity)
+	local snow = get_snow(pos) or 0
+	if snow <= 0 then return 0 end
+
+	heat = heat or core.get_heat(pos) or -5
+	if heat > 2 then return 0 end
+
+	humidity = humidity or core.get_humidity(pos) or 70
+	local wet = math.max(0, math.min(1, (heat + 12) / 13))
+	local humid = math.max(0.5, math.min(1.5, humidity / 70))
+	local amount = snow * (1.0 + wet) * humid * 2
+	return weather.random_amount(amount, 6)
+end
+
+local function snow_target(base_pos, top_pos)
+	local wind_top = weather.wind_target(top_pos, 0.55, 2, 0.35)
+	if wind_top.x == top_pos.x and wind_top.z == top_pos.z then
+		return base_pos, top_pos
+	end
+
+	if core.get_node(wind_top).name ~= "air" then
+		return base_pos, top_pos
+	end
+
+	local wind_base = addvectors(wind_top, {x=0, y=-1, z=0})
+	local wind_node = core.get_node(wind_base)
+	local wind_def = core.registered_nodes[wind_node.name]
+	if wind_node.name == "default:snow"
+			or (wind_def and snow_drawtypes[wind_def.drawtype]) then
+		return wind_base, wind_top
+	end
+
+	return base_pos, top_pos
+end
+
 -- -[[ Enable this section if you have a very fast PC
 core.register_abm({
 	nodenames = {"group:crumbly", "group:snappy", "group:cracky", "group:choppy", "group:melt", "group:snowy"},
@@ -104,19 +126,20 @@ core.register_abm({
 	chance = 50,
 
 	action = function (pos, node, active_object_count, active_object_count_wider, neighbor, activate)
-		local amount = get_snow(pos)
-		if amount == 0 then return end
-		local add = 1 + (amount * 2);
-		local drawtype = core.registered_nodes[node.name].drawtype
-		if drawtype ~= "normal"
-			and drawtype ~= "nodebox"
-			and drawtype ~= "allfaces_optional"
-			and drawtype ~= "glasslike"
-			then return end
+		local def = core.registered_nodes[node.name]
+		if not def or not snow_drawtypes[def.drawtype] then return end
+
 		local np = addvectors(pos, {x=0, y=1, z=0})
-		local light = core.get_node_light(np, 0.5)
-		if not light or light < default.LIGHT_SUN - 1 then return end
-		if core.get_node(pos).name == "default:snow" then
+		if not weather.exposed_to_sky(np, 1) then return end
+
+		local heat = core.get_heat(pos) or -5
+		local add = snow_fill_amount(pos, heat, core.get_humidity(pos) or 70)
+		if add <= 0 then return end
+
+		pos, np = snow_target(pos, np)
+		node = core.get_node(pos)
+
+		if node.name == "default:snow" then
 			local min_level = core.get_node_level(pos)
 			local min_pos = pos
 
@@ -124,7 +147,6 @@ core.register_abm({
 			-- smooth
 			--local rnd = math.random(1, 4)
 			local arr = {1, 2, 3, 4, 5, 6, 7}
-			local heat = core.get_heat(pos)
 			-- smooth or wet snow
 			if heat < -10 then table.remove(arr) end
 			-- if heat < -20 then table.remove(arr) end
@@ -145,7 +167,7 @@ core.register_abm({
 				local test_name = core.get_node(ngp).name
 				if test_name == "air" then
 					min_pos = ngp
-					core.set_node(min_pos, {name="snow"}, 2)
+					core.set_node(min_pos, {name="default:snow"}, 2)
 					local random_max = -heat/2
 					if random_max > 1 and math.random(random_max) > 1 then
 						update_falling = 1
@@ -171,7 +193,7 @@ core.register_abm({
 			end
 		end
 		if add > 0 and core.get_node(np).name == "air" then
-			core.set_node(np, {name="snow"}, 2)
+			core.set_node(np, {name="default:snow"}, 2)
 			core.add_node_level(np, add, 2)
 		end
 	end

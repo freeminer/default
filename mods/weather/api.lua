@@ -1,6 +1,6 @@
 local CYCLE = 8 -- Time period of cyclic clouds update in seconds
 
-weather = {}
+weather = weather or {}
 
 -- default implementation is empty
 function weather.get(player)
