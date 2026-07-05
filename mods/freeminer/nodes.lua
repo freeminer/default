@@ -56,6 +56,10 @@ if flowing_sand_disable >= 1 then
 	flowing_sand_liquid_drop = 0
 end
 
+local water_pressure = 64
+local lava_pressure = 24
+local steam_weight = -100
+
 local lava_stones = {
 	"default:stone",
 	"default:cobble",
@@ -420,12 +424,12 @@ update_node("default:water_source", {
 	melt = 105,
 	liquid_drop = 1,
 	weight = 1000,
-	pressure = 32,
+	pressure = water_pressure,
 }, {
 	leveled = 8,
 	paramtype2 = "leveled",
 	freeze = "default:ice",
-	melt = "air",
+	melt = "default:cloud",
 	light_vertical_dimnish = 0.1,
 })
 
@@ -434,11 +438,12 @@ update_node("default:water_flowing", {
 	melt = 100,
 	liquid_drop = 1,
 	weight = 1000,
+	pressure = water_pressure,
 }, {
 	leveled = 8,
 	paramtype2 = "leveled",
 	freeze = "default:snow",
-	melt = "air",
+	melt = "default:cloud",
 })
 
 core.register_alias_force("default:river_water_source", "default:water_source")
@@ -449,7 +454,7 @@ update_node("default:lava_source", {
 	wield_light = 5,
 	liquid_drop = 1,
 	weight = 2000,
-	pressure = 32,
+	pressure = lava_pressure,
 }, {
 	paramtype2 = "leveled",
 	leveled = 4,
@@ -461,11 +466,55 @@ update_node("default:lava_flowing", {
 	wield_light = 2,
 	liquid_drop = 1,
 	weight = 2000,
+	pressure = lava_pressure,
 }, {
 	paramtype2 = "leveled",
 	leveled = 4,
 	freeze = "default:stone",
 })
+
+local steam_groups = {
+	cloud = 1,
+	gas = 1,
+	steam = 1,
+	weight = steam_weight,
+	freeze = -60,
+	melt = 120,
+}
+
+local steam_texture = "[fill:16x16:#e1f0ff40"
+
+local steam_fields = {
+	drawtype = "liquid",
+	tiles = {
+		{name = steam_texture},
+	},
+	special_tiles = {
+		{name = steam_texture, backface_culling = false},
+		{name = steam_texture, backface_culling = true},
+	},
+	use_texture_alpha = "blend",
+	paramtype = "light",
+	paramtype2 = "leveled",
+	walkable = false,
+	pointable = false,
+	diggable = false,
+	buildable_to = true,
+	floodable = true,
+	liquidtype = "source",
+	liquid_alternative_flowing = "default:cloud",
+	liquid_alternative_source = "default:cloud",
+	liquid_viscosity = 1,
+	liquid_renewable = false,
+	liquid_range = 8,
+	leveled = 8,
+	--freeze = "default:water_source",
+	freeze = "air",
+	melt = "air",
+	post_effect_color = {a = 24, r = 225, g = 240, b = 245},
+}
+
+update_node("default:cloud", steam_groups, steam_fields)
 
 update_node("default:glass", {melt = 1500}, {
 	melt = "default:obsidian_glass",
