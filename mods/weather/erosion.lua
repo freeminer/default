@@ -24,6 +24,7 @@ local erosion_rules = {
 		to = "default:gravel",
 		resistance = 1.2,
 	},
+	--[[ Respect player buildings
 	["default:cobble"] = {
 		to = "default:gravel",
 		resistance = 0.8,
@@ -33,6 +34,7 @@ local erosion_rules = {
 		resistance = 0.6,
 		needs_humidity = 45,
 	},
+	]]
 	["default:desert_stone"] = {
 		to = "default:desert_sand",
 		resistance = 0.8,
@@ -45,10 +47,12 @@ local erosion_rules = {
 		to = "default:desert_sand",
 		resistance = 1.0,
 	},
+--[[
 	["default:desert_cobble"] = {
 		to = "default:desert_sand",
 		resistance = 0.7,
 	},
+]]
 	["default:sandstone"] = {
 		to = "default:sand",
 		resistance = 0.6,
