@@ -20,6 +20,11 @@ flame_sound (Flame sound) bool true
 #    Enable lavacooling.
 enable_lavacooling (Lavacooling) bool true
 
+#    If enabled, weather erosion can convert cobble, mossycobble and
+#    desert cobble into loose material. Disabled by default to avoid
+#    damaging player-built cobble structures.
+erosion_cobble (Erode cobble) bool false
+
 #    If enabled, steel tools, torches and cobblestone will be given to new
 #    players.
 give_initial_stuff (Give initial items) bool false

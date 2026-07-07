@@ -425,6 +425,7 @@ update_node("default:water_source", {
 	liquid_drop = 1,
 	weight = 1000,
 	pressure = water_pressure,
+	tnt_melt_level_multiplier = 8,
 }, {
 	leveled = 8,
 	paramtype2 = "leveled",
@@ -439,6 +440,7 @@ update_node("default:water_flowing", {
 	liquid_drop = 1,
 	weight = 1000,
 	pressure = water_pressure,
+	tnt_melt_level_multiplier = 8,
 }, {
 	leveled = 8,
 	paramtype2 = "leveled",

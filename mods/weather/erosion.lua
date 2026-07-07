@@ -1,4 +1,5 @@
 local erosion_debug = core.settings:get_bool("erosion_debug_fast") or false
+local erosion_cobble = core.settings:get_bool("erosion_cobble", false)
 
 local water_nodes = {
 	["default:water_flowing"] = true,
@@ -24,17 +25,6 @@ local erosion_rules = {
 		to = "default:gravel",
 		resistance = 1.2,
 	},
-	--[[ Respect player buildings
-	["default:cobble"] = {
-		to = "default:gravel",
-		resistance = 0.8,
-	},
-	["default:mossycobble"] = {
-		to = "default:gravel",
-		resistance = 0.6,
-		needs_humidity = 45,
-	},
-	]]
 	["default:desert_stone"] = {
 		to = "default:desert_sand",
 		resistance = 0.8,
@@ -47,12 +37,6 @@ local erosion_rules = {
 		to = "default:desert_sand",
 		resistance = 1.0,
 	},
---[[
-	["default:desert_cobble"] = {
-		to = "default:desert_sand",
-		resistance = 0.7,
-	},
-]]
 	["default:sandstone"] = {
 		to = "default:sand",
 		resistance = 0.6,
@@ -112,6 +96,22 @@ local erosion_rules = {
 		needs_humidity = 65,
 	},
 }
+
+if erosion_cobble then
+	erosion_rules["default:cobble"] = {
+		to = "default:gravel",
+		resistance = 0.8,
+	}
+	erosion_rules["default:mossycobble"] = {
+		to = "default:gravel",
+		resistance = 0.6,
+		needs_humidity = 45,
+	}
+	erosion_rules["default:desert_cobble"] = {
+		to = "default:desert_sand",
+		resistance = 0.7,
+	}
+end
 
 local erosion_nodes = {}
 for name in pairs(erosion_rules) do

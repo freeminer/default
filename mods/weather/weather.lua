@@ -83,7 +83,7 @@ local function cloud_value(pos)
 end
 
 function weather.cloud_cover(pos, humidity)
-	humidity = humidity or core.get_humidity(pos, 0) or 50
+	humidity = humidity or core.get_humidity(pos) or 50
 	local moisture = clamp((humidity - 25) / 65, 0.05, 1.25)
 	return clamp(cloud_value(pos) * (0.45 + moisture), 0, 1)
 end
@@ -256,9 +256,9 @@ end
 get_snow = function (p, visible)
 	if not p then return 0 end
 	if visible and p.y > cloud_height then return 0 end
-	local heat = core.get_heat(p, 0)
+	local heat = core.get_heat(p)
 	if heat > 2 then return 0 end
-	local humidity = core.get_humidity(p, 0)
+	local humidity = core.get_humidity(p)
 	if humidity < snow_humidity then return 0 end
 	local phase = 1 - precipitation_phase(heat, -2, 2)
 	local precip = weather.precipitation_factor(p, humidity)
@@ -268,10 +268,10 @@ end
 get_rain = function (p, visible)
 	if not p then return 0 end
 	if visible and p.y > cloud_height then return 0 end
-	local heat = core.get_heat(p, 0)
+	local heat = core.get_heat(p)
 	if heat < -2 then return 0 end
 	if heat > 50 then return 0 end
-	local humidity = core.get_humidity(p, 0)
+	local humidity = core.get_humidity(p)
 	if humidity < rain_humidity then return 0 end
 	local phase = precipitation_phase(heat, -2, 2)
 	local precip = weather.precipitation_factor(p, humidity)
