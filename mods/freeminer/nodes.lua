@@ -59,6 +59,7 @@ end
 local water_pressure = 64
 local lava_pressure = 24
 local steam_weight = -100
+local cloud_height = tonumber(core.settings:get("cloud_height")) or 500
 
 local lava_stones = {
 	"default:stone",
@@ -480,6 +481,8 @@ local steam_groups = {
 	gas = 1,
 	steam = 1,
 	weight = steam_weight,
+	-- Gas rises below this Y and sinks above it.
+	float_height = cloud_height,
 	freeze = -60,
 	melt = 120,
 }
