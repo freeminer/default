@@ -205,10 +205,10 @@ core.register_abm({
 	interval = 200,
 	chance = 1,
 	action = function (pos, node, active_object_count, active_object_count_wider)
-        local bottom_name = core.get_node(addvectors(pos, {x=0, y=-1, z=0})).name
+		local bottom_name = core.get_node(addvectors(pos, {x=0, y=-1, z=0})).name
 		if bottom_name == "ignore" or bottom_name == "air" then return end
 
-        local top_name = core.get_node(addvectors(pos, {x=0, y=1, z=0})).name
+		local top_name = core.get_node(addvectors(pos, {x=0, y=1, z=0})).name
 		if top_name == "default:snow" or top_name == "default:ice" then
 			core.set_node(pos, {name="default:ice"})
 		end
