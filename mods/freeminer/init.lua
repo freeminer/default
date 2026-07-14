@@ -1,5 +1,2 @@
-
 local default_path = minetest.get_modpath("freeminer")
-dofile(default_path.."/nodes.lua")
-
-print("=================================FRRRRRRRRREEEEEEEEEEEEE")
+dofile(default_path .. "/nodes.lua")
