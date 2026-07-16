@@ -295,7 +295,7 @@ local grass_humidity_min2 = 40
 local grass_light_min = 6
 local dirt_dry_humidity = 10
 local tree_light_min = 12
-local grow_debug = core.settings:get("grow_debug_fast") or 0
+local grow_debug = (tonumber(core.settings:get("grow_debug_fast")) or 0) ~= 0
 
 --[[ all dirt types:
 default:dirt
@@ -309,180 +309,86 @@ default:dry_dirt
 default:dry_dirt_with_dry_grass
 ]]
 
-core.register_abm({
+core.register_core_abm({
+	name = "weather:soil_weather",
+	action = "soil_weather",
 	nodenames = {"default:dirt", "default:dirt_with_grass", "default:dirt_with_grass_footsteps", "default:dry_dirt", "default:dirt_with_dry_grass"},
 	interval = grow_debug and 1 or 10,
 	chance = grow_debug and 1 or 30,
-	action = function(pos, node, active_object_count, active_object_count_wider, neighbor, activate)
-		local top_pos = {x=pos.x, y=pos.y+1, z=pos.z}
-		local top_name = core.get_node(top_pos).name
-		local top_nodedef = core.registered_nodes[top_name]
-		if top_name == "ignore" or not top_nodedef then return end
-
-		local bottom_pos = {x=pos.x, y=pos.y-1, z=pos.z}
-		local bottom_name = core.get_node(bottom_pos).name
-		local bottom_air = (bottom_name == "air" or bottom_name == "ignore")
-
-		local light_day = core.get_node_light(top_pos, 0.5) or 0
-		local light = core.get_node_light(top_pos) or 0
-		local heat = core.get_heat(pos)
-		local humidity = core.get_humidity(pos)
-		local new_name
-
-		if not ((top_nodedef.sunlight_propagates or top_nodedef.paramtype == "light") and top_nodedef.liquidtype == "none") then
-			if not bottom_air and (node.name == "default:dirt_with_dry_grass" or node.name == "default:dry_dirt_with_dry_grass") then
-				new_name = "default:dry_dirt"
-			elseif node.name == "default:dirt_with_grass" then
-				new_name = "default:dirt"
-			end
-		elseif not bottom_air then
-			if top_name == "default:snow" or top_name == "default:snowblock" or top_name == "default:ice" then
-					new_name = "default:dirt_with_snow"
-			elseif top_name == "air" then
-				if (node.name == "default:dirt_with_grass" or node.name == "default:dirt_with_grass_footsteps") and (light_day < grass_light_min or (heat > grass_heat_max and humidity < grass_humidity_min2) or humidity < 1 or heat > grass_heat_max2) then
-					if humidity < dirt_dry_humidity then
-						new_name = "default:dry_dirt_with_dry_grass"
-					else
-						new_name = "default:dirt_with_dry_grass"
-					end
-				elseif node.name == "default:dirt" and (light_day < grass_light_min or (heat > grass_heat_max and humidity < grass_humidity_min2) or humidity < grass_humidity_min or heat > grass_heat_max2) then
-					new_name = "default:dry_dirt"
-				end
-
-				-- dont freeze falling blocks
-				if node.name == "default:dirt" then
-					if (default.weather and heat < -5 and humidity > 5) then
-						new_name = "default:dirt_with_snow"
-					elseif (not default.weather or (heat > 5 and heat < grass_heat_max and humidity > grass_humidity_min)) and light >= grass_light_min then
-						new_name = "default:dirt_with_grass"
-					end
-				end
-			end
-		end
-
-		local air_sides = 0
-		if core.get_node({x=pos.x-1, y=pos.y, z=pos.z}).name == "air" then air_sides = air_sides + 1 end
-		if core.get_node({x=pos.x+1, y=pos.y, z=pos.z}).name == "air" then air_sides = air_sides + 1 end
-		if core.get_node({x=pos.x, y=pos.y, z=pos.z-1}).name == "air" then air_sides = air_sides + 1 end
-		if core.get_node({x=pos.x, y=pos.y, z=pos.z+1}).name == "air" then air_sides = air_sides + 1 end
-
-		local fall = 0
---[[
-		if bottom_name == "air"
-			and top_name == "air"
-			air_sides >= 4
-			then
-			fall = 1
-			top_pos = pos
-			pos = bottom_pos
-			core.set_node(top_pos, {name = "air"}, 2)
-		end
-]]
-
-		local rnd1000 = math.random(grow_debug and 1 or 1000)
-
-		if rnd1000 < 10
-			and node.name ~= "default:dirt"
-			and bottom_name == "air"
-			and top_name == "air"
-			and air_sides >= 2
-			then
-			new_name = "default:dirt"
-		end
-
-		if new_name and new_name ~= node.name then
-			node.name = new_name
-			core.set_node(pos, node, 2)
-		elseif fall == 1 then
-			core.set_node(pos, node, 2)
-		else
-			if (node.name == "default:dirt_with_grass" or node.name == "default:dirt_with_grass_footsteps") and top_name == "air" and (default.weather and heat > 5 and heat < grass_heat_max and humidity > grass_humidity_min)
-				and (activate == 1 or math.random(1, 40) == 1) and light >= grass_light_min then
-
-				if core.find_node_near(pos, (6-5*humidity/100), {"group:flower", "group:tree", "group:sapling"}) then return end
-
-				if rnd1000 <= 10 then
-					set_moonflower(top_pos, "flowers:moonflower_closed")
-				elseif rnd1000 <= 100 then
-					local num = math.random(#flowers.datas)
-					if not flowers.datas[num][1] then return end -- why?
-					flowers.flower_spread(top_pos, {name = "flowers:" .. flowers.datas[num][1]})
-				else
-					core.set_node(top_pos, {name = "default:grass_1"}, 2)
-				end
-			end
-		end
-	end
+	catch_up = true,
+	params = {
+		grass_heat_max = grass_heat_max,
+		grass_heat_extreme = grass_heat_max2,
+		grass_humidity_min = grass_humidity_min,
+		grass_humidity_dry = grass_humidity_min2,
+		grass_light_min = grass_light_min,
+		dirt_dry_humidity = dirt_dry_humidity,
+		debug_fast = grow_debug,
+		dirt_node = "default:dirt",
+		grass_node = "default:dirt_with_grass",
+		grass_footsteps_node = "default:dirt_with_grass_footsteps",
+		dry_dirt_node = "default:dry_dirt",
+		dry_grass_node = "default:dirt_with_dry_grass",
+		dry_dirt_grass_node = "default:dry_dirt_with_dry_grass",
+		snow_dirt_node = "default:dirt_with_snow",
+		snow_node = "default:snow",
+		snowblock_node = "default:snowblock",
+		ice_node = "default:ice",
+		grass_plant_node = "default:grass_1",
+	},
 })
 
-core.register_abm({
+core.register_core_abm({
+	name = "weather:grass_weather",
+	action = "grass_weather",
 	nodenames = {"default:grass_1", "default:grass_2", "default:grass_3", "default:grass_4", "default:grass_5", "default:dry_shrub", "default:dry_grass_1", "default:dry_grass_2", "default:dry_grass_3", "default:dry_grass_4", "default:dry_grass_5"},
 	neighbors = {"default:dirt_with_grass", "default:dirt_with_grass_footsteps", "default:dirt"},
 	interval = grow_debug and 1 or  20,
 	chance = grow_debug and 1 or  10,
-	action = function(pos, node, active_object_count, active_object_count_wider, neighbor, activate)
-		local humidity = core.get_humidity(pos)
-		local heat = core.get_heat(pos)
-		--local node = core.get_node(pos)
-		local name = node.name
-		if (heat < -5 or heat > grass_heat_max or humidity < 3) and (name == "default:grass_4" or name == "default:grass_5") then
-			node.name = "default:dry_shrub"
-			core.set_node(pos, node, 2)
-			return
-		end
-		local light = core.get_node_light(pos) or 0
-		if heat < 5 or heat > grass_heat_max or light < grass_light_min then return end
-		local rnd = (activate or grow_debug) and 1 or math.random(1, 110-humidity)
-		if name == "default:grass_5" then
-			    if activate > 1 then return end
-				if rnd >= 3 then return end
-				if     humidity > 70 and heat > 25 then node.name = "default:junglesapling"
-				elseif humidity >= 20 and humidity < 35 and heat > 25 then node.name = "default:acacia_sapling"
-				elseif humidity > 20 and heat < 10 then node.name = "default:pine_sapling"
-				elseif humidity > 45 and heat < 25 then node.name = "default:aspen_sapling"
-				elseif humidity > 30 and heat < 40 then node.name = "default:sapling"
-				else return end
-				if light < tree_light_min or core.find_node_near(pos, (7-5*humidity/100), {"group:tree", "group:sapling"}) then return end
-				core.set_node(pos, node, 2)
-		elseif name == "default:dry_shrub" then
-			node.name = "default:grass_" .. 1
-			core.set_node(pos, node, 2)
-		else
-			for i=1,4 do
-				if rnd >= i+5 then return end
-				if name == "default:grass_" .. i then
-					node.name = "default:grass_" .. (i+1)
-					core.set_node(pos, node, 2)
-				end
-				if name == "default:dry_grass_" .. i then
-					node.name = "default:grass_" .. i
-					core.set_node(pos, node, 2)
-				end
-			end
-		end
-	end
+	catch_up = true,
+	params = {
+		grass_heat_max = grass_heat_max,
+		grass_humidity_min = grass_humidity_min,
+		grass_light_min = grass_light_min,
+		tree_light_min = tree_light_min,
+		debug_fast = grow_debug,
+		grass_1_node = "default:grass_1",
+		grass_2_node = "default:grass_2",
+		grass_3_node = "default:grass_3",
+		grass_4_node = "default:grass_4",
+		grass_5_node = "default:grass_5",
+		dry_grass_1_node = "default:dry_grass_1",
+		dry_grass_2_node = "default:dry_grass_2",
+		dry_grass_3_node = "default:dry_grass_3",
+		dry_grass_4_node = "default:dry_grass_4",
+		dry_grass_5_node = "default:dry_grass_5",
+		dry_shrub_node = "default:dry_shrub",
+		jungle_sapling_node = "default:junglesapling",
+		acacia_sapling_node = "default:acacia_sapling",
+		pine_sapling_node = "default:pine_sapling",
+		aspen_sapling_node = "default:aspen_sapling",
+		sapling_node = "default:sapling",
+	},
 })
 
-core.register_abm({
+core.register_core_abm({
+	name = "weather:soil_hydrate",
+	action = "soil_hydrate",
 	nodenames = {"default:sand", "default:desert_sand", "default:silver_sand",  "default:dry_dirt", "default:dirt_with_dry_grass", "default:dry_dirt_with_dry_grass"},
 	neighbors = {"default:water_flowing"},
 	interval = grow_debug and 1 or  20,
 	chance = grow_debug and 1 or 10,
 	neighbors_range = 3,
-	action = function(pos, node)
-		if ((core.get_heat(pos) > grass_heat_max or core.get_humidity(pos) < grass_humidity_min)) then return end
-		if node.name == "default:dirt_with_dry_grass" or node.name == "default:dry_dirt_with_dry_grass" then
-			local top_pos = {x=pos.x, y=pos.y+1, z=pos.z}
-			local light_day = core.get_node_light(top_pos, 0.5) or 0
-			if light_day < grass_light_min then
-				return
-			end
-			node.name = "default:dirt_with_grass"
-		else
-			node.name = "default:dirt"
-		end
-		core.set_node(pos, node, 2)
-	end
+	catch_up = true,
+	params = {
+		heat_max = grass_heat_max,
+		humidity_min = grass_humidity_min,
+		light_min = grass_light_min,
+		dirt_node = "default:dirt",
+		grass_node = "default:dirt_with_grass",
+		dry_grass_node = "default:dirt_with_dry_grass",
+		dry_dirt_grass_node = "default:dry_dirt_with_dry_grass",
+	},
 })
 
 --[[ now in mt

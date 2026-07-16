@@ -44,68 +44,93 @@ local rain_drawtypes = {
 	allfaces_optional = true,
 }
 
-local rain_water_add_rate = 2.0 -- previous 3.0, reduced 1.5x
-local rain_water_add_max = 5 -- previous 8, reduced 1.5x and rounded down
+local rain_material_groups = {
+	crumbly = true,
+	snappy = true,
+	cracky = true,
+	choppy = true,
+	water = true,
+	snowy = true,
+}
 
-local function rain_fill_amount(pos)
-	local rain = get_rain(pos) or 0
-	if rain <= 0 then return 0 end
-
-	local heat = core.get_heat(pos) or 10
-	if heat < -2 then return 0 end
-
-	local humidity = core.get_humidity(pos) or 50
-	local wet_air = math.max(0, (humidity - 55) / 45)
-	local amount = rain * (1.0 + wet_air) * rain_water_add_rate
-	return weather.random_amount(amount, rain_water_add_max)
-end
-
-local function can_collect_rain(node)
-	local def = core.registered_nodes[node.name]
-	return def and rain_drawtypes[def.drawtype]
-end
-
-local function rain_target(base_pos, top_pos)
-	local wind_top = weather.wind_target(top_pos, 0.35, 1, 0.25)
-	if wind_top.x == top_pos.x and wind_top.z == top_pos.z then
-		return base_pos, top_pos
+core.register_on_mods_loaded(function()
+	for name, def in pairs(core.registered_nodes) do
+		local collect = rain_drawtypes[def.drawtype]
+		if collect then
+			collect = false
+			for group in pairs(rain_material_groups) do
+				if (def.groups and def.groups[group] or 0) > 0 then
+					collect = true
+					break
+				end
+			end
+		end
+		if collect then
+			core.add_item_groups(name, {rain_collect = 1})
+		end
 	end
+end)
 
-	if core.get_node(wind_top).name ~= "air" then
-		return base_pos, top_pos
-	end
+core.register_core_abm({
+	name = "weather:water_evaporate",
+	action = "water_evaporate",
+	nodenames = {"default:water_flowing"},
+	neighbors = {"air"},
+	interval = 10,
+	chance = 10,
+	catch_up = true,
+	params = {
+		humidity_stop = 96,
+		humid_air_stop = 75,
+		humid_heat_min = -2,
+		humid_heat_max = 50,
+		heat_min = -5,
+		warm_scale = 45,
+		warm_max = 1.8,
+		shade_factor = 0.35,
+		rate = 6,
+		max_level_loss = 8,
+	},
+})
 
-	local wind_base = addvectors(wind_top, {x=0, y=-1, z=0})
-	local wind_node = core.get_node(wind_base)
-	if wind_node.name == "air" or can_collect_rain(wind_node) then
-		return wind_base, wind_top
-	end
+core.register_core_abm({
+	name = "weather:steam_evaporate",
+	action = "steam_evaporate",
+	nodenames = {"group:steam"},
+	neighbors = {"air"},
+	interval = 10,
+	chance = 1,
+	catch_up = true,
+	params = {
+		humidity_reference = 100,
+		min_evaporation_chance = 1,
+		level_step = 1,
+		evaporate_on_activate = true,
+	},
+})
 
-	return base_pos, top_pos
-end
-
-core.register_abm({
-	nodenames = {"group:crumbly", "group:snappy", "group:cracky", "group:choppy", "group:water", "group:snowy"},
+core.register_core_abm({
+	name = "weather:rain_fill",
+	action = "rain_fill",
+	nodenames = {"group:rain_collect"},
 	neighbors = {"air"},
 	interval = 15.0,
 	chance = 50,
-	action = function (pos, node, active_object_count, active_object_count_wider, neighbor, activate)
-		if not can_collect_rain(node) then return end
-
-		local np = addvectors(pos, {x=0, y=1, z=0})
-		if not weather.exposed_to_sky(np) then return end
-
-		local amount = rain_fill_amount(pos)
-		if amount <= 0 then return end
-
-		local target_pos, target_np = rain_target(pos, np)
-		local target_node = core.get_node(target_pos)
-
-		if target_node.name == "default:water_flowing" then
-			core.add_node_level(target_pos, 4 * amount, 2)
-		elseif core.get_node(target_np).name == "air" then
-			core.set_node(target_np, {name="default:water_flowing"})
-			core.set_node_level(target_np, amount, 2)
-		end
-	end
+	catch_up = true,
+	params = {
+		water_node = "default:water_flowing",
+		cloud_height = weather.cloud_height,
+		heat_min = -2,
+		heat_max = 50,
+		phase_heat_max = 2,
+		rain_humidity = 75,
+		wet_humidity = 55,
+		wet_span = 45,
+		rate = 2.0,
+		max_amount = 5,
+		existing_water_multiplier = 4,
+		wind_scale = 0.35,
+		wind_limit = 1,
+		wind_chance_scale = 0.25,
+	},
 })

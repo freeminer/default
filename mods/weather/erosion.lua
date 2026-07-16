@@ -2,8 +2,8 @@ local erosion_debug = core.settings:get_bool("erosion_debug_fast") or false
 local erosion_cobble = core.settings:get_bool("erosion_cobble", false)
 
 local water_nodes = {
-	["default:water_flowing"] = true,
-	["default:river_water_flowing"] = true,
+	"default:water_flowing",
+	"default:river_water_flowing",
 }
 
 local deposit_rules = {
@@ -113,115 +113,68 @@ if erosion_cobble then
 	}
 end
 
+local trigger_nodes = {}
 local erosion_nodes = {}
-for name in pairs(erosion_rules) do
+local erosion_targets = {}
+local erosion_resistances = {}
+local erosion_humidity_min = {}
+for name, rule in pairs(erosion_rules) do
+	trigger_nodes[#trigger_nodes + 1] = name
 	erosion_nodes[#erosion_nodes + 1] = name
-end
-for name in pairs(deposit_rules) do
-	erosion_nodes[#erosion_nodes + 1] = name
-end
-
-local water_dirs = {
-	{x = 0, y = 1, z = 0, weight = 2.2},
-	{x = 1, y = 0, z = 0, weight = 1.0},
-	{x = -1, y = 0, z = 0, weight = 1.0},
-	{x = 0, y = 0, z = 1, weight = 1.0},
-	{x = 0, y = 0, z = -1, weight = 1.0},
-	{x = 0, y = -1, z = 0, weight = 0.35},
-}
-
-local function exposed_to_rain(pos)
-	local np = addvectors(pos, {x=0, y=1, z=0})
-	return weather.exposed_to_sky(np, 1)
+	erosion_targets[#erosion_targets + 1] = rule.to
+	erosion_resistances[#erosion_resistances + 1] = rule.resistance
+	erosion_humidity_min[#erosion_humidity_min + 1] = rule.needs_humidity or 0
 end
 
-local function water_energy(pos)
-	local energy = 0
-
-	for _, dir in ipairs(water_dirs) do
-		local p = addvectors(pos, dir)
-		if water_nodes[core.get_node(p).name] then
-			local level = core.get_node_level(p) or 0
-			local moving = 1.0 - math.min(0.75, level / 16)
-			energy = energy + dir.weight * moving
-		end
-	end
-
-	return energy
+local deposit_nodes = {}
+local deposit_targets = {}
+for name, target in pairs(deposit_rules) do
+	trigger_nodes[#trigger_nodes + 1] = name
+	deposit_nodes[#deposit_nodes + 1] = name
+	deposit_targets[#deposit_targets + 1] = target
 end
 
-local function slope_energy(pos)
-	if core.get_node(addvectors(pos, {x=0, y=-1, z=0})).name == "air" then
-		return 0.6
-	end
-
-	local air_sides = 0
-	for _, dir in ipairs({
-			{x=1, y=0, z=0},
-			{x=-1, y=0, z=0},
-			{x=0, y=0, z=1},
-			{x=0, y=0, z=-1},
-	}) do
-		if core.get_node(addvectors(pos, dir)).name == "air" then
-			air_sides = air_sides + 1
-		end
-	end
-	return air_sides * 0.12
-end
-
-local function erosion_strength(pos)
-	local water = water_energy(pos)
-	local rain = exposed_to_rain(pos) and (get_rain(pos) or 0) or 0
-	if water <= 0 and rain <= 0 then return 0 end
-
-	local humidity = core.get_humidity(pos) or 50
-	local heat = core.get_heat(pos) or 10
-	local wet = math.max(0.15, humidity / 85)
-	local warm = heat > 0 and 1.0 or math.max(0.05, (heat + 20) / 20)
-	local slope = 1.0 + slope_energy(pos)
-
-	return (water * 1.25 + rain * 0.9) * wet * warm * slope
-end
-
-local function try_deposit(pos, strength, humidity)
-	if strength > 0.55 or humidity < 45 then return false end
-
-	local node = core.get_node(pos)
-	local target = deposit_rules[node.name]
-	if not target then return false end
-
-	local above = addvectors(pos, {x=0, y=1, z=0})
-	if core.get_node(above).name ~= "air" then return false end
-
-	local chance = math.min(0.18, (0.55 - strength) * humidity / 180)
-	if math.random() >= chance then return false end
-
-	core.set_node(pos, {name = target})
-	return true
-end
-
-core.register_abm({
-	nodenames = erosion_nodes,
+core.register_core_abm({
+	name = "weather:erosion",
+	action = "erosion",
+	nodenames = trigger_nodes,
 	neighbors = {"air", "default:water_flowing", "default:river_water_flowing"},
 	interval = erosion_debug and 1 or 180.0,
 	chance = erosion_debug and 1 or 40,
-	action = function(pos, node, active_object_count, active_object_count_wider)
-		local rule = erosion_rules[node.name]
-
-		local humidity = core.get_humidity(pos) or 50
-		if rule and rule.needs_humidity and humidity < rule.needs_humidity then return end
-
-		local strength = erosion_strength(pos)
-		if strength <= 0 then return end
-		if try_deposit(pos, strength, humidity) then return end
-		if not rule then return end
-
-		local chance = math.min(0.3, (strength / rule.resistance) * 0.07)
-		if math.random() >= chance then return end
-
-		core.set_node(pos, {name = rule.to})
-		if core.check_single_for_falling then
-			core.check_single_for_falling(pos)
-		end
-	end,
+	catch_up = true,
+	params = {
+		water_nodes = water_nodes,
+		erosion_nodes = erosion_nodes,
+		erosion_targets = erosion_targets,
+		erosion_resistances = erosion_resistances,
+		erosion_humidity_min = erosion_humidity_min,
+		deposit_nodes = deposit_nodes,
+		deposit_targets = deposit_targets,
+		cloud_height = weather.cloud_height,
+		rain_heat_min = -2,
+		rain_heat_max = 50,
+		rain_phase_max = 2,
+		rain_humidity = 75,
+		sky_tolerance = 1,
+		water_above_weight = 2.2,
+		water_side_weight = 1.0,
+		water_below_weight = 0.35,
+		water_level_divisor = 16,
+		water_level_max_reduction = 0.75,
+		water_strength = 1.25,
+		rain_strength = 0.9,
+		wet_min = 0.15,
+		humidity_scale = 85,
+		cold_offset = 20,
+		cold_scale = 20,
+		cold_min = 0.05,
+		unsupported_slope = 0.6,
+		air_side_slope = 0.12,
+		deposit_strength_max = 0.55,
+		deposit_humidity_min = 45,
+		deposit_chance_max = 0.18,
+		deposit_chance_divisor = 180,
+		erosion_chance_max = 0.3,
+		erosion_chance_scale = 0.07,
+	},
 })
