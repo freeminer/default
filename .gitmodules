@@ -34,3 +34,6 @@
 [submodule "mods/volumetric-lighting"]
 	path = mods/volumetric-lighting
 	url = https://github.com/rollerozxa/volumetric-lighting.git
+[submodule "mods/marinara"]
+	path = mods/marinara
+	url = https://github.com/Skandarella/marinara.git

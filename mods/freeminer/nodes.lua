@@ -238,6 +238,7 @@ update_node("default:cave_ice", {
 
 update_node("default:tree", {
     grow_tree = 1,
+    tree_liquid_water = 1,
 }, {
     liquid_alternative_source = "default:leaves",
 })
@@ -253,6 +254,7 @@ update_node("default:apple", {
 
 update_node("default:jungletree", {
     grow_tree = 1,
+    tree_liquid_water = 1,
     tree_water_max = 65,
     tree_get_water_max_from_humidity = 36,
     tree_grow_heat_min = 19,
@@ -279,6 +281,7 @@ update_node("default:jungleleaves", {
 
 update_node("default:pine_tree", {
     grow_tree = 1,
+    tree_liquid_water = 1,
     tree_water_max = 65,
     tree_grow_heat_min = 3,
     leaves_water_max = 10,
@@ -298,6 +301,7 @@ update_node("default:pine_needles", {
 
 update_node("default:acacia_tree", {
     grow_tree = 1,
+    tree_liquid_water = 1,
     tree_water_max = 40,
     tree_get_water_from_humidity = 15,
     tree_get_water_max_from_humidity = 12,
@@ -337,6 +341,7 @@ update_node("default:acacia_leaves", {
 
 update_node("default:aspen_tree", {
     grow_tree = 1,
+    tree_liquid_water = 1,
     tree_water_max = 50,
     tree_grow_heat_min = 0,
     tree_grow_heat_max = 35,
@@ -375,6 +380,7 @@ update_node("default:mese", {
 
 update_node("default:cactus", {
     grow_tree = 1,
+    tree_liquid_water = 1,
     tree_get_water_from_humidity = 40,
     leaves_grow_light_min = 13,
     tree_grow_light_max = 15,
@@ -391,6 +397,7 @@ update_node("default:cactus", {
 update_node("default:papyrus", {
     dig_immediate = 3,
     grow_tree = 1,
+    tree_liquid_water = 1,
     tree_get_water_from_humidity = 0,
     leaves_grow_light_min = 12,
     tree_grow_light_max = 15,
