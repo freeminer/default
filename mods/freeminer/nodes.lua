@@ -245,6 +245,9 @@ update_node("default:tree", {
 update_node("default:leaves", {
     fall_damage_add_percent = -40,
     grow_leaves = 1,
+    leaves_die_under_falling_node = 1,
+    leaves_die_under_soil = 1,
+    leaves_die_under_water = 1,
 }, {
     liquid_alternative_source = "default:apple",
 })
@@ -272,6 +275,9 @@ update_node("default:jungletree", {
 
 update_node("default:jungleleaves", {
     grow_leaves = 1,
+    leaves_die_under_falling_node = 1,
+    leaves_die_under_soil = 1,
+    leaves_die_under_water = 1,
     leaves_water_max = 30,
     leaves_grow_heat_min = 19,
     leaves_grow_heat_max = 49,
@@ -293,6 +299,9 @@ update_node("default:pine_tree", {
 
 update_node("default:pine_needles", {
     grow_leaves = 1,
+    leaves_die_under_falling_node = 1,
+    leaves_die_under_soil = 1,
+    leaves_die_under_water = 1,
     leaves_water_max = 10,
     leaves_grow_prefer_top = 1,
     leaves_die_heat_max = 0,
@@ -327,6 +336,9 @@ update_node("default:acacia_tree", {
 
 update_node("default:acacia_leaves", {
     grow_leaves = 1,
+    leaves_die_under_falling_node = 1,
+    leaves_die_under_soil = 1,
+    leaves_die_under_water = 1,
     tree_get_water_from_humidity = 15,
     leaves_water_max = 14,
     leaves_grow_light_min = 10,
@@ -357,6 +369,9 @@ update_node("default:aspen_tree", {
 
 update_node("default:aspen_leaves", {
     grow_leaves = 1,
+    leaves_die_under_falling_node = 1,
+    leaves_die_under_soil = 1,
+    leaves_die_under_water = 1,
     leaves_water_max = 10,
     leaves_grow_light_min = 9,
     leaves_grow_heat_min = 0,
