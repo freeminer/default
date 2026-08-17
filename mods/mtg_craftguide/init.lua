@@ -145,7 +145,7 @@ local function cache_usages(recipe)
 	end
 end
 
-minetest.register_on_mods_loaded(function()
+minetest.after(0.01, function()
 	for name, def in pairs(minetest.registered_items) do
 		if show_item(def) then
 			local recipes = get_craftable_recipes(name)
