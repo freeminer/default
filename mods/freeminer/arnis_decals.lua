@@ -1,4 +1,4 @@
-local entity_name = "default:arnis_decal_display"
+local entity_name = "freeminer:arnis_decal_display"
 
 local function rotation_for(facing, turn)
 	local r = (turn % 8) * math.pi / 4
@@ -16,7 +16,7 @@ local function rotation_for(facing, turn)
 	return {x = 0, y = 0, z = -r}
 end
 
-minetest.register_node("default:arnis_decal_frame", {
+minetest.register_node("freeminer:arnis_decal_frame", {
 	description = "Arnis decal frame",
 	drawtype = "airlike",
 	paramtype = "light",
@@ -81,8 +81,8 @@ end
 
 minetest.register_lbm({
 	label = "Restore Arnis decal displays",
-	name = "default:restore_arnis_decal_displays",
-	nodenames = {"default:arnis_decal_frame"},
+	name = "freeminer:restore_arnis_decal_displays",
+	nodenames = {"freeminer:arnis_decal_frame"},
 	run_at_every_load = true,
 	action = spawn_display,
 })
