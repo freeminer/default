@@ -37,3 +37,6 @@
 [submodule "mods/marinara"]
 	path = mods/marinara
 	url = https://github.com/Skandarella/marinara.git
+[submodule "mods/signs_lib"]
+	path = mods/signs_lib
+	url = https://github.com/mt-mods/signs_lib.git
