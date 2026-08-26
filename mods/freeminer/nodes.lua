@@ -1,4 +1,7 @@
 -- Freeminer-specific extensions for Minetest Game default nodes.
+
+local S = default.get_translator
+
 local light_max = core.LIGHT_MAX or 14
 
 local function override_item(name, redefinition, del_fields)
