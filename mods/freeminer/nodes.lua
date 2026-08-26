@@ -199,8 +199,8 @@ update_node("default:snow", {
     },
     on_construct = function(pos)
         pos.y = pos.y - 1
-        if minetest.get_node(pos).name == "default:dirt_with_grass" then
-            minetest.set_node(pos, {
+        if core.get_node(pos).name == "default:dirt_with_grass" then
+            core.set_node(pos, {
                 name = "default:dirt_with_snow",
             }, 2)
         end
@@ -791,3 +791,18 @@ for i = 1, 3 do
         tnt_resistance = 0.4,
     })
 end
+
+core.register_node("freeminer:lamp_red", {
+	description = S("Red Lamp"),
+	drawtype = "glasslike",
+	tiles = {"default_meselamp.png"},
+	-- ContentFeatures::color is also used by the far-light point generator.
+	-- Keep this explicit instead of relying on the texture's average colour.
+	color = "#ff0000",
+	paramtype = "light",
+	sunlight_propagates = true,
+	is_ground_content = false,
+	groups = {cracky = 3, oddly_breakable_by_hand = 3},
+	sounds = default.node_sound_glass_defaults(),
+	light_source = default.LIGHT_MAX,
+})
