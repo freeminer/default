@@ -795,6 +795,82 @@ for i = 1, 3 do
     })
 end
 
+-- StreetsMod is optional and normally loads after this mod.  Delay these
+-- overrides until every node is registered so that update_node() does not
+-- silently skip the traffic-light definitions.
+core.register_on_mods_loaded(function()
+    local red = "#ff1800"
+    local yellow = "#ffd000"
+    local green = "#00e830"
+    local red_yellow = "#ff8000"
+
+    local function update_traffic_light(name, color)
+        local fields = {color = color or "#000000"}
+        if not color then
+            -- Several StreetsMod "off" nodes incorrectly retain a light
+            -- source.  Besides local illumination, that creates a white far
+            -- light, so disable emission for those states completely.
+            fields.light_source = 0
+        end
+        update_node(name, nil, fields)
+    end
+
+    local signal_colors = {
+        off = false,
+        red = red,
+        yellow = yellow,
+        redyellow = red_yellow,
+        green = green,
+        warn = yellow,
+        flashred = red,
+        flashgreen = green,
+    }
+    for _, direction in ipairs({"", "_left", "_right"}) do
+        for state, color in pairs(signal_colors) do
+            update_traffic_light(
+                "streets:trafficlight_top" .. direction .. "_" .. state,
+                color)
+        end
+    end
+
+    for _, direction in ipairs({"left", "right"}) do
+        update_traffic_light("streets:trafficlight_top_extender_" .. direction .. "_off")
+        update_traffic_light("streets:trafficlight_top_extender_" .. direction .. "_yellow", yellow)
+        update_traffic_light("streets:trafficlight_top_extender_" .. direction .. "_green", green)
+        update_traffic_light("streets:trafficlight_top_extender_" .. direction .. "_flashgreen", green)
+    end
+
+    local explicit_colors = {
+        ["streets:pedlight_top_off"] = false,
+        ["streets:pedlight_top_dontwalk"] = red,
+        ["streets:pedlight_top_walk"] = green,
+        ["streets:pedlight_top_flashingdontwalk"] = red,
+        ["streets:pedlight_top_flashingwalk"] = green,
+
+        ["streets:beacon_off"] = false,
+        ["streets:beacon_flashred"] = red,
+        ["streets:beacon_flashyellow"] = yellow,
+        ["streets:beacon_hybrid_off"] = false,
+        ["streets:beacon_hybrid_yellow"] = yellow,
+        ["streets:beacon_hybrid_red"] = red,
+        ["streets:beacon_hybrid_flashyellow"] = yellow,
+        ["streets:beacon_hybrid_flashred"] = red,
+
+        ["streets:trafficlight_portable_off"] = false,
+        ["streets:trafficlight_portable_allred"] = red,
+        ["streets:trafficlight_portable_yellowa"] = red_yellow,
+        ["streets:trafficlight_portable_yellowb"] = red_yellow,
+        ["streets:trafficlight_portable_maingreen"] = green,
+        ["streets:trafficlight_portable_sidegreen"] = green,
+        ["streets:trafficlight_portable_rrflash"] = red,
+        ["streets:trafficlight_portable_yyflash"] = yellow,
+        ["streets:trafficlight_portable_yrflash"] = red_yellow,
+    }
+    for name, color in pairs(explicit_colors) do
+        update_traffic_light(name, color)
+    end
+end)
+
 core.register_node("freeminer:lamp_red", {
 	description = S("Red Lamp"),
 	drawtype = "glasslike",
