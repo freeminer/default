@@ -11,10 +11,12 @@ minetest.register_chatcommand("killme", {
 		if player then
 			if minetest.settings:get_bool("enable_damage") then
 				player:set_hp(0)
+				core.stat_add("suicide", name)
 				return true
 			else
 				for _, callback in pairs(minetest.registered_on_respawnplayers) do
 					if callback(player) then
+						core.stat_add("suicide", name)
 						return true
 					end
 				end
