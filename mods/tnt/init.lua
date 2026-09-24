@@ -207,6 +207,7 @@ local function calc_velocity(pos1, pos2, old_vel, power)
 	return vel
 end
 
+--[[
 local function entity_physics(pos, radius, drops)
 	local objs = minetest.get_objects_inside_radius(pos, radius)
 	for _, obj in pairs(objs) do
@@ -223,7 +224,7 @@ local function entity_physics(pos, radius, drops)
 
 			obj:set_hp(obj:get_hp() - damage)
 		else
-]]
+] ]
 		if true then
 			local luaobj = obj:get_luaentity()
 
@@ -264,6 +265,8 @@ local function entity_physics(pos, radius, drops)
 		end
 	end
 end
+]]
+
 
 local function add_effects(pos, radius, drops)
 	minetest.add_particle({
@@ -504,6 +507,26 @@ local function tnt_explode(pos, def, radius, ignore_protection, ignore_on_blast,
 	local drops = {}
 		local result = core.tnt_explode(pos, {
 			radius = radius or def.radius or tnt_radius,
+			-- fm: Core object effects; retain entity callbacks and drops.
+			damage_multiplier = def.damage_multiplier or 1,
+			knockback_multiplier = def.knockback_multiplier or 1,
+			object_radius_multiplier = def.object_radius_multiplier or 3,
+			object_wall_shield = def.object_wall_shield ~= false,
+			player_damage_multiplier = def.player_damage_multiplier or 0.2,
+			player_knockback_multiplier = def.player_knockback_multiplier or 0.2,
+			on_blast_object = function(obj, damage)
+				local entity = obj:get_luaentity()
+				local entity_def = entity and minetest.registered_entities[entity.name]
+				if entity_def and entity_def.on_blast then
+					local do_damage, do_knockback, entity_drops = entity_def.on_blast(entity, damage)
+					for _, item in pairs(entity_drops or {}) do
+						add_drop(drops, item)
+					end
+					return do_damage, do_knockback
+				end
+				return true, true
+			end,
+			-- ===
 			time_max = def.time_max or tnt.time_max,
 			liquid_real = tnt.liquid_real,
 			ignore_protection = ignore_protection,
@@ -560,10 +583,8 @@ function tnt.boom(pos, def)
 			max_hear_distance = math.min(def.radius * 20, 128)}, true)
 	local drops, radius = tnt_explode(pos, def, def.radius, def.ignore_protection,
 			def.ignore_on_blast, owner, def.explode_center)
-	-- append entity drops
-	local damage_radius = (radius / math.max(1, def.radius)) * def.damage_radius
-	damage_radius = radius * 3
-	entity_physics(pos, damage_radius, drops)
+	-- fm: Object damage, knockback and entity drops are handled by core.tnt_explode.
+	-- ===
 	if not def.disable_drops then
 		eject_drops(drops, pos, radius)
 	end
