@@ -11,7 +11,7 @@ local root_substrates = {
     ["default:obsidian"] = true,
 }
 
-local lava_search_radius = 1
+local lava_search_radius = 3
 local growth_heat_min = 80
 local freeze_heat_max = 40
 
@@ -305,7 +305,7 @@ local function grow_lava_tree(pos)
 end
 
 local function start_bud_timer(pos)
-    minetest.get_node_timer(pos):start(math.random(600, 1800))
+    minetest.get_node_timer(pos):start(math.random(60, 180))
 end
 
 minetest.register_node(":" .. bud_name, {
@@ -394,13 +394,15 @@ default.register_leafdecay({
     radius = 4,
 })
 
--- Rare buds establish on stone or obsidian beside deep lava.
+-- Lava shores offer far fewer eligible sites than snowy surfaces for ice trees.
+-- Give buds a chance to establish during a visit to an active cave.
 minetest.register_abm({
     label = "Freeminer lava tree bud seeding",
     nodenames = {"default:stone", "default:obsidian"},
     neighbors = {"group:lava"},
+    neighbors_range = lava_search_radius + 1, -- The bud is above the substrate.
     interval = 60,
-    chance = 5000,
+    chance = 100,
     catch_up = false,
     action = function(pos)
         local bud_pos = offset(pos, 0, 1, 0)
