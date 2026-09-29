@@ -9,7 +9,15 @@ local crown_name = "plant_lava:lava_tree_crown"
 local root_substrates = {
     ["default:stone"] = true,
     ["default:obsidian"] = true,
+    ["default:desert_stone"] = true,
+    ["default:sandstone"] = true,
 }
+
+for name in pairs(minetest.registered_nodes) do
+    if name:match("^default:stone_with_") then
+        root_substrates[name] = true
+    end
+end
 
 local lava_search_radius = 3
 local growth_heat_min = 80
@@ -396,9 +404,14 @@ default.register_leafdecay({
 
 -- Lava shores offer far fewer eligible sites than snowy surfaces for ice trees.
 -- Give buds a chance to establish during a visit to an active cave.
+local seeding_substrates = {}
+for name in pairs(root_substrates) do
+    seeding_substrates[#seeding_substrates + 1] = name
+end
+
 minetest.register_abm({
     label = "Freeminer lava tree bud seeding",
-    nodenames = {"default:stone", "default:obsidian"},
+    nodenames = seeding_substrates,
     neighbors = {"group:lava"},
     neighbors_range = lava_search_radius + 1, -- The bud is above the substrate.
     interval = 60,
