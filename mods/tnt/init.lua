@@ -96,12 +96,9 @@ local function eject_drops(drops, pos, radius)
 	for _, item in pairs(drops) do
 		local count = item:get_count()
 		while count > 0 do
-			local take = math.max(1,math.min(radius * radius,
-					count,
-					item:get_stack_max()))
-
-			if count > item:get_stack_max() then take = item:get_stack_max() end
-			if count < item:get_stack_max() then take = count end
+			-- fm: Emit the fewest objects allowed by the item's stack limit.
+			local take = math.min(count, math.max(1, item:get_stack_max()))
+			-- ===
 
 			rand_pos(pos, drop_pos, radius)
 			local dropitem = ItemStack(item)
@@ -537,6 +534,9 @@ local function tnt_explode(pos, def, radius, ignore_protection, ignore_on_blast,
 		melt_min_radius = def.melt_min_radius or tnt.melt_min_radius,
 		blast_strength = def.blast_strength or tnt.blast_strength,
 		blast_tnt_strength = def.blast_tnt_strength or tnt.blast_tnt_strength,
+		-- fm: Minimum incoming ray strength required to absorb TNT.
+		blast_tnt_absorb_strength = def.blast_tnt_absorb_strength or tnt.blast_tnt_absorb_strength,
+		-- ===
 		blast_distance_loss = def.blast_distance_loss or tnt.blast_distance_loss,
 		blast_resistance_scale = def.blast_resistance_scale or tnt.blast_resistance_scale,
 		blast_default_resistance = def.blast_default_resistance or tnt.blast_default_resistance,
@@ -604,6 +604,10 @@ minetest.register_node("tnt:boom", {
 	-- unaffected by explosions
 	on_blast = function() end,
 })
+
+-- fm: Expire explosion markers and clean up markers saved by older versions.
+dofile(minetest.get_modpath("tnt") .. "/fm_boom_cleanup.lua")
+-- ===
 
 minetest.register_node("tnt:gunpowder", {
 	description = S("Gun Powder"),
