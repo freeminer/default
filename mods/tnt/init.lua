@@ -13,7 +13,7 @@ else
 	enable_tnt = minetest.is_yes(enable_tnt)
 end
 
-local tnt_radius = tonumber(minetest.settings:get("tnt_radius") or 3)
+local tnt_radius = tonumber(minetest.settings:get("tnt_radius") or 4)
 
 --[[
 -- Fill a table with data for all content IDs, after all nodes are registered
@@ -57,7 +57,7 @@ tnt.melt_chance = tonumber(core.settings:get("tnt_melt_chance") or 15)
 tnt.melt_min_radius = tonumber(core.settings:get("tnt_melt_min_radius") or 10)
 tnt.blast_strength = positive_setting("tnt_blast_strength")
 tnt.blast_tnt_strength = positive_setting("tnt_blast_tnt_strength")
-tnt.blast_distance_loss = tonumber(core.settings:get("tnt_blast_distance_loss") or 0.02)
+tnt.blast_distance_loss = tonumber(core.settings:get("tnt_blast_distance_loss") or 0.1)
 tnt.blast_resistance_scale = tonumber(core.settings:get("tnt_blast_resistance_scale") or 1)
 tnt.blast_default_resistance = tonumber(core.settings:get("tnt_blast_default_resistance") or 1)
 tnt.blast_min_strength = tonumber(core.settings:get("tnt_blast_min_strength") or 0.15)
@@ -74,65 +74,27 @@ local function particle_texture(name)
 	return ret
 end
 
-local function rand_pos(center, pos, radius)
-	local def
-	local reg_nodes = minetest.registered_nodes
-	local i = 0
-	repeat
-		-- Give up and use the center if this takes too long
-		if i > 4 then
-			pos.x, pos.z = center.x, center.z
-			break
-		end
-		pos.x = center.x + math.random(-radius, radius)
-		pos.z = center.z + math.random(-radius, radius)
-		def = reg_nodes[minetest.get_node(pos).name]
-		i = i + 1
-	until def and not def.walkable
-end
+-- fm: Keep drop placement in loaded nodes, even at a sparse blast frontier.
+local rand_pos = dofile(minetest.get_modpath("tnt") .. "/fm_drop_position.lua")
+-- ===
 
+-- fm: Aggregate wide counts separately from bounded ItemStacks.
+local drop_store = dofile(minetest.get_modpath("tnt") .. "/fm_drops.lua")
+local queue_chain = dofile(minetest.get_modpath("tnt") .. "/fm_chain.lua")
+local add_drop = drop_store.add
 local function eject_drops(drops, pos, radius)
 	local drop_pos = vector.new(pos)
-	for _, item in pairs(drops) do
-		local count = item:get_count()
-		while count > 0 do
-			-- fm: Emit the fewest objects allowed by the item's stack limit.
-			local take = math.min(count, math.max(1, item:get_stack_max()))
-			-- ===
-
-			rand_pos(pos, drop_pos, radius)
-			local dropitem = ItemStack(item)
-			dropitem:set_count(take)
-			local obj = minetest.add_item(drop_pos, dropitem)
-			if obj then
-				obj:get_luaentity().collect = true
-				obj:set_acceleration({x = 0, y = -10, z = 0})
-				obj:set_velocity({x = math.random(-3, 3),
-						y = math.random(0, 10),
-						z = math.random(-3, 3)})
-			end
-			count = count - take
+	drop_store.each_stack(drops, function(item)
+		rand_pos(pos, drop_pos, radius)
+		local obj = minetest.add_item(drop_pos, item)
+		if obj then
+			obj:get_luaentity().collect = true
+			obj:set_acceleration({x = 0, y = -10, z = 0})
+			obj:set_velocity({x = math.random(-3, 3), y = math.random(0, 10), z = math.random(-3, 3)})
 		end
-	end
+	end)
 end
-
-local function add_drop(drops, item)
-	item = ItemStack(item)
-	-- Note that this needs to be set on the dropped item, not the node.
-	-- Value represents "one in X will be lost"
-	local lost = item:get_definition()._tnt_loss or 0
-	if lost > 0 and (lost == 1 or math.random(1, lost) == 1) then
-		return
-	end
-
-	local name = item:get_name()
-	local drop = drops[name]
-	if drop == nil then
-		drops[name] = item
-	else
-		drop:set_count(drop:get_count() + item:get_count())
-	end
-end
+-- ===
 
 --[[
 local basic_flame_on_construct -- cached value
@@ -298,8 +260,11 @@ local function add_effects(pos, radius, drops)
 	local texture = "tnt_blast.png" -- fallback
 	local node
 	local most = 0
-	for name, stack in pairs(drops) do
-		local count = stack:get_count()
+	-- fm: Read the wide aggregate count, preserving the prototype's item name.
+	for _, entry in pairs(drops) do
+		local name = entry.item:get_name()
+		local count = entry.count
+		-- ===
 		if count > most then
 			most = count
 			local def = minetest.registered_nodes[name]
@@ -534,8 +499,11 @@ local function tnt_explode(pos, def, radius, ignore_protection, ignore_on_blast,
 		melt_min_radius = def.melt_min_radius or tnt.melt_min_radius,
 		blast_strength = def.blast_strength or tnt.blast_strength,
 		blast_tnt_strength = def.blast_tnt_strength or tnt.blast_tnt_strength,
-		-- fm: Minimum incoming ray strength required to absorb TNT.
+		-- fm: Absorption and angular core controls.
 		blast_tnt_absorb_strength = def.blast_tnt_absorb_strength or tnt.blast_tnt_absorb_strength,
+		blast_tnt_ray_fraction = def.blast_tnt_ray_fraction or tnt.blast_tnt_ray_fraction,
+		blast_core_radius = def.blast_core_radius or tnt.blast_core_radius,
+		blast_core_shell_fraction = def.blast_core_shell_fraction or tnt.blast_core_shell_fraction,
 		-- ===
 		blast_distance_loss = def.blast_distance_loss or tnt.blast_distance_loss,
 		blast_resistance_scale = def.blast_resistance_scale or tnt.blast_resistance_scale,
@@ -561,11 +529,13 @@ local function tnt_explode(pos, def, radius, ignore_protection, ignore_on_blast,
 		end
 	end
 
-	for _, chain_pos in ipairs(result.chained_tnt or {}) do
-		tnt.boom(chain_pos, def)
-	end
+	-- fm: Defer chained explosions to avoid recursive budget resets.
+	queue_chain(result.chained_tnt, def)
+	-- ===
 
-	return drops, result.radius or radius
+	-- fm: Distant air rays do not set the drop and particle radius.
+	return drops, result.effect_radius or result.radius or radius
+	-- ===
 end
 
 
