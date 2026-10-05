@@ -110,7 +110,9 @@ local function populate_chest(pos, rand, dungeontype)
 	-- place items at random places in chest
 	local inv = minetest.get_meta(pos):get_inventory()
 	local listsz = inv:get_size("main")
-	assert(listsz >= #items)
+	-- fm: Loot can expand to more stacks than the chest has slots. The loop below
+	-- uses add_item for occupied slots, so this assertion aborts map generation.
+	-- ===
 	for _, item in ipairs(items) do
 		local index = rand:next(1, listsz)
 		if inv:get_stack("main", index):is_empty() then
