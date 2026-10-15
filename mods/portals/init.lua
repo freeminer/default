@@ -197,9 +197,10 @@ local function ignite(p, axis, owner)
         seed = (seed * 131 + key:byte(i)) % 2147483647
     end
     local random = PcgRandom(seed)
-    local axes = random:next(1, 3) -- X, Z, or both.
-    local dx = axes ~= 2 and (random:next(0, 1) == 0 and -xz_offset or xz_offset) or 0
-    local dz = axes ~= 1 and (random:next(0, 1) == 0 and -xz_offset or xz_offset) or 0
+    -- Offset along the portal face normal: XY frames use Z, ZY frames use X.
+    local offset = random:next(0, 1) == 0 and -xz_offset or xz_offset
+    local dx = axis == 1 and offset or 0
+    local dz = axis == 0 and offset or 0
     -- Prefer the opposite direction if the selected offset crosses the world edge.
     if math.abs(p.x + dx) > map_limit then
         dx = -dx

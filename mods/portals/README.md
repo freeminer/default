@@ -54,9 +54,10 @@ including worlds larger than 31000 nodes. The old `portals_y_min` / `portals_y_m
 settings are no longer used. A target entirely outside the world bounds fails with
 a message. Existing saved links still reconnect to their previous destination.
 The complete destination frame lies within the resulting Y range. Search
-regions are emerged asynchronously without changing mapgen. A coordinate-seeded
-choice shifts the destination by 10000 nodes on X, Z, or both, with independently
-chosen signs. A direction crossing the world boundary is reversed. The local
+regions are emerged asynchronously without changing mapgen. Frame orientation
+selects the horizontal offset axis perpendicular to its surface: a frame spanning
+X shifts 10000 nodes on Z; a frame spanning Z shifts 10000 nodes on X.
+Portal coordinates determine the offset sign. A direction crossing the world boundary is reversed. The local
 `portals_search_radius` applies around that shifted position. Set
 `portals_xz_offset = 0` to search near the source X/Z.
 A private RNG seeded from the frame coordinates selects the same sequence of

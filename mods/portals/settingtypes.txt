@@ -1,6 +1,6 @@
 # Obsidian searches below; obsidian blocks search above by this offset.
 portals_y_offset (Vertical distance from source) int 10000 1
-# Select X, Z, or both, with deterministic signs from portal coordinates.
+# Portal facing selects X or Z; coordinates select a deterministic sign.
 portals_xz_offset (Horizontal destination offset per selected axis) int 10000 0
 portals_y_radius (Vertical search radius) int 250 2
 # Search bounds follow the server mapgen_limit setting.
