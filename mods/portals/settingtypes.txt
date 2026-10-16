@@ -8,9 +8,8 @@ portals_y_radius (Vertical search radius) int 500 2
 # Defaults search within ±500 nodes on all axes around the target.
 # Search bounds follow the server mapgen_limit setting.
 portals_search_radius (Horizontal search radius) int 500 16 1024
-portals_search_attempts (Maximum emerged search regions per frame) int 24 1 256
 # Maximum total search time, including waiting for emerge callbacks.
-portals_search_timeout (Portal search timeout in seconds) int 180 10 3600
+portals_search_timeout (Portal search timeout in seconds) int 60 10 3600
 
 # Move liquids touching either face to the opposite portal face, one node lower.
 portals_transfer_liquids (Transfer liquids through portals) bool true

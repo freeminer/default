@@ -54,9 +54,8 @@ portals_y_offset = 10000
 portals_y_radius = 500
 portals_xz_offset = 10000
 portals_search_radius = 500
-portals_search_attempts = 24
 portals_max_frame_size = 64
-portals_search_timeout = 180
+portals_search_timeout = 60
 ```
 
 New obsidian-frame searches center below the source; obsidian-block frames search
@@ -90,7 +89,7 @@ still differ if loaded terrain or protection changes.
 Search reports progress every ten seconds and stops after the configured total
 timeout, even if an emerge callback never arrives. It inspects safe loaded cave
 space while other blocks are still emerging. If no suitable cave is found, a
-chat message explains how to retry. Increase the range or attempts for worlds with sparse deep caves.
+chat message explains how to retry. Increase the range or timeout for worlds with sparse deep caves.
 
 Avoid enabling another mod that ignites obsidian frames, such as Nether, at the
 same time. Those mods may claim the same frame.
@@ -128,3 +127,6 @@ and restrict liquids to non-damaging, non-solid types such as water.
 Protection and world-bound checks always apply. Frame and portal surface cells
 replace liquid; surrounding liquid remains. Set `portals_spawn_in_liquids = false`
 for air-only destination volumes and exits.
+
+Search retries are limited only by elapsed time (60 seconds by default).
+The old `portals_search_attempts` setting is ignored.

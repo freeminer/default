@@ -14,7 +14,6 @@ local xz_offset = setting("portals_xz_offset", 10000, 0, map_limit)
 local y_radius = setting("portals_y_radius", 500, 2, map_limit)
 local radius = setting("portals_search_radius", 1000, 16, map_limit)
 local max_frame_size = setting("portals_max_frame_size", 64, 3, 1024)
-local attempts = setting("portals_search_attempts", 24, 1, 256)
 local transfer_liquids = settings:get_bool("portals_transfer_liquids", true)
 local spawn_in_liquids = settings:get_bool("portals_spawn_in_liquids", true)
 local safe_destination = settings:get_bool("portals_safe_destination", false)
@@ -26,7 +25,7 @@ local function open_destination(name)
         and (def.liquidtype == "source" or def.liquidtype == "flowing")
 end
 local liquid_arrivals = {}
-local timeout = setting("portals_search_timeout", 180, 10, 3600)
+local timeout = setting("portals_search_timeout", 60, 10, 3600)
 local function emerge_bounds(p)
     return {
         x = math.max(-map_limit, math.min(map_limit, p.x)),
@@ -281,7 +280,14 @@ local function ignite(p, axis, owner)
     local started = api.get_us_time() / 1000000
     local last_report = started
     local function active()
-        return pending[key] == job
+        if pending[key] ~= job then return false end
+        if api.get_us_time() / 1000000 - started >= timeout then
+            pending[key] = nil
+            notify(owner, "search timed out after " .. timeout .. " seconds in region " .. trial ..
+                "; replace a frame block to retry, or increase portals_search_timeout.")
+            return false
+        end
+        return true
     end
     local function finish(message)
         if not active() then
@@ -314,10 +320,6 @@ local function ignite(p, axis, owner)
             return
         end
         trial = trial + 1
-        if trial > attempts then
-            finish("no safe, unprotected cave found after " .. attempts .. " regions; replace a frame block to retry.")
-            return
-        end
         local center = {
             x = target_x + random:next(-radius, radius),
             y = random:next(ymin, ymax - vertical_span(p, axis) + 1),
@@ -446,7 +448,7 @@ local function ignite(p, axis, owner)
         end
         if now - last_report >= 10 then
             last_report = now
-            notify(owner, "still searching: region " .. trial .. "/" .. attempts .. ", " .. math.floor(now - started) ..
+            notify(owner, "still searching: region " .. trial .. ", " .. math.floor(now - started) ..
                 " seconds elapsed.")
         end
         api.after(2, watch)

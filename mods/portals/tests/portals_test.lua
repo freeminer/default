@@ -53,6 +53,7 @@ PcgRandom = function(seed)
         end,
     }
 end
+local immediate_seconds = 20
 core = {
     get_mod_storage = function()
         return storage
@@ -218,6 +219,8 @@ core = {
     end,
     after = function(delay, f)
         if delay == 0 then
+            -- Model time spent generating each sampled region in this synchronous fixture.
+            clock = clock + immediate_seconds * 1000000
             f()
         else
             jobs[#jobs + 1] = {
@@ -411,7 +414,7 @@ callbacks.place({
 }, {
     name = 'default:obsidian',
 }, player)
-assert(messages[#messages]:find('no safe'), 'missing search failure')
+assert(messages[#messages]:find('timed out'), 'missing search failure')
 assert(core.get_node({
     x = 1,
     y = 1,
@@ -750,6 +753,7 @@ print('PASS: server-step round trip, cooldown, destination load retry and LBM re
 
 -- Region sequences depend only on frame coordinates and the search settings.
 local function regions(origin)
+    immediate_seconds = 11
     nodes, metas = {}, {}
     for u = 0, 3 do
         for v = 0, 4 do
@@ -779,7 +783,8 @@ local function regions(origin)
     callbacks.place(origin, {
         name = 'default:obsidian',
     }, player)
-    assert(#sampled == 3, 'wrong number of deterministic attempts')
+    immediate_seconds = 20
+    assert(#sampled == 3, 'wrong number of deterministic attempts: ' .. #sampled)
     return table.concat(sampled, ';')
 end
 local math_random = math.random
@@ -962,7 +967,7 @@ callbacks.place({
 }, {
     name = 'default:obsidian',
 }, player)
-assert(messages[#messages]:find('no safe'), 'broken old frame did not fall back to search')
+assert(messages[#messages]:find('timed out'), 'broken old frame did not fall back to search')
 assert(core.get_node({
     x = 20,
     y = -30897,
