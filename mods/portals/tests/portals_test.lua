@@ -1037,6 +1037,7 @@ local function relative_range(source_y, extra, source_x, axis)
         if extra and extra[name] then
             return name == 'portals_y_offset' and tostring(tonumber(extra[name]) / 3) or extra[name]
         end
+        if name == 'portals_search_radius' then return '500' end
         if name == 'portals_y_offset' then
             return '10000'
         end
@@ -1883,6 +1884,7 @@ do
             if name == 'portals_search_attempts' then
                 return '1'
             end
+            if name == 'portals_search_radius' then return '500' end
             if name == 'portals_y_offset' then
                 return '10000'
             end
@@ -1890,6 +1892,7 @@ do
         end
         core.settings.get_bool = function(_, name, fallback)
             if name == "portals_spawn_in_liquids" and options.disable_liquids then return false end
+            if name == "portals_safe_destination" then return options.safe or false end
             return fallback
         end
         local a = {
@@ -1993,9 +1996,10 @@ do
     end
     for _, options in ipairs({{liquid = true}, {liquid = true, damage = 4},
         {liquid = true, solid_liquid = true}, {liquid = true, disable_liquids = true},
-        {liquid = true, protected = true}}) do
+        {liquid = true, protected = true}, {liquid = true, safe = true},
+        {liquid = true, safe = true, damage = 4}, {liquid = true, safe = true, solid_liquid = true}}) do
         local a, b, at = flat_pair(4, 5, false, options)
-        local expected = not options.damage and not options.solid_liquid and not options.disable_liquids
+        local expected = (not options.safe or not options.damage and not options.solid_liquid) and not options.disable_liquids
             and not options.protected
         assert((core.get_node(at(a, 1, 1)).name == 'portals:portal') == expected,
             'submerged destination acceptance ignored liquid safety, protection or setting')

@@ -17,11 +17,12 @@ local max_frame_size = setting("portals_max_frame_size", 64, 3, 1024)
 local attempts = setting("portals_search_attempts", 24, 1, 256)
 local transfer_liquids = settings:get_bool("portals_transfer_liquids", true)
 local spawn_in_liquids = settings:get_bool("portals_spawn_in_liquids", true)
+local safe_destination = settings:get_bool("portals_safe_destination", false)
 local function open_destination(name)
     if name == "air" then return true end
     local def = api.registered_nodes[name]
-    return spawn_in_liquids and def and def.walkable == false
-        and (def.damage_per_second or 0) == 0
+    return spawn_in_liquids and def
+        and (not safe_destination or def.walkable == false and (def.damage_per_second or 0) == 0)
         and (def.liquidtype == "source" or def.liquidtype == "flowing")
 end
 local liquid_arrivals = {}
@@ -207,8 +208,10 @@ local function cave_site(p, axis, owner, upward)
                 if not def then return false end
                 local footing = axis == 2 and d == -4 or axis ~= 2 and v == -1
                 if footing then
-                    if not def.walkable or (def.damage_per_second or 0) > 0
-                        or not upward and api.get_item_group(node.name, "stone") == 0 then return false end
+                    local liquid_footing = not safe_destination and node.name ~= "air" and open_destination(node.name)
+                    if not liquid_footing and (not def.walkable
+                        or safe_destination and (def.damage_per_second or 0) > 0
+                        or not upward and api.get_item_group(node.name, "stone") == 0) then return false end
                 elseif not open_destination(node.name) then
                     return false
                 end
@@ -257,8 +260,15 @@ local function ignite(p, axis, owner)
         -- Return portals can stand on soil and other safe solid surfaces too.
         floor_names = {}
         for name, def in pairs(api.registered_nodes) do
-            if def.walkable ~= false and (def.damage_per_second or 0) == 0 and
+            if def.walkable ~= false and (not safe_destination or (def.damage_per_second or 0) == 0) and
                 (not def.liquidtype or def.liquidtype == "none") then
+                floor_names[#floor_names + 1] = name
+            end
+        end
+    end
+    if spawn_in_liquids and not safe_destination then
+        for name, def in pairs(api.registered_nodes) do
+            if def.liquidtype == "source" or def.liquidtype == "flowing" then
                 floor_names[#floor_names + 1] = name
             end
         end

@@ -120,8 +120,11 @@ Data a mod stores separately by world position is not relocated automatically.
 A short arrival cooldown prevents immediate transfer back during the same step.
 Set `portals_transfer_liquids = false` to disable this behavior.
 
-`portals_spawn_in_liquids = true` (default) also permits submerged destinations
-and horizontal exits in non-damaging, non-solid liquids such as water. Solid
-footing and protection checks still apply. Frame and portal surface cells replace
-liquid; surrounding liquid remains. Lava and solid flowing sand/dirt are rejected.
-Set this setting to `false` for air-only destination volumes and exits.
+`portals_spawn_in_liquids = true` (default) permits submerged destinations and
+horizontal exits. `portals_safe_destination = false` (default) allows every liquid
+type, including lava and flowing dirt or sand, and allows liquid footing.
+Enable `portals_safe_destination = true` to require solid, non-damaging footing
+and restrict liquids to non-damaging, non-solid types such as water.
+Protection and world-bound checks always apply. Frame and portal surface cells
+replace liquid; surrounding liquid remains. Set `portals_spawn_in_liquids = false`
+for air-only destination volumes and exits.
