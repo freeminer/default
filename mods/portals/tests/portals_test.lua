@@ -66,7 +66,7 @@ core = {
                 return '1'
             end
             if n == 'portals_y_offset' then
-                return '30750'
+                return '10250'
             end
             return nil
         end,
@@ -764,7 +764,7 @@ local function regions(origin)
             return '3'
         end
         if name == 'portals_y_offset' then
-            return '30750'
+            return '10250'
         end
         return nil
     end
@@ -830,7 +830,7 @@ core.settings.get = function(_, name)
         return '1'
     end
     if name == 'portals_y_offset' then
-        return '30750'
+        return '10250'
     end
     return nil
 end
@@ -1035,10 +1035,10 @@ local function relative_range(source_y, extra, source_x, axis)
             return '1'
         end
         if extra and extra[name] then
-            return extra[name]
+            return name == 'portals_y_offset' and tostring(tonumber(extra[name]) / 3) or extra[name]
         end
         if name == 'portals_y_offset' then
-            return '30000'
+            return '10000'
         end
         return nil
     end
@@ -1058,8 +1058,8 @@ local function relative_range(source_y, extra, source_x, axis)
 end
 for _, y in ipairs({0, 1000, -900}) do
     local range = assert(relative_range(y))
-    assert(range.a.y >= math.max(-30992, y - 30252), 'search too low for source')
-    assert(range.b.y <= math.min(30992, y - 29745), 'search too high for source')
+    assert(range.a.y >= math.max(-30992, y - 30502), 'search too low for source')
+    assert(range.b.y <= math.min(30992, y - 29495), 'search too high for source')
 end
 assert(not relative_range(-2000), 'out-of-world target was silently moved to boundary')
 assert(messages[#messages]:find('outside the world Y limits'), 'missing depth limit feedback')
@@ -1092,7 +1092,7 @@ core.settings.get = function(_, name)
         return '1'
     end
     if name == 'portals_y_offset' then
-        return '30750'
+        return '10250'
     end
     return nil
 end
@@ -1207,7 +1207,7 @@ core.settings.get = function(_, name)
         return '1'
     end
     if name == 'portals_y_offset' then
-        return '30000'
+        return '10000'
     end
     return nil
 end
@@ -1293,14 +1293,14 @@ core.find_nodes_in_area_under_air = function()
 end
 mapgen_limit = 100000
 local high = assert(relative_range(90000, nil, 90000))
-assert(high.a.y >= 59748 and high.b.y <= 60255, 'large-world downward target clipped')
-assert(high.a.x > 79800, 'large-world X coordinate clipped')
+assert(high.a.y >= 59498 and high.b.y <= 60505, 'large-world downward target clipped')
+assert(high.a.x > 79400, 'large-world X coordinate clipped')
 local deep = assert(relative_range(-50000))
-assert(deep.a.y >= -80252 and deep.b.y <= -79745, 'large-world deep target clipped')
+assert(deep.a.y >= -80502 and deep.b.y <= -79495, 'large-world deep target clipped')
 local far = assert(relative_range(90000, {
     portals_y_offset = '150000',
 }))
-assert(far.a.y >= -60252 and far.b.y <= -59745, 'offset retained old 62000 cap')
+assert(far.a.y >= -60502 and far.b.y <= -59495, 'offset retained old 62000 cap')
 local rng = PcgRandom
 PcgRandom = function()
     return {
@@ -1336,7 +1336,7 @@ for axis = 0, 1 do
             }
         end
         local region = assert(relative_range(0, nil, nil, axis))
-        local offset = sign == 0 and -10000 or 10000
+        local offset = sign == 0 and -20000 or 20000
         assert(region.a.x + 10 == (axis == 1 and offset or 0), 'wrong X offset for frame orientation')
         assert(region.a.z + 10 == (axis == 0 and offset or 0), 'wrong Z offset for frame orientation')
     end
@@ -1355,7 +1355,7 @@ PcgRandom = function()
     }
 end
 local edge = assert(relative_range(0, nil, 30000, 1))
-assert(edge.a.x + 10 == 20000, 'out-of-bounds horizontal offset did not reverse')
+assert(edge.a.x + 10 == 10000, 'out-of-bounds horizontal offset did not reverse')
 for axis = 0, 1 do
     local disabled = assert(relative_range(0, {
         portals_xz_offset = '0',
@@ -1364,6 +1364,32 @@ for axis = 0, 1 do
 end
 PcgRandom = original_rng
 print('PASS: frame-normal X/Z offsets, both signs, world-edge reversal and disabled offset')
+
+-- Default search samples all axes within a 1000-node-wide target window.
+local repeat_a = relative_range(1000)
+local repeat_b = relative_range(1000)
+assert(key(repeat_a.a) == key(repeat_b.a) and key(repeat_a.b) == key(repeat_b.b),
+    'coordinate-seeded search changed between retries')
+local window_rng = PcgRandom
+for _, endpoint in ipairs({-500, 500}) do
+    local samples = 0
+    PcgRandom = function()
+        return {next = function(_, lo, hi)
+            if lo == -500 and hi == 500 then
+                samples = samples + 1
+                return endpoint
+            end
+            return lo
+        end}
+    end
+    local region = assert(relative_range(1000, {portals_xz_offset = '0'}))
+    assert(samples == 2, 'X and Z did not both sample the default window')
+    assert(region.a.x >= -502 and region.b.x <= 505 and region.a.z >= -502 and region.b.z <= 502,
+        'sampled region exceeded target window plus frame padding')
+end
+PcgRandom = window_rng
+print('PASS: deterministic retries and default 1000-node XYZ window')
+
 
 core.registered_nodes['test:water'] = {
     liquidtype = 'source',
@@ -1647,13 +1673,13 @@ do
         saved_pairs = {}
         persist_pairs = true
         objects = {}
-        mapgen_limit = 100000
+        mapgen_limit = 200000
         core.settings.get = function(_, name)
             if name == 'portals_search_attempts' then
                 return '1'
             end
             if name == 'portals_y_offset' then
-                return '30750'
+                return '10250'
             end
             if name == 'portals_max_frame_size' then
                 return options.limit and tostring(options.limit) or nil
@@ -1670,7 +1696,7 @@ do
         }
         local floor = {
             x = 20,
-            y = -30900,
+            y = -math.floor(10250 * (h - 2) + 0.5) - 150,
             z = 20,
         }
         local target = vector.offset(floor, 0, 1, 0)
@@ -1736,12 +1762,12 @@ do
                         'destination size/material mismatch')
                 end
             end
-            local distance = math.min(100000, math.floor(10000 * (w - 2) * (h - 2) / 6 + 0.5))
+            local distance = math.min(200000, math.floor(10000 * (w - 2) + 0.5))
             local offset_axis = axis == 0 and 'z' or 'x'
-            assert(requests[1].a[offset_axis] + 10 == distance, 'distance did not scale with opening area')
+            assert(requests[1].a[offset_axis] + 10 == distance, 'horizontal distance did not scale with opening width')
             local span_axis = axis == 0 and 'x' or 'z'
             assert(requests[1].b[span_axis] >= w - 1, 'emerge bounds missed frame width')
-            assert(requests[1].b.y >= -31000 + h - 1, 'emerge bounds missed frame height')
+            assert(requests[1].a.y == -math.floor(10250 * (h - 2) + 0.5) - 502, 'vertical distance did not scale with opening height')
         end
     end
     -- All four corners and side-center placements can complete a large frame.
@@ -1842,17 +1868,17 @@ do
     PcgRandom = original_rng
     mapgen_limit = 31000
     print(
-        'PASS: variable rectangles, area-scaled distance, all completion edges, limits, full opening transfers, cleanup, reconnection and reload')
+        'PASS: variable rectangles, width/height-scaled distances, all completion edges, limits, full opening transfers, cleanup, reconnection and reload')
 end
 
--- Horizontal X/Z frames search only along Y and preserve their full footprint.
+-- Horizontal X/Z frames sample the target window and preserve their full footprint.
 do
     local function flat_pair(w, h, upward, options)
         options = options or {}
         nodes, metas, timers, saved_pairs = {}, {}, {}, {}
         objects = {}
         persist_pairs = true
-        mapgen_limit = 100000
+        mapgen_limit = 1000000
         core.settings.get = function(_, name)
             if name == 'portals_search_attempts' then
                 return '1'
@@ -1872,7 +1898,7 @@ do
         }
         local b = {
             x = a.x,
-            y = a.y + (upward and 10000 or -10000),
+            y = a.y + (upward and 1 or -1) * math.floor(10000 * (w - 2) * (h - 2) + 0.5),
             z = a.z,
         }
         local material = upward and 'default:obsidian_block' or 'default:obsidian'
@@ -1910,11 +1936,11 @@ do
             f(lo, 4, 0)
         end
         core.find_nodes_in_area = function(lo, hi)
-            assert(lo.x == a.x and hi.x == a.x and lo.z == a.z and hi.z == a.z, 'flat frame shifted horizontal search')
+            assert(lo.x >= a.x - 500 and hi.x <= a.x + 500 and lo.z >= a.z - 500 and hi.z <= a.z + 500, 'flat search outside window')
             return {}
         end
         core.find_nodes_in_area_under_air = function(lo, hi)
-            assert(lo.x == a.x and hi.x == a.x and lo.z == a.z and hi.z == a.z, 'flat frame jittered floor column')
+            assert(hi.x - lo.x <= 16 and hi.z - lo.z <= 16, 'flat search must use small sampled regions')
             return {at(b, options.wrong_column and 1 or 0, 0, -4)}
         end
         dofile(root .. 'init.lua')
@@ -1932,8 +1958,8 @@ do
             assert(meta:get_int('axis') == 2 and meta:get_int('width') == w and meta:get_int('height') == h,
                 'flat metadata wrong')
             assert(meta:get_string('target') == key(b), 'flat link has horizontal displacement')
-            assert(requests[1].a.x == a.x - 4 and requests[1].a.z == a.z - 4, 'flat load minimum wrong')
-            assert(requests[1].b.x == a.x + w + 3 and requests[1].b.z == a.z + h + 3, 'flat load footprint incomplete')
+            assert(requests[1].a.x >= a.x - 504 and requests[1].a.z >= a.z - 504, 'flat load minimum outside window')
+            assert(requests[1].b.x - requests[1].a.x >= w + 7 and requests[1].b.z - requests[1].a.z >= h + 7, 'flat load footprint incomplete')
             for u = 0, w - 1 do
                 for v = 0, h - 1 do
                     local edge = u == 0 or u == w - 1 or v == 0 or v == h - 1
@@ -2060,5 +2086,5 @@ do
     objects = {}
     mapgen_limit = 31000
     print(
-        'PASS: horizontal detection, exact X/Z, up/down search, dimensions, facing, clearance, traversal sides, fluids, repair and reload')
+        'PASS: horizontal detection, XYZ search window, up/down search, dimensions, facing, clearance, traversal sides, fluids, repair and reload')
 end

@@ -11,8 +11,8 @@ local map_limit = math.floor(assert(tonumber(api.get_mapgen_setting("mapgen_limi
     "portals requires the mapgen_limit mapgen setting") / 16) * 16
 local y_offset = setting("portals_y_offset", 10000, 1, map_limit * 2)
 local xz_offset = setting("portals_xz_offset", 10000, 0, map_limit)
-local y_radius = setting("portals_y_radius", 250, 2, map_limit)
-local radius = setting("portals_search_radius", 128, 16, 1024)
+local y_radius = setting("portals_y_radius", 500, 2, map_limit)
+local radius = setting("portals_search_radius", 500, 16, 1024)
 local max_frame_size = setting("portals_max_frame_size", 64, 3, 1024)
 local attempts = setting("portals_search_attempts", 24, 1, 256)
 local transfer_liquids = settings:get_bool("portals_transfer_liquids", true)
@@ -225,7 +225,7 @@ local function ignite(p, axis, owner)
     end
     local random = PcgRandom(seed)
     -- Offset along the portal face normal: XY frames use Z, ZY frames use X.
-    local distance = axis == 2 and 0 or math.min(map_limit, math.floor(xz_offset * (width(p) - 2) * (height(p) - 2) / 6 + 0.5))
+    local distance = axis == 2 and 0 or math.min(map_limit, math.floor(xz_offset * (width(p) - 2) + 0.5))
     local offset = random:next(0, 1) == 0 and -distance or distance
     local dx = axis == 1 and offset or 0
     local dz = axis == 0 and offset or 0
@@ -240,7 +240,10 @@ local function ignite(p, axis, owner)
     local upward = api.get_node(p).name == down_frame
     local direction = upward and "above" or "below"
     local destination_material = upward and frame or down_frame
-    local target_y = p.y + (upward and y_offset or -y_offset)
+    -- Flat frames scale by opening area, standing frames by opening height.
+    local y_multiplier = axis == 2 and (width(p) - 2) * (height(p) - 2) or (height(p) - 2)
+    local vertical_distance = math.floor(y_offset * y_multiplier + 0.5)
+    local target_y = p.y + (upward and vertical_distance or -vertical_distance)
     local floor_names = {"group:stone"}
     if upward then
         -- Return portals can stand on soil and other safe solid surfaces too.
@@ -288,7 +291,7 @@ local function ignite(p, axis, owner)
             return
         end
         if ymax - ymin < vertical_span(p, axis) - 1 then
-            finish("cannot search " .. y_offset .. " nodes " .. direction ..
+            finish("cannot search " .. vertical_distance .. " nodes " .. direction ..
                        " this frame: the target range is outside the world Y limits.")
             return
         end
@@ -298,13 +301,18 @@ local function ignite(p, axis, owner)
             return
         end
         local center = {
-            x = target_x + (axis == 2 and 0 or random:next(-radius, radius)),
+            x = target_x + random:next(-radius, radius),
             y = random:next(ymin, ymax - vertical_span(p, axis) + 1),
-            z = target_z + (axis == 2 and 0 or random:next(-radius, radius)),
+            z = target_z + random:next(-radius, radius),
         }
-        local spread = axis == 2 and 0 or 8
+        local spread = 8
         local minp = emerge_bounds(vector.offset(center, -spread, 0, -spread))
         local maxp = emerge_bounds(vector.offset(center, spread, math.min(31, ymax - center.y), spread))
+        minp.x, minp.z = math.max(minp.x, target_x - radius), math.max(minp.z, target_z - radius)
+        maxp.x, maxp.z = math.min(maxp.x, target_x + radius), math.min(maxp.z, target_z + radius)
+        local function in_window(q)
+            return q.y >= ymin and q.y + vertical_span(p, axis) - 1 <= ymax
+        end
         local complete = false
         local region_trial = trial
         local function inspect()
@@ -317,7 +325,7 @@ local function ignite(p, axis, owner)
             -- left frame node is itself obsidian, so test each found node as an origin.
             for _, old in ipairs(api.find_nodes_in_area(minp, maxp, {frame, down_frame})) do
                 sized(old, width(p), height(p))
-                if not vector.equals(old, p) and (axis ~= 2 or old.x == target_x and old.z == target_z) and old.y >= ymin and old.y + vertical_span(p, axis) - 1 <= ymax and reusable_frame(old, axis, p) and
+                if not vector.equals(old, p) and in_window(old) and reusable_frame(old, axis, p) and
                     frame_accessible(old, axis, owner) then
                     build(old, axis, p, owner)
                     build(p, axis, old, owner)
@@ -332,8 +340,7 @@ local function ignite(p, axis, owner)
             local floors = api.find_nodes_in_area_under_air(floor_min, floor_max, floor_names)
             for _, floor in ipairs(floors) do
                 local dest = sized(vector.offset(floor, 0, axis == 2 and 4 or 1, 0), width(p), height(p))
-                if (axis ~= 2 or dest.x == target_x and dest.z == target_z)
-                    and dest.y >= ymin and dest.y + vertical_span(p, axis) - 1 <= ymax and cave_site(dest, axis, owner, upward) then
+                if in_window(dest) and cave_site(dest, axis, owner, upward) then
                     build(dest, axis, p, owner, destination_material)
                     build(p, axis, dest, owner)
                     finish((upward and "linked to upper portal at " or "linked to cave at ") .. api.pos_to_string(dest))

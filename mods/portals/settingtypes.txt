@@ -1,10 +1,13 @@
-# Obsidian searches below; obsidian blocks search above by this offset.
-portals_y_offset (Vertical distance from source) int 10000 1
+# Obsidian searches below; obsidian blocks search above.
+# Standing frames multiply by opening height; flat frames by opening area.
+portals_y_offset (Vertical distance per opening height or area node) int 10000 1
+# Standing frames multiply by opening width.
 # Portal facing selects X or Z; coordinates select a deterministic sign.
-portals_xz_offset (Horizontal distance for a 2x3 opening) int 10000 0
-portals_y_radius (Vertical search radius) int 250 2
+portals_xz_offset (Horizontal distance per opening width node) int 10000 0
+portals_y_radius (Vertical search radius) int 500 2
+# Defaults search within ±500 nodes on all axes around the target.
 # Search bounds follow the server mapgen_limit setting.
-portals_search_radius (Horizontal search radius) int 128 16 1024
+portals_search_radius (Horizontal search radius) int 500 16 1024
 portals_search_attempts (Maximum emerged search regions per frame) int 24 1 256
 # Maximum total search time, including waiting for emerge callbacks.
 portals_search_timeout (Portal search timeout in seconds) int 180 10 3600

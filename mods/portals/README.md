@@ -11,9 +11,11 @@ Generated cave frames use `default:obsidian_block`; upper frames use
 `default:obsidian`. Reconnecting preserves existing materials. No ignition item
 or Nether mod is required. Old 4×5 portals and their saved links remain valid.
 
-Flat frames search at the **same X/Z coordinates**, using only the configured
-vertical offset and vertical search range. Horizontal offsets, area-based distance,
-and X/Z search jitter do not apply to flat frames. The destination ring also lies
+Flat frames multiply the configured vertical offset by opening area for
+their target center;
+horizontal offsets and area-based distance do not apply. All frames search a
+coordinate-seeded pseudo-random window of **±500 nodes on X, Y and Z** around
+their target by default (roughly 1000 nodes across each axis). The destination ring also lies
 flat and matches the source footprint. Generated rings leave three clear air
 layers below and above their plane, with natural solid ground four nodes below,
 so an object can safely emerge on either face. Blocked exits refuse object travel.
@@ -48,22 +50,26 @@ name (the builder's name for items). Protection is provided by the server's
 Settings in `luanti.conf` (also available in the settings menu):
 
 ```
-portals_y_offset = 30000
-portals_y_radius = 250
+portals_y_offset = 10000
+portals_y_radius = 500
 portals_xz_offset = 10000
-portals_search_radius = 128
+portals_search_radius = 500
 portals_search_attempts = 24
 portals_max_frame_size = 64
 portals_search_timeout = 180
 ```
 
-New obsidian-frame searches center on **source frame Y minus 30000**;
-obsidian-block frames search at **source frame Y plus 30000**, within ±250 nodes.
+New obsidian-frame searches center below the source; obsidian-block frames search
+above it. For vertical frames, the vertical distance is
+`portals_y_offset × opening_height`. For horizontal frames, it is
+`portals_y_offset × opening_width × opening_height`.
+Distances round to the nearest node. With a base distance of 10000, a 2×3 opening travels 30000 nodes vertically
+when standing, or 60000 when flat. The default search window is ±500 nodes on each axis.
 Generated lower frames use obsidian blocks; generated upper frames use obsidian.
 Upper destinations can stand on safe solid ground such as soil, with clear
 space for the frame. Lower destinations still require stone cave footing.
-For example, an obsidian frame at Y=1000 searches near Y=-29000; an
-obsidian-block frame at Y=-29000 searches near Y=1000. The offset and vertical
+For example, a 2×3 obsidian opening at Y=1000 searches near Y=-29000; an
+obsidian-block opening of the same size at Y=-29000 searches near Y=1000. The offset and vertical
 radius are configurable. World bounds come only from the server's `mapgen_limit`,
 including worlds larger than 31000 nodes. The old `portals_y_min` / `portals_y_max`
 settings are no longer used. A target entirely outside the world bounds fails with
@@ -72,10 +78,10 @@ The complete destination frame lies within the resulting Y range. Search
 regions are emerged asynchronously without changing mapgen. Frame orientation
 selects the horizontal offset axis perpendicular to its surface: a frame spanning
 X shifts on Z; a frame spanning Z shifts on X. The horizontal distance is
-`portals_xz_offset × opening_width × opening_height / 6`, rounded to the nearest
+`portals_xz_offset × opening_width`, rounded to the nearest
 node and capped at `mapgen_limit`. With the default base of 10000, a 2×3 opening
-shifts 10000 nodes and a 4×3 opening shifts 20000. Frame borders are excluded from
-the area. Portal coordinates determine the offset sign. A direction crossing the world boundary is reversed. The local
+shifts 20000 nodes and a 4×3 opening shifts 40000. Frame borders are excluded from
+these dimensions. Portal coordinates determine the offset sign. A direction crossing the world boundary is reversed. The local
 `portals_search_radius` applies around that shifted position. Set
 `portals_xz_offset = 0` to search near the source X/Z.
 A private RNG seeded from the frame coordinates selects the same sequence of
