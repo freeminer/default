@@ -1,7 +1,7 @@
 # Obsidian searches below; obsidian blocks search above by this offset.
 portals_y_offset (Vertical distance from source) int 10000 1
 # Portal facing selects X or Z; coordinates select a deterministic sign.
-portals_xz_offset (Horizontal destination offset per selected axis) int 10000 0
+portals_xz_offset (Horizontal distance for a 2x3 opening) int 10000 0
 portals_y_radius (Vertical search radius) int 250 2
 # Search bounds follow the server mapgen_limit setting.
 portals_search_radius (Horizontal search radius) int 128 16 1024
@@ -11,3 +11,6 @@ portals_search_timeout (Portal search timeout in seconds) int 180 10 3600
 
 # Move liquids touching either face to the opposite portal face, one node lower.
 portals_transfer_liquids (Transfer liquids through portals) bool true
+
+# Maximum outer width or height; includes the frame border.
+portals_max_frame_size (Maximum portal frame side length) int 64 3 1024

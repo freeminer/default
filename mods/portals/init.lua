@@ -9,10 +9,11 @@ end
 -- skipped without an emerge completion callback.
 local map_limit = math.floor(assert(tonumber(api.get_mapgen_setting("mapgen_limit")),
     "portals requires the mapgen_limit mapgen setting") / 16) * 16
-local y_offset = setting("portals_y_offset", 10000, 1, map_limit * 2)
+local y_offset = setting("portals_y_offset", 30000, 1, map_limit * 2)
 local xz_offset = setting("portals_xz_offset", 10000, 0, map_limit)
 local y_radius = setting("portals_y_radius", 250, 2, map_limit)
 local radius = setting("portals_search_radius", 128, 16, 1024)
+local max_frame_size = setting("portals_max_frame_size", 64, 3, 1024)
 local attempts = setting("portals_search_attempts", 24, 1, 256)
 local transfer_liquids = settings:get_bool("portals_transfer_liquids", true)
 local liquid_arrivals = {}
@@ -56,13 +57,23 @@ local function point(p, axis, u, v, depth)
         z = p.z + (axis == 1 and u or depth or 0),
     }
 end
+local function width(p) return p.width or 4 end
+local function height(p) return p.height or 5 end
+local function sized(p, w, h)
+    p.width, p.height = w, h
+    return p
+end
+local function frame_max(p, axis, dimensions, pad)
+    return vector.offset(p, axis == 0 and width(dimensions) - 1 + pad or pad,
+        height(dimensions) - 1 + pad, axis == 1 and width(dimensions) - 1 + pad or pad)
+end
 local function track(p, axis)
     active_portals[api.pos_to_string(p)] = point(p, axis, 1, 1)
 end
 local function each(p, axis, fn)
-    for u = 0, 3 do
-        for v = 0, 4 do
-            local edge = u == 0 or u == 3 or v == 0 or v == 4
+    for u = 0, width(p) - 1 do
+        for v = 0, height(p) - 1 do
+            local edge = u == 0 or u == width(p) - 1 or v == 0 or v == height(p) - 1
             if fn(point(p, axis, u, v), edge) == false then
                 return false
             end
@@ -87,6 +98,10 @@ local function metadata(p)
     local meta = api.get_meta(p)
     local origin = api.string_to_pos(meta:get_string("origin"))
     local target = api.string_to_pos(meta:get_string("target"))
+    local w, h = meta:get_int("width"), meta:get_int("height")
+    w, h = w >= 3 and w or 4, h >= 3 and h or 5
+    if origin then sized(origin, w, h) end
+    if target then sized(target, w, h) end
     return origin, meta:get_int("axis"), target, meta:get_string("owner")
 end
 local function reusable_frame(p, axis, source)
@@ -107,8 +122,8 @@ local function reusable_frame(p, axis, source)
     end)
 end
 local function frame_accessible(p, axis, owner)
-    for u = 0, 3 do
-        for v = -1, 4 do
+    for u = 0, width(p) - 1 do
+        for v = -1, height(p) - 1 do
             for d = -1, 1 do
                 if api.is_protected(point(p, axis, u, v, d), owner) then
                     return false
@@ -146,6 +161,8 @@ local function build(p, axis, target, owner, material)
             local meta = api.get_meta(q)
             meta:set_string("origin", api.pos_to_string(p))
             meta:set_int("axis", axis)
+            meta:set_int("width", width(p))
+            meta:set_int("height", height(p))
             meta:set_string("target", api.pos_to_string(target))
             meta:set_string("owner", owner)
             meta:set_string("infotext", "Deep cave portal")
@@ -157,9 +174,9 @@ end
 -- Require natural solid footing and a completely empty cave volume, including
 -- both exits. Never excavate, overwrite a build, or place in a protected volume.
 local function cave_site(p, axis, owner, upward)
-    for u = 0, 3 do
+    for u = 0, width(p) - 1 do
         for d = -1, 1 do
-            for v = -1, 4 do
+            for v = -1, height(p) - 1 do
                 local q = point(p, axis, u, v, d)
                 if api.is_protected(q, owner) then
                     return false
@@ -198,7 +215,8 @@ local function ignite(p, axis, owner)
     end
     local random = PcgRandom(seed)
     -- Offset along the portal face normal: XY frames use Z, ZY frames use X.
-    local offset = random:next(0, 1) == 0 and -xz_offset or xz_offset
+    local distance = math.min(map_limit, math.floor(xz_offset * (width(p) - 2) * (height(p) - 2) / 6 + 0.5))
+    local offset = random:next(0, 1) == 0 and -distance or distance
     local dx = axis == 1 and offset or 0
     local dz = axis == 0 and offset or 0
     -- Prefer the opposite direction if the selected offset crosses the world edge.
@@ -259,7 +277,7 @@ local function ignite(p, axis, owner)
         if not active() or not source_ready() then
             return
         end
-        if ymax - ymin < 4 then
+        if ymax - ymin < height(p) - 1 then
             finish("cannot search " .. y_offset .. " nodes " .. direction ..
                        " this frame: the target range is outside the world Y limits.")
             return
@@ -271,7 +289,7 @@ local function ignite(p, axis, owner)
         end
         local center = {
             x = target_x + random:next(-radius, radius),
-            y = random:next(ymin, ymax - 4),
+            y = random:next(ymin, ymax - height(p) + 1),
             z = target_z + random:next(-radius, radius),
         }
         local minp = emerge_bounds(vector.offset(center, -8, 0, -8))
@@ -287,7 +305,8 @@ local function ignite(p, axis, owner)
             -- Recover inactive frames from before pair records existed. The bottom
             -- left frame node is itself obsidian, so test each found node as an origin.
             for _, old in ipairs(api.find_nodes_in_area(minp, maxp, {frame, down_frame})) do
-                if not vector.equals(old, p) and old.y >= ymin and old.y + 4 <= ymax and reusable_frame(old, axis, p) and
+                sized(old, width(p), height(p))
+                if not vector.equals(old, p) and old.y >= ymin and old.y + height(p) - 1 <= ymax and reusable_frame(old, axis, p) and
                     frame_accessible(old, axis, owner) then
                     build(old, axis, p, owner)
                     build(p, axis, old, owner)
@@ -297,8 +316,8 @@ local function ignite(p, axis, owner)
             end
             local floors = api.find_nodes_in_area_under_air(minp, maxp, floor_names)
             for _, floor in ipairs(floors) do
-                local dest = vector.offset(floor, 0, 1, 0)
-                if dest.y >= ymin and dest.y + 4 <= ymax and cave_site(dest, axis, owner, upward) then
+                local dest = sized(vector.offset(floor, 0, 1, 0), width(p), height(p))
+                if dest.y >= ymin and dest.y + height(p) - 1 <= ymax and cave_site(dest, axis, owner, upward) then
                     build(dest, axis, p, owner, destination_material)
                     build(p, axis, dest, owner)
                     finish((upward and "linked to upper portal at " or "linked to cave at ") .. api.pos_to_string(dest))
@@ -311,7 +330,7 @@ local function ignite(p, axis, owner)
                 api.after(2, inspect)
             end
         end
-        api.emerge_area(emerge_bounds(vector.offset(minp, -2, -2, -2)), emerge_bounds(vector.offset(maxp, 5, 5, 5)),
+        api.emerge_area(emerge_bounds(vector.offset(minp, -2, -2, -2)), emerge_bounds(frame_max(maxp, axis, p, 1)),
             function(_, _, remaining)
                 if remaining == 0 then
                     complete = true
@@ -326,6 +345,7 @@ local function ignite(p, axis, owner)
             search();
             return
         end
+        sized(target, width(p), height(p))
         notify(owner, "checking the previous portal at " .. api.pos_to_string(target) .. "…")
         local complete = false
         local function inspect()
@@ -356,7 +376,7 @@ local function ignite(p, axis, owner)
             build(p, axis, target, owner)
             finish("reconnected to portal at " .. api.pos_to_string(target))
         end
-        api.emerge_area(emerge_bounds(vector.offset(target, -2, -2, -2)), emerge_bounds(vector.offset(target, 5, 6, 5)),
+        api.emerge_area(emerge_bounds(vector.offset(target, -2, -2, -2)), emerge_bounds(frame_max(target, axis, target, 2)),
             function(_, _, remaining)
                 if remaining == 0 then
                     complete = true
@@ -412,23 +432,56 @@ local function register_surface(name, tint)
 end
 register_surface(field, "#9933ff")
 register_surface(up_field, "#7755ff")
-api.register_on_placenode(function(pos, node, placer)
-    if not is_frame(node.name) or not placer or not placer:is_player() then
-        return
+-- Locate a rectangular air opening beside a newly placed frame node. Starting
+-- from nearby air also recognizes a corner placed last, without scanning an
+-- unbounded connected air region outside the frame.
+local function detect_frame(pos, axis, du, dv)
+    local function name(u, v)
+        local node = api.get_node_or_nil(point(pos, axis, u, v))
+        return node and node.name
     end
+    if name(du, dv) ~= "air" then return nil end
+    local left, bottom = du, dv
+    for _ = 1, max_frame_size - 2 do
+        if name(left - 1, dv) ~= "air" then break end
+        left = left - 1
+    end
+    for _ = 1, max_frame_size - 2 do
+        if name(du, bottom - 1) ~= "air" then break end
+        bottom = bottom - 1
+    end
+    if not is_frame(name(left - 1, dv)) or not is_frame(name(du, bottom - 1)) then return nil end
+    local w, h = 0, 0
+    for count = 1, max_frame_size - 2 do
+        if name(left + count - 1, bottom) ~= "air" then break end
+        w = count
+    end
+    for count = 1, max_frame_size - 2 do
+        if name(left, bottom + count - 1) ~= "air" then break end
+        h = count
+    end
+    if w == 0 or h == 0 then return nil end
+    local p = sized(point(pos, axis, left - 1, bottom - 1), w + 2, h + 2)
+    if valid(p, axis, false) then return p end
+end
+api.register_on_placenode(function(pos, node, placer)
+    if not is_frame(node.name) or not placer or not placer:is_player() then return end
     local owner = placer:get_player_name()
     for axis = 0, 1 do
-        for u = 0, 3 do
-            for v = 0, 4 do
-                local p = point(pos, axis, -u, -v)
-                if valid(p, axis, false) and allowed(p, axis, owner) then
-                    ignite(p, axis, owner)
-                    return
+        for du = -1, 1 do
+            for dv = -1, 1 do
+                if du ~= 0 or dv ~= 0 then
+                    local p = detect_frame(pos, axis, du, dv)
+                    if p and allowed(p, axis, owner) then
+                        ignite(p, axis, owner)
+                        return
+                    end
                 end
             end
         end
     end
 end)
+
 local function node_state(pos)
     local meta = api.get_meta(pos):to_table()
     if not meta then
@@ -494,8 +547,8 @@ local function move_liquids(p, axis, target, owner, now)
     if not transfer_liquids then
         return
     end
-    for u = 1, 2 do
-        for v = 1, 3 do
+    for u = 1, width(p) - 2 do
+        for v = 1, height(p) - 2 do
             for _, side in ipairs({-1, 1}) do
                 local source = point(p, axis, u, v, side)
                 local node = api.get_node_or_nil(source)
@@ -561,7 +614,7 @@ local function process_portal(pos)
         if not loading[key] or requested - loading[key] > 10000000 then
             loading[key] = requested
             api.emerge_area(emerge_bounds(vector.offset(target, -2, -2, -2)),
-                emerge_bounds(vector.offset(target, 5, 6, 5)), function(_, _, remaining)
+                emerge_bounds(frame_max(target, axis, target, 2)), function(_, _, remaining)
                     if remaining == 0 and loading[key] == requested then
                         loading[key] = nil
                     end
@@ -571,15 +624,17 @@ local function process_portal(pos)
     end
     local other, other_axis, back = metadata(target_cell)
     if not other or not back or other_axis ~= axis or not vector.equals(other, target) or not vector.equals(back, p) or
-        not valid(target, axis, true) then
+        width(other) ~= width(p) or height(other) ~= height(p) or not valid(target, axis, true) then
         extinguish(p, axis)
         return
     end
     track(target, axis)
     local now = api.get_us_time() / 1000000
     move_liquids(p, axis, target, owner, now)
-    local center = point(p, axis, 1.5, 2)
-    for _, object in ipairs(api.get_objects_inside_radius(center, 2.5)) do
+    local half_w, half_h = (width(p) - 1) / 2, (height(p) - 1) / 2
+    local center = point(p, axis, half_w, half_h)
+    local object_radius = math.sqrt(half_w * half_w + half_h * half_h) + 0.6
+    for _, object in ipairs(api.get_objects_inside_radius(center, object_radius)) do
         local player = object:is_player()
         local entity = not player and object:get_luaentity()
         local props = object:get_properties()
@@ -587,10 +642,10 @@ local function process_portal(pos)
         local u = q and (axis == 0 and q.x - p.x or q.z - p.z)
         local d = q and (axis == 0 and q.z - p.z or q.x - p.x)
         if q and (player or entity and (entity.name == "__builtin:item" or props and props.physical)) and
-            not object:get_attach() and (cooldown[object] or 0) < now and u >= 0.5 and u <= 2.5 and q.y >= p.y + 0.5 and
-            q.y <= p.y + 3.5 and math.abs(d) <= 0.6 then
+            not object:get_attach() and (cooldown[object] or 0) < now and u >= 0.5 and u <= width(p) - 1.5 and q.y >= p.y + 0.5 and
+            q.y <= p.y + height(p) - 1.5 and math.abs(d) <= 0.6 then
             local name = player and object:get_player_name() or owner
-            local arrival = point(target, axis, u, 1, 0)
+            local arrival = point(target, axis, u, q.y - p.y, 0)
             if not api.is_protected(q, name) and not api.is_protected(arrival, name) then
                 cooldown[object] = now + 4
                 local velocity = object:get_velocity()
