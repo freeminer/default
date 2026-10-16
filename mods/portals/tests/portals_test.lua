@@ -1888,7 +1888,8 @@ do
             end
             return nil
         end
-        core.settings.get_bool = function(_, _, fallback)
+        core.settings.get_bool = function(_, name, fallback)
+            if name == "portals_spawn_in_liquids" and options.disable_liquids then return false end
             return fallback
         end
         local a = {
@@ -1916,6 +1917,20 @@ do
                 })
             end
         end
+        if options.liquid then
+            core.registered_nodes['test:destination_liquid'] = {
+                walkable = options.solid_liquid or false,
+                damage_per_second = options.damage or 0,
+                liquidtype = 'source',
+            }
+            for u = 0, w - 1 do
+                for v = 0, h - 1 do
+                    for d = -3, 3 do
+                        core.set_node(at(b, u, v, d), {name = 'test:destination_liquid'})
+                    end
+                end
+            end
+        end
         if options.obstruction then
             core.set_node(at(b, w - 2, h - 2, 2), {
                 name = 'default:stone',
@@ -1935,12 +1950,14 @@ do
             }
             f(lo, 4, 0)
         end
-        core.find_nodes_in_area = function(lo, hi)
+        core.find_nodes_in_area = function(lo, hi, names)
             assert(lo.x >= a.x - 500 and hi.x <= a.x + 500 and lo.z >= a.z - 500 and hi.z <= a.z + 500, 'flat search outside window')
+            if options.liquid and names[1] == 'group:stone' then return {at(b, 0, 0, -4)} end
             return {}
         end
         core.find_nodes_in_area_under_air = function(lo, hi)
             assert(hi.x - lo.x <= 16 and hi.z - lo.z <= 16, 'flat search must use small sampled regions')
+            if options.liquid then return {} end
             return {at(b, options.wrong_column and 1 or 0, 0, -4)}
         end
         dofile(root .. 'init.lua')
@@ -1974,6 +1991,20 @@ do
             end
         end
     end
+    for _, options in ipairs({{liquid = true}, {liquid = true, damage = 4},
+        {liquid = true, solid_liquid = true}, {liquid = true, disable_liquids = true},
+        {liquid = true, protected = true}}) do
+        local a, b, at = flat_pair(4, 5, false, options)
+        local expected = not options.damage and not options.solid_liquid and not options.disable_liquids
+            and not options.protected
+        assert((core.get_node(at(a, 1, 1)).name == 'portals:portal') == expected,
+            'submerged destination acceptance ignored liquid safety, protection or setting')
+        if expected then
+            assert(core.get_node(at(b, 1, 1, 2)).name == 'test:destination_liquid',
+                'submerged portal drained surrounding liquid')
+        end
+    end
+    print('PASS: submerged destination discovery, safe liquids, protection and disable setting')
     local a, b, at = flat_pair(6, 7, false, {
         obstruction = true,
     })

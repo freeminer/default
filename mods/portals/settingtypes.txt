@@ -17,3 +17,7 @@ portals_transfer_liquids (Transfer liquids through portals) bool true
 
 # Maximum outer width or height; includes the frame border.
 portals_max_frame_size (Maximum portal frame side length) int 64 3 1024
+
+# Allow destination volumes and exits in non-damaging, non-solid liquids.
+# Solid footing is still required.
+portals_spawn_in_liquids (Allow destinations in safe liquids) bool true

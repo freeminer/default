@@ -16,6 +16,14 @@ local radius = setting("portals_search_radius", 500, 16, 1024)
 local max_frame_size = setting("portals_max_frame_size", 64, 3, 1024)
 local attempts = setting("portals_search_attempts", 24, 1, 256)
 local transfer_liquids = settings:get_bool("portals_transfer_liquids", true)
+local spawn_in_liquids = settings:get_bool("portals_spawn_in_liquids", true)
+local function open_destination(name)
+    if name == "air" then return true end
+    local def = api.registered_nodes[name]
+    return spawn_in_liquids and def and def.walkable == false
+        and (def.damage_per_second or 0) == 0
+        and (def.liquidtype == "source" or def.liquidtype == "flowing")
+end
 local liquid_arrivals = {}
 local timeout = setting("portals_search_timeout", 180, 10, 3600)
 local function emerge_bounds(p)
@@ -186,7 +194,7 @@ local function build(p, axis, target, owner, material)
     remember(p, axis, target)
     track(p, axis)
 end
--- Require natural solid footing and a completely empty cave volume, including
+-- Require natural solid footing and air or safe liquids in the volume, including
 -- both exits. Never excavate, overwrite a build, or place in a protected volume.
 local function cave_site(p, axis, owner, upward)
     for u = 0, width(p) - 1 do
@@ -201,7 +209,7 @@ local function cave_site(p, axis, owner, upward)
                 if footing then
                     if not def.walkable or (def.damage_per_second or 0) > 0
                         or not upward and api.get_item_group(node.name, "stone") == 0 then return false end
-                elseif node.name ~= "air" then
+                elseif not open_destination(node.name) then
                     return false
                 end
             end
@@ -338,6 +346,15 @@ local function ignite(p, axis, owner)
                 floor_min, floor_max = vector.offset(minp, 0, -4, 0), vector.offset(maxp, 0, -4, 0)
             end
             local floors = api.find_nodes_in_area_under_air(floor_min, floor_max, floor_names)
+            if spawn_in_liquids then
+                -- under_air omits submerged floors; include floors under safe liquids too.
+                for _, floor in ipairs(api.find_nodes_in_area(floor_min, floor_max, floor_names)) do
+                    local above = api.get_node_or_nil(vector.offset(floor, 0, 1, 0))
+                    if above and above.name ~= "air" and open_destination(above.name) then
+                        floors[#floors + 1] = floor
+                    end
+                end
+            end
             for _, floor in ipairs(floors) do
                 local dest = sized(vector.offset(floor, 0, axis == 2 and 4 or 1, 0), width(p), height(p))
                 if in_window(dest) and cave_site(dest, axis, owner, upward) then
@@ -600,7 +617,7 @@ local function horizontal_exit_clear(pos, props, player)
         for y = math.floor(pos.y + box[2] + 0.500001), math.floor(pos.y + box[5] + 0.499999) do
             for z = math.floor(pos.z + box[3] + 0.500001), math.floor(pos.z + box[6] + 0.499999) do
                 local node = api.get_node_or_nil({x = x, y = y, z = z})
-                if not node or node.name ~= "air" and not is_field(node.name) then return false end
+                if not node or not open_destination(node.name) and not is_field(node.name) then return false end
             end
         end
     end

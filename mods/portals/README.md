@@ -40,7 +40,7 @@ history can also be recovered if found within the normal cave search regions.
 Changed or dismantled destination frames fall back to a new cave search. Existing frames can be activated by replacing one obsidian block.
 
 Destination frames sit one node above the cave floor, preserving the stone
-underneath. Destinations require an empty cave with solid stone footing and clear space on
+underneath. Destinations require air or safe liquid above solid stone footing, with space on
 both sides. The mod does not excavate caves. It checks protection at every
 node in the destination volume and source frame using the builder's name.
 Travel also checks protection at the entry and arrival using the traveller's
@@ -119,3 +119,9 @@ copies. Normal lighting and liquid simulation still update nodes afterwards.
 Data a mod stores separately by world position is not relocated automatically.
 A short arrival cooldown prevents immediate transfer back during the same step.
 Set `portals_transfer_liquids = false` to disable this behavior.
+
+`portals_spawn_in_liquids = true` (default) also permits submerged destinations
+and horizontal exits in non-damaging, non-solid liquids such as water. Solid
+footing and protection checks still apply. Frame and portal surface cells replace
+liquid; surrounding liquid remains. Lava and solid flowing sand/dirt are rejected.
+Set this setting to `false` for air-only destination volumes and exits.
