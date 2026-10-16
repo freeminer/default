@@ -1627,129 +1627,438 @@ print('PASS: rich metadata, inventory stack data and widths, privacy, timers, me
 
 -- Variable-size frames retain full dimensions through every link operation.
 do
- local original_rng=PcgRandom
- PcgRandom=function() return {next=function(_,lo,hi)
-  if lo==0 and hi==1 then return 1 end
-  if lo<0 and hi==-lo then return 0 end
-  return lo
- end} end
- local function sized_pair(w,h,axis,last,options)
-  options=options or {}
-  nodes,metas,timers={},{},{}
-  saved_pairs={}
-  persist_pairs=true
-  objects={}
-  mapgen_limit=100000
-  core.settings.get=function(_,name)
-   if name=='portals_search_attempts' then return '1' end
-   if name=='portals_y_offset' then return '30750' end
-   if name=='portals_max_frame_size' then return options.limit and tostring(options.limit) or nil end
-   return nil
-  end
-  core.settings.get_bool=function(_,_,fallback) return fallback end
-  local source={x=0,y=0,z=0}
-  local floor={x=20,y=-30900,z=20}
-  local target=vector.offset(floor,0,1,0)
-  local function at(p,u,v,d)
-   return vector.offset(p,axis==0 and u or d or 0,v,axis==1 and u or d or 0)
-  end
-  for u=0,w-1 do for v=0,h-1 do
-   local edge=u==0 or u==w-1 or v==0 or v==h-1
-   core.set_node(at(source,u,v,0),{name=edge and 'default:obsidian' or 'air'})
-  end end
-  for u=0,w-1 do for d=-1,1 do
-   core.set_node(at(floor,u,0,d),{name='default:stone'})
-  end end
-  if options.blocked then core.set_node(at(source,1,1,0),{name='default:stone'}) end
-  core.is_protected=function(p)
-   return options.protected and key(p)==key(at(source,w-1,h-1,0)) or false
-  end
-  local requests={}
-  core.emerge_area=function(a,b,f)
-   requests[#requests+1]={a=a,b=b}
-   f(a,4,0)
-  end
-  core.find_nodes_in_area=function() return {} end
-  core.find_nodes_in_area_under_air=function() return {floor} end
-  dofile(root..'init.lua')
-  local placed=at(source,last[1],last[2],0)
-  callbacks.place(placed,{name='default:obsidian'},player)
-  return source,target,at,requests
- end
- for _,size in ipairs({{3,3},{4,5},{6,5},{5,8},{12,4},{4,12},{64,3}}) do
-  local w,h=size[1],size[2]
-  for axis=0,1 do
-   local a,b,at,requests=sized_pair(w,h,axis,{w-1,h-1})
-   assert(#requests==1,'size not detected: '..w..'x'..h)
-   local source_meta=core.get_meta(at(a,1,1,0))
-   assert(source_meta:get_int('width')==w and source_meta:get_int('height')==h,'source dimensions missing')
-   for u=0,w-1 do for v=0,h-1 do
-    local edge=u==0 or u==w-1 or v==0 or v==h-1
-    assert(core.get_node(at(b,u,v,0)).name==(edge and 'default:obsidian_block' or 'portals:portal_up'),'destination size/material mismatch')
-   end end
-   local distance=math.min(100000,math.floor(10000*(w-2)*(h-2)/6+0.5))
-   local offset_axis=axis==0 and 'z' or 'x'
-   assert(requests[1].a[offset_axis]+10==distance,'distance did not scale with opening area')
-   local span_axis=axis==0 and 'x' or 'z'
-   assert(requests[1].b[span_axis]>=w-1,'emerge bounds missed frame width')
-   assert(requests[1].b.y>=-31000+h-1,'emerge bounds missed frame height')
-  end
- end
- -- All four corners and side-center placements can complete a large frame.
- for _,last in ipairs({{0,0},{5,0},{0,6},{5,6},{0,3},{5,3},{2,0},{2,6}}) do
-  local _,_,_,requests=sized_pair(6,7,0,last)
-  assert(#requests==1,'completion node not detected: '..last[1]..','..last[2])
- end
- local _,_,_,requests=sized_pair(5,6,0,{0,0},{blocked=true})
- assert(#requests==0,'nonrectangular/obstructed opening activated')
- local _,_,_,requests=sized_pair(6,7,1,{0,0},{protected=true})
- assert(#requests==0,'large protected frame activated')
- local _,_,_,requests=sized_pair(9,5,0,{0,0},{limit=8})
- assert(#requests==0,'oversized frame ignored configured limit')
- local _,_,_,requests=sized_pair(9,5,0,{0,0},{limit=9})
- assert(#requests==1,'configured size increase ignored')
- -- Travel through the far upper corner, beyond the former fixed-size bounds.
- local a,b,at=sized_pair(8,10,1,{7,9})
- local object_pos=at(a,6,8,0)
- local object={is_player=function() return true end,get_player_name=function() return 'builder' end,
-  get_pos=function() return object_pos end,get_properties=function() return {} end,get_attach=function() end,
-  get_velocity=function() return {x=0,y=0,z=0} end,set_pos=function(_,p) object_pos=p end}
- objects={object}
- local get_objects=core.get_objects_inside_radius
- core.get_objects_inside_radius=function(center,radius)
-  local dx,dy,dz=object_pos.x-center.x,object_pos.y-center.y,object_pos.z-center.z
-  return dx*dx+dy*dy+dz*dz<=radius*radius and objects or {}
- end
- callbacks.step(0.1)
- assert(key(object_pos)==key(at(b,6,8,0)),'far-corner travel failed or vertical offset lost')
- core.get_objects_inside_radius=get_objects
- objects={}
- local liquid_source,liquid_dest=at(a,6,8,1),at(b,6,7,-1)
- core.set_node(liquid_source,{name='test:flow',param2=6})
- callbacks.step(0.1)
- assert(core.get_node(liquid_source).name=='air' and core.get_node(liquid_dest).name=='test:flow','far-corner liquid transfer failed')
- -- Break the large frame and verify cleanup/reconnection covers every cell.
- core.remove_node(at(a,7,9,0))
- callbacks.abm(at(a,1,1,0))
- assert(core.get_node(at(a,6,8,0)).name=='air','large source cleanup missed far corner')
- callbacks.abm(at(b,1,1,0))
- assert(core.get_node(at(b,6,8,0)).name=='air','large destination cleanup missed far corner')
- core.set_node(at(a,7,9,0),{name='default:obsidian'})
- core.find_nodes_in_area_under_air=function() error('large saved pair unexpectedly searched for a cave') end
- dofile(root..'init.lua')
- callbacks.place(at(a,7,9,0),{name='default:obsidian'},player)
- assert(core.get_node(at(b,6,8,0)).name=='portals:portal_up','large saved frame not relit')
- assert(core.get_meta(at(b,6,8,0)):get_int('height')==10,'reconnection lost size')
- -- Restore tracking from metadata after another mod reload.
- dofile(root..'init.lua')
- callbacks.lbm(at(a,6,8,0))
- clock=clock+5000000
- object_pos=at(a,6,8,0)
- objects={object}
- callbacks.step(0.1)
- assert(key(object_pos)==key(at(b,6,8,0)),'loaded large portal lost dimensions')
- objects={}
- PcgRandom=original_rng
- mapgen_limit=31000
- print('PASS: variable rectangles, area-scaled distance, all completion edges, limits, full opening transfers, cleanup, reconnection and reload')
+    local original_rng = PcgRandom
+    PcgRandom = function()
+        return {
+            next = function(_, lo, hi)
+                if lo == 0 and hi == 1 then
+                    return 1
+                end
+                if lo < 0 and hi == -lo then
+                    return 0
+                end
+                return lo
+            end,
+        }
+    end
+    local function sized_pair(w, h, axis, last, options)
+        options = options or {}
+        nodes, metas, timers = {}, {}, {}
+        saved_pairs = {}
+        persist_pairs = true
+        objects = {}
+        mapgen_limit = 100000
+        core.settings.get = function(_, name)
+            if name == 'portals_search_attempts' then
+                return '1'
+            end
+            if name == 'portals_y_offset' then
+                return '30750'
+            end
+            if name == 'portals_max_frame_size' then
+                return options.limit and tostring(options.limit) or nil
+            end
+            return nil
+        end
+        core.settings.get_bool = function(_, _, fallback)
+            return fallback
+        end
+        local source = {
+            x = 0,
+            y = 0,
+            z = 0,
+        }
+        local floor = {
+            x = 20,
+            y = -30900,
+            z = 20,
+        }
+        local target = vector.offset(floor, 0, 1, 0)
+        local function at(p, u, v, d)
+            return vector.offset(p, axis == 0 and u or d or 0, v, axis == 1 and u or d or 0)
+        end
+        for u = 0, w - 1 do
+            for v = 0, h - 1 do
+                local edge = u == 0 or u == w - 1 or v == 0 or v == h - 1
+                core.set_node(at(source, u, v, 0), {
+                    name = edge and 'default:obsidian' or 'air',
+                })
+            end
+        end
+        for u = 0, w - 1 do
+            for d = -1, 1 do
+                core.set_node(at(floor, u, 0, d), {
+                    name = 'default:stone',
+                })
+            end
+        end
+        if options.blocked then
+            core.set_node(at(source, 1, 1, 0), {
+                name = 'default:stone',
+            })
+        end
+        core.is_protected = function(p)
+            return options.protected and key(p) == key(at(source, w - 1, h - 1, 0)) or false
+        end
+        local requests = {}
+        core.emerge_area = function(a, b, f)
+            requests[#requests + 1] = {
+                a = a,
+                b = b,
+            }
+            f(a, 4, 0)
+        end
+        core.find_nodes_in_area = function()
+            return {}
+        end
+        core.find_nodes_in_area_under_air = function()
+            return {floor}
+        end
+        dofile(root .. 'init.lua')
+        local placed = at(source, last[1], last[2], 0)
+        callbacks.place(placed, {
+            name = 'default:obsidian',
+        }, player)
+        return source, target, at, requests
+    end
+    for _, size in ipairs({{3, 3}, {4, 5}, {6, 5}, {5, 8}, {12, 4}, {4, 12}, {64, 3}}) do
+        local w, h = size[1], size[2]
+        for axis = 0, 1 do
+            local a, b, at, requests = sized_pair(w, h, axis, {w - 1, h - 1})
+            assert(#requests == 1, 'size not detected: ' .. w .. 'x' .. h)
+            local source_meta = core.get_meta(at(a, 1, 1, 0))
+            assert(source_meta:get_int('width') == w and source_meta:get_int('height') == h, 'source dimensions missing')
+            for u = 0, w - 1 do
+                for v = 0, h - 1 do
+                    local edge = u == 0 or u == w - 1 or v == 0 or v == h - 1
+                    assert(core.get_node(at(b, u, v, 0)).name ==
+                               (edge and 'default:obsidian_block' or 'portals:portal_up'),
+                        'destination size/material mismatch')
+                end
+            end
+            local distance = math.min(100000, math.floor(10000 * (w - 2) * (h - 2) / 6 + 0.5))
+            local offset_axis = axis == 0 and 'z' or 'x'
+            assert(requests[1].a[offset_axis] + 10 == distance, 'distance did not scale with opening area')
+            local span_axis = axis == 0 and 'x' or 'z'
+            assert(requests[1].b[span_axis] >= w - 1, 'emerge bounds missed frame width')
+            assert(requests[1].b.y >= -31000 + h - 1, 'emerge bounds missed frame height')
+        end
+    end
+    -- All four corners and side-center placements can complete a large frame.
+    for _, last in ipairs({{0, 0}, {5, 0}, {0, 6}, {5, 6}, {0, 3}, {5, 3}, {2, 0}, {2, 6}}) do
+        local _, _, _, requests = sized_pair(6, 7, 0, last)
+        assert(#requests == 1, 'completion node not detected: ' .. last[1] .. ',' .. last[2])
+    end
+    local _, _, _, requests = sized_pair(5, 6, 0, {0, 0}, {
+        blocked = true,
+    })
+    assert(#requests == 0, 'nonrectangular/obstructed opening activated')
+    local _, _, _, requests = sized_pair(6, 7, 1, {0, 0}, {
+        protected = true,
+    })
+    assert(#requests == 0, 'large protected frame activated')
+    local _, _, _, requests = sized_pair(9, 5, 0, {0, 0}, {
+        limit = 8,
+    })
+    assert(#requests == 0, 'oversized frame ignored configured limit')
+    local _, _, _, requests = sized_pair(9, 5, 0, {0, 0}, {
+        limit = 9,
+    })
+    assert(#requests == 1, 'configured size increase ignored')
+    -- Travel through the far upper corner, beyond the former fixed-size bounds.
+    local a, b, at = sized_pair(8, 10, 1, {7, 9})
+    local object_pos = at(a, 6, 8, 0)
+    local object = {
+        is_player = function()
+            return true
+        end,
+        get_player_name = function()
+            return 'builder'
+        end,
+        get_pos = function()
+            return object_pos
+        end,
+        get_properties = function()
+            return {}
+        end,
+        get_attach = function()
+        end,
+        get_velocity = function()
+            return {
+                x = 0,
+                y = 0,
+                z = 0,
+            }
+        end,
+        set_pos = function(_, p)
+            object_pos = p
+        end,
+    }
+    objects = {object}
+    local get_objects = core.get_objects_inside_radius
+    core.get_objects_inside_radius = function(center, radius)
+        local dx, dy, dz = object_pos.x - center.x, object_pos.y - center.y, object_pos.z - center.z
+        return dx * dx + dy * dy + dz * dz <= radius * radius and objects or {}
+    end
+    callbacks.step(0.1)
+    assert(key(object_pos) == key(at(b, 6, 8, 0)), 'far-corner travel failed or vertical offset lost')
+    core.get_objects_inside_radius = get_objects
+    objects = {}
+    local liquid_source, liquid_dest = at(a, 6, 8, 1), at(b, 6, 7, -1)
+    core.set_node(liquid_source, {
+        name = 'test:flow',
+        param2 = 6,
+    })
+    callbacks.step(0.1)
+    assert(core.get_node(liquid_source).name == 'air' and core.get_node(liquid_dest).name == 'test:flow',
+        'far-corner liquid transfer failed')
+    -- Break the large frame and verify cleanup/reconnection covers every cell.
+    core.remove_node(at(a, 7, 9, 0))
+    callbacks.abm(at(a, 1, 1, 0))
+    assert(core.get_node(at(a, 6, 8, 0)).name == 'air', 'large source cleanup missed far corner')
+    callbacks.abm(at(b, 1, 1, 0))
+    assert(core.get_node(at(b, 6, 8, 0)).name == 'air', 'large destination cleanup missed far corner')
+    core.set_node(at(a, 7, 9, 0), {
+        name = 'default:obsidian',
+    })
+    core.find_nodes_in_area_under_air = function()
+        error('large saved pair unexpectedly searched for a cave')
+    end
+    dofile(root .. 'init.lua')
+    callbacks.place(at(a, 7, 9, 0), {
+        name = 'default:obsidian',
+    }, player)
+    assert(core.get_node(at(b, 6, 8, 0)).name == 'portals:portal_up', 'large saved frame not relit')
+    assert(core.get_meta(at(b, 6, 8, 0)):get_int('height') == 10, 'reconnection lost size')
+    -- Restore tracking from metadata after another mod reload.
+    dofile(root .. 'init.lua')
+    callbacks.lbm(at(a, 6, 8, 0))
+    clock = clock + 5000000
+    object_pos = at(a, 6, 8, 0)
+    objects = {object}
+    callbacks.step(0.1)
+    assert(key(object_pos) == key(at(b, 6, 8, 0)), 'loaded large portal lost dimensions')
+    objects = {}
+    PcgRandom = original_rng
+    mapgen_limit = 31000
+    print(
+        'PASS: variable rectangles, area-scaled distance, all completion edges, limits, full opening transfers, cleanup, reconnection and reload')
+end
+
+-- Horizontal X/Z frames search only along Y and preserve their full footprint.
+do
+    local function flat_pair(w, h, upward, options)
+        options = options or {}
+        nodes, metas, timers, saved_pairs = {}, {}, {}, {}
+        objects = {}
+        persist_pairs = true
+        mapgen_limit = 100000
+        core.settings.get = function(_, name)
+            if name == 'portals_search_attempts' then
+                return '1'
+            end
+            if name == 'portals_y_offset' then
+                return '10000'
+            end
+            return nil
+        end
+        core.settings.get_bool = function(_, _, fallback)
+            return fallback
+        end
+        local a = {
+            x = 25,
+            y = upward and -10000 or 100,
+            z = 35,
+        }
+        local b = {
+            x = a.x,
+            y = a.y + (upward and 10000 or -10000),
+            z = a.z,
+        }
+        local material = upward and 'default:obsidian_block' or 'default:obsidian'
+        local function at(p, u, v, d)
+            return vector.offset(p, u, d or 0, v)
+        end
+        for u = 0, w - 1 do
+            for v = 0, h - 1 do
+                local edge = u == 0 or u == w - 1 or v == 0 or v == h - 1
+                core.set_node(at(a, u, v), {
+                    name = edge and material or 'air',
+                })
+                core.set_node(at(b, u, v, -4), {
+                    name = 'default:stone',
+                })
+            end
+        end
+        if options.obstruction then
+            core.set_node(at(b, w - 2, h - 2, 2), {
+                name = 'default:stone',
+            })
+        end
+        core.is_protected = function(q)
+            if options.protected then
+                return key(q) == key(at(b, w - 2, h - 2, 2))
+            end
+            return false
+        end
+        local requests = {}
+        core.emerge_area = function(lo, hi, f)
+            requests[#requests + 1] = {
+                a = lo,
+                b = hi,
+            }
+            f(lo, 4, 0)
+        end
+        core.find_nodes_in_area = function(lo, hi)
+            assert(lo.x == a.x and hi.x == a.x and lo.z == a.z and hi.z == a.z, 'flat frame shifted horizontal search')
+            return {}
+        end
+        core.find_nodes_in_area_under_air = function(lo, hi)
+            assert(lo.x == a.x and hi.x == a.x and lo.z == a.z and hi.z == a.z, 'flat frame jittered floor column')
+            return {at(b, options.wrong_column and 1 or 0, 0, -4)}
+        end
+        dofile(root .. 'init.lua')
+        callbacks.place(at(a, w - 1, h - 1), {
+            name = material,
+        }, player)
+        return a, b, at, requests
+    end
+    for _, size in ipairs({{3, 3}, {4, 5}, {6, 7}, {9, 4}}) do
+        local w, h = size[1], size[2]
+        for _, upward in ipairs({false, true}) do
+            local a, b, at, requests = flat_pair(w, h, upward)
+            assert(#requests == 1, 'horizontal frame not detected')
+            local meta = core.get_meta(at(a, 1, 1))
+            assert(meta:get_int('axis') == 2 and meta:get_int('width') == w and meta:get_int('height') == h,
+                'flat metadata wrong')
+            assert(meta:get_string('target') == key(b), 'flat link has horizontal displacement')
+            assert(requests[1].a.x == a.x - 4 and requests[1].a.z == a.z - 4, 'flat load minimum wrong')
+            assert(requests[1].b.x == a.x + w + 3 and requests[1].b.z == a.z + h + 3, 'flat load footprint incomplete')
+            for u = 0, w - 1 do
+                for v = 0, h - 1 do
+                    local edge = u == 0 or u == w - 1 or v == 0 or v == h - 1
+                    local name = core.get_node(at(b, u, v)).name
+                    assert(name == (edge and (upward and 'default:obsidian' or 'default:obsidian_block') or
+                               (upward and 'portals:portal' or 'portals:portal_up')),
+                        'flat destination geometry/material wrong')
+                    if not edge then
+                        assert(core.get_node(at(b, u, v)).param2 == 4, 'surface not rotated flat')
+                    end
+                end
+            end
+        end
+    end
+    local a, b, at = flat_pair(6, 7, false, {
+        obstruction = true,
+    })
+    assert(core.get_node(at(a, 1, 1)).name == 'air', 'flat cave with obstructed headroom accepted')
+    local a, b, at = flat_pair(6, 7, false, {
+        protected = true,
+    })
+    assert(core.get_node(at(a, 1, 1)).name == 'air', 'flat protected cave accepted')
+    local a, b, at = flat_pair(6, 7, false, {
+        wrong_column = true,
+    })
+    assert(core.get_node(at(a, 1, 1)).name == 'air', 'flat destination shifted to a different column')
+    local a, b, at = flat_pair(6, 7, false)
+    local pos = at(a, 3.2, 4.1, 0.3)
+    local object = {
+        is_player = function()
+            return true
+        end,
+        get_player_name = function()
+            return 'builder'
+        end,
+        get_pos = function()
+            return pos
+        end,
+        get_properties = function()
+            return {}
+        end,
+        get_attach = function()
+        end,
+        get_velocity = function()
+            return {
+                x = 0,
+                y = -2,
+                z = 0,
+            }
+        end,
+        set_pos = function(_, q)
+            pos = q
+        end,
+    }
+    objects = {object}
+    callbacks.step(0.1)
+    assert(pos.x == b.x + 3.2 and pos.z == b.z + 4.1 and pos.y < b.y - 1.75,
+        'falling player did not exit below flat plane')
+    local saved_pos = copy(pos)
+    callbacks.step(0.1)
+    assert(key(pos) == key(saved_pos), 'horizontal portal bounced object back')
+    clock = clock + 5000000
+    pos = at(b, 3.2, 4.1, -0.3)
+    callbacks.step(0.1)
+    assert(pos.x == a.x + 3.2 and pos.z == a.z + 4.1 and pos.y > a.y + 0.6,
+        'rising player did not exit above flat plane')
+    -- Destination changes after linking must not place a player inside solid nodes.
+    clock = clock + 5000000
+    pos = at(a, 1, 1, 0.3)
+    local obstacle = at(b, 1, 1, -2)
+    core.set_node(obstacle, {
+        name = 'default:stone',
+    })
+    callbacks.step(0.1)
+    assert(pos.y > a.y, 'blocked horizontal exit teleported player')
+    core.remove_node(obstacle)
+    callbacks.step(0.1)
+    assert(pos.y < b.y, 'cleared horizontal exit did not resume traversal')
+    objects = {}
+    local from, to = at(a, 4, 5, 1), at(b, 4, 5, -2)
+    core.set_node(from, {
+        name = 'test:flow',
+        param2 = 5,
+    })
+    core.get_meta(from):set_string('payload', 'flat liquid state')
+    callbacks.step(0.1)
+    assert(core.get_node(from).name == 'air' and core.get_node(to).name == 'test:flow',
+        'horizontal liquid mapping wrong')
+    assert(core.get_meta(to):get_string('payload') == 'flat liquid state', 'horizontal liquid metadata lost')
+    -- Opposite-face-minus-one-down would hit the surface from below: air-only
+    -- transfer must leave that liquid alone and preserve the portal cell.
+    from = at(a, 2, 2, -1)
+    core.set_node(from, {
+        name = 'test:water',
+    })
+    callbacks.step(0.1)
+    assert(core.get_node(from).name == 'test:water' and core.get_node(at(b, 2, 2)).name == 'portals:portal_up',
+        'flat liquid overwrote surface')
+    -- Saved pair geometry remains flat across cleanup, repair and mod reload.
+    core.remove_node(at(a, 5, 6))
+    callbacks.abm(at(a, 1, 1))
+    callbacks.abm(at(b, 1, 1))
+    assert(core.get_node(at(a, 4, 5)).name == 'air' and core.get_node(at(b, 4, 5)).name == 'air',
+        'flat cleanup missed opening')
+    core.set_node(at(a, 5, 6), {
+        name = 'default:obsidian',
+    })
+    core.find_nodes_in_area_under_air = function()
+        error('flat saved pair did not reconnect')
+    end
+    dofile(root .. 'init.lua')
+    callbacks.place(at(a, 5, 6), {
+        name = 'default:obsidian',
+    }, player)
+    assert(core.get_node(at(b, 4, 5)).name == 'portals:portal_up' and core.get_node(at(b, 4, 5)).param2 == 4,
+        'flat saved partner not relit')
+    dofile(root .. 'init.lua')
+    callbacks.lbm(at(a, 4, 5))
+    clock = clock + 5000000
+    pos = at(a, 1, 1, 0.3)
+    objects = {object}
+    callbacks.step(0.1)
+    assert(pos.y < b.y, 'flat loaded portal did not restore traversal')
+    objects = {}
+    mapgen_limit = 31000
+    print(
+        'PASS: horizontal detection, exact X/Z, up/down search, dimensions, facing, clearance, traversal sides, fluids, repair and reload')
 end

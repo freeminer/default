@@ -9,7 +9,7 @@ end
 -- skipped without an emerge completion callback.
 local map_limit = math.floor(assert(tonumber(api.get_mapgen_setting("mapgen_limit")),
     "portals requires the mapgen_limit mapgen setting") / 16) * 16
-local y_offset = setting("portals_y_offset", 30000, 1, map_limit * 2)
+local y_offset = setting("portals_y_offset", 10000, 1, map_limit * 2)
 local xz_offset = setting("portals_xz_offset", 10000, 0, map_limit)
 local y_radius = setting("portals_y_radius", 250, 2, map_limit)
 local radius = setting("portals_search_radius", 128, 16, 1024)
@@ -51,6 +51,9 @@ local cooldown = setmetatable({}, {
     __mode = "k",
 })
 local function point(p, axis, u, v, depth)
+    if axis == 2 then
+        return {x = p.x + u, y = p.y + (depth or 0), z = p.z + v}
+    end
     return {
         x = p.x + (axis == 0 and u or depth or 0),
         y = p.y + v,
@@ -63,7 +66,19 @@ local function sized(p, w, h)
     p.width, p.height = w, h
     return p
 end
+local function vertical_span(p, axis)
+    return axis == 2 and 1 or height(p)
+end
+local function facing(axis) return axis == 2 and 4 or axis end
+local function frame_min(p, axis, pad)
+    if axis == 2 then pad = math.max(pad, 4) end
+    return vector.offset(p, -pad, -pad, -pad)
+end
 local function frame_max(p, axis, dimensions, pad)
+    if axis == 2 then
+        pad = math.max(pad, 4)
+        return vector.offset(p, width(dimensions) - 1 + pad, pad, height(dimensions) - 1 + pad)
+    end
     return vector.offset(p, axis == 0 and width(dimensions) - 1 + pad or pad,
         height(dimensions) - 1 + pad, axis == 1 and width(dimensions) - 1 + pad or pad)
 end
@@ -123,8 +138,8 @@ local function reusable_frame(p, axis, source)
 end
 local function frame_accessible(p, axis, owner)
     for u = 0, width(p) - 1 do
-        for v = -1, height(p) - 1 do
-            for d = -1, 1 do
+        for v = axis == 2 and 0 or -1, height(p) - 1 do
+            for d = axis == 2 and -4 or -1, axis == 2 and 3 or 1 do
                 if api.is_protected(point(p, axis, u, v, d), owner) then
                     return false
                 end
@@ -154,7 +169,7 @@ local function build(p, axis, target, owner, material)
         if not edge or not is_frame(api.get_node(q).name) then
             api.set_node(q, {
                 name = edge and (material or frame) or surface,
-                param2 = axis == 0 and 0 or 1,
+                param2 = facing(axis),
             })
         end
         if not edge then
@@ -175,22 +190,17 @@ end
 -- both exits. Never excavate, overwrite a build, or place in a protected volume.
 local function cave_site(p, axis, owner, upward)
     for u = 0, width(p) - 1 do
-        for d = -1, 1 do
-            for v = -1, height(p) - 1 do
+        for v = axis == 2 and 0 or -1, height(p) - 1 do
+            for d = axis == 2 and -4 or -1, axis == 2 and 3 or 1 do
                 local q = point(p, axis, u, v, d)
-                if api.is_protected(q, owner) then
-                    return false
-                end
+                if api.is_protected(q, owner) then return false end
                 local node = api.get_node_or_nil(q)
                 local def = node and api.registered_nodes[node.name]
-                if not def then
-                    return false
-                end
-                if v == -1 then
-                    if not def.walkable or def.damage_per_second and def.damage_per_second > 0 or not upward and
-                        api.get_item_group(node.name, "stone") == 0 then
-                        return false
-                    end
+                if not def then return false end
+                local footing = axis == 2 and d == -4 or axis ~= 2 and v == -1
+                if footing then
+                    if not def.walkable or (def.damage_per_second or 0) > 0
+                        or not upward and api.get_item_group(node.name, "stone") == 0 then return false end
                 elseif node.name ~= "air" then
                     return false
                 end
@@ -215,7 +225,7 @@ local function ignite(p, axis, owner)
     end
     local random = PcgRandom(seed)
     -- Offset along the portal face normal: XY frames use Z, ZY frames use X.
-    local distance = math.min(map_limit, math.floor(xz_offset * (width(p) - 2) * (height(p) - 2) / 6 + 0.5))
+    local distance = axis == 2 and 0 or math.min(map_limit, math.floor(xz_offset * (width(p) - 2) * (height(p) - 2) / 6 + 0.5))
     local offset = random:next(0, 1) == 0 and -distance or distance
     local dx = axis == 1 and offset or 0
     local dz = axis == 0 and offset or 0
@@ -242,8 +252,8 @@ local function ignite(p, axis, owner)
             end
         end
     end
-    local ymin = math.max(-map_limit + 1, target_y - y_radius)
-    local ymax = math.min(map_limit, target_y + y_radius)
+    local ymin = math.max(-map_limit + (axis == 2 and 4 or 1), target_y - y_radius)
+    local ymax = math.min(map_limit - (axis == 2 and 3 or 0), target_y + y_radius)
     local job = {}
     pending[key] = job
     local trial = 0
@@ -277,7 +287,7 @@ local function ignite(p, axis, owner)
         if not active() or not source_ready() then
             return
         end
-        if ymax - ymin < height(p) - 1 then
+        if ymax - ymin < vertical_span(p, axis) - 1 then
             finish("cannot search " .. y_offset .. " nodes " .. direction ..
                        " this frame: the target range is outside the world Y limits.")
             return
@@ -288,12 +298,13 @@ local function ignite(p, axis, owner)
             return
         end
         local center = {
-            x = target_x + random:next(-radius, radius),
-            y = random:next(ymin, ymax - height(p) + 1),
-            z = target_z + random:next(-radius, radius),
+            x = target_x + (axis == 2 and 0 or random:next(-radius, radius)),
+            y = random:next(ymin, ymax - vertical_span(p, axis) + 1),
+            z = target_z + (axis == 2 and 0 or random:next(-radius, radius)),
         }
-        local minp = emerge_bounds(vector.offset(center, -8, 0, -8))
-        local maxp = emerge_bounds(vector.offset(center, 8, math.min(31, ymax - center.y), 8))
+        local spread = axis == 2 and 0 or 8
+        local minp = emerge_bounds(vector.offset(center, -spread, 0, -spread))
+        local maxp = emerge_bounds(vector.offset(center, spread, math.min(31, ymax - center.y), spread))
         local complete = false
         local region_trial = trial
         local function inspect()
@@ -306,7 +317,7 @@ local function ignite(p, axis, owner)
             -- left frame node is itself obsidian, so test each found node as an origin.
             for _, old in ipairs(api.find_nodes_in_area(minp, maxp, {frame, down_frame})) do
                 sized(old, width(p), height(p))
-                if not vector.equals(old, p) and old.y >= ymin and old.y + height(p) - 1 <= ymax and reusable_frame(old, axis, p) and
+                if not vector.equals(old, p) and (axis ~= 2 or old.x == target_x and old.z == target_z) and old.y >= ymin and old.y + vertical_span(p, axis) - 1 <= ymax and reusable_frame(old, axis, p) and
                     frame_accessible(old, axis, owner) then
                     build(old, axis, p, owner)
                     build(p, axis, old, owner)
@@ -314,10 +325,15 @@ local function ignite(p, axis, owner)
                     return
                 end
             end
-            local floors = api.find_nodes_in_area_under_air(minp, maxp, floor_names)
+            local floor_min, floor_max = minp, maxp
+            if axis == 2 then
+                floor_min, floor_max = vector.offset(minp, 0, -4, 0), vector.offset(maxp, 0, -4, 0)
+            end
+            local floors = api.find_nodes_in_area_under_air(floor_min, floor_max, floor_names)
             for _, floor in ipairs(floors) do
-                local dest = sized(vector.offset(floor, 0, 1, 0), width(p), height(p))
-                if dest.y >= ymin and dest.y + height(p) - 1 <= ymax and cave_site(dest, axis, owner, upward) then
+                local dest = sized(vector.offset(floor, 0, axis == 2 and 4 or 1, 0), width(p), height(p))
+                if (axis ~= 2 or dest.x == target_x and dest.z == target_z)
+                    and dest.y >= ymin and dest.y + vertical_span(p, axis) - 1 <= ymax and cave_site(dest, axis, owner, upward) then
                     build(dest, axis, p, owner, destination_material)
                     build(p, axis, dest, owner)
                     finish((upward and "linked to upper portal at " or "linked to cave at ") .. api.pos_to_string(dest))
@@ -330,7 +346,7 @@ local function ignite(p, axis, owner)
                 api.after(2, inspect)
             end
         end
-        api.emerge_area(emerge_bounds(vector.offset(minp, -2, -2, -2)), emerge_bounds(frame_max(maxp, axis, p, 1)),
+        api.emerge_area(emerge_bounds(frame_min(minp, axis, 2)), emerge_bounds(frame_max(maxp, axis, p, 1)),
             function(_, _, remaining)
                 if remaining == 0 then
                     complete = true
@@ -376,7 +392,7 @@ local function ignite(p, axis, owner)
             build(p, axis, target, owner)
             finish("reconnected to portal at " .. api.pos_to_string(target))
         end
-        api.emerge_area(emerge_bounds(vector.offset(target, -2, -2, -2)), emerge_bounds(frame_max(target, axis, target, 2)),
+        api.emerge_area(emerge_bounds(frame_min(target, axis, 2)), emerge_bounds(frame_max(target, axis, target, 2)),
             function(_, _, remaining)
                 if remaining == 0 then
                     complete = true
@@ -467,7 +483,7 @@ end
 api.register_on_placenode(function(pos, node, placer)
     if not is_frame(node.name) or not placer or not placer:is_player() then return end
     local owner = placer:get_player_name()
-    for axis = 0, 1 do
+    for axis = 0, 2 do
         for du = -1, 1 do
             for dv = -1, 1 do
                 if du ~= 0 or dv ~= 0 then
@@ -555,7 +571,8 @@ local function move_liquids(p, axis, target, owner, now)
                 local def = node and api.registered_nodes[node.name]
                 if def and (def.liquidtype == "source" or def.liquidtype == "flowing") and
                     (liquid_arrivals[api.pos_to_string(source)] or 0) <= now then
-                    local dest = point(target, axis, u, v - 1, -side)
+                    local dest = axis == 2 and point(target, axis, u, v, -side - 1)
+                        or point(target, axis, u, v - 1, -side)
                     local dest_node = api.get_node_or_nil(dest)
                     if dest_node and dest_node.name == "air" and not api.is_protected(source, owner) and
                         not api.is_protected(dest, owner) then
@@ -567,6 +584,20 @@ local function move_liquids(p, axis, target, owner, now)
             end
         end
     end
+end
+
+local function horizontal_exit_clear(pos, props, player)
+    local box = props and props.collisionbox or (player and {-0.3, 0, -0.3, 0.3, 1.75, 0.3}
+        or {-0.3, -0.3, -0.3, 0.3, 0.3, 0.3})
+    for x = math.floor(pos.x + box[1] + 0.500001), math.floor(pos.x + box[4] + 0.499999) do
+        for y = math.floor(pos.y + box[2] + 0.500001), math.floor(pos.y + box[5] + 0.499999) do
+            for z = math.floor(pos.z + box[3] + 0.500001), math.floor(pos.z + box[6] + 0.499999) do
+                local node = api.get_node_or_nil({x = x, y = y, z = z})
+                if not node or node.name ~= "air" and not is_field(node.name) then return false end
+            end
+        end
+    end
+    return true
 end
 
 local loading = {}
@@ -613,7 +644,7 @@ local function process_portal(pos)
         local requested = api.get_us_time()
         if not loading[key] or requested - loading[key] > 10000000 then
             loading[key] = requested
-            api.emerge_area(emerge_bounds(vector.offset(target, -2, -2, -2)),
+            api.emerge_area(emerge_bounds(frame_min(target, axis, 2)),
                 emerge_bounds(frame_max(target, axis, target, 2)), function(_, _, remaining)
                     if remaining == 0 and loading[key] == requested then
                         loading[key] = nil
@@ -639,16 +670,24 @@ local function process_portal(pos)
         local entity = not player and object:get_luaentity()
         local props = object:get_properties()
         local q = object:get_pos()
-        local u = q and (axis == 0 and q.x - p.x or q.z - p.z)
-        local d = q and (axis == 0 and q.z - p.z or q.x - p.x)
+        local u = q and (axis == 1 and q.z - p.z or q.x - p.x)
+        local v = q and (axis == 2 and q.z - p.z or q.y - p.y)
+        local d = q and (axis == 2 and q.y - p.y or axis == 0 and q.z - p.z or q.x - p.x)
         if q and (player or entity and (entity.name == "__builtin:item" or props and props.physical)) and
-            not object:get_attach() and (cooldown[object] or 0) < now and u >= 0.5 and u <= width(p) - 1.5 and q.y >= p.y + 0.5 and
-            q.y <= p.y + height(p) - 1.5 and math.abs(d) <= 0.6 then
+            not object:get_attach() and (cooldown[object] or 0) < now and u >= 0.5 and u <= width(p) - 1.5 and v >= 0.5 and
+            v <= height(p) - 1.5 and math.abs(d) <= 0.6 then
             local name = player and object:get_player_name() or owner
-            local arrival = point(target, axis, u, q.y - p.y, 0)
-            if not api.is_protected(q, name) and not api.is_protected(arrival, name) then
+            local velocity = object:get_velocity()
+            local exit_depth = 0
+            if axis == 2 then
+                local from_above = d > 0 or d == 0 and (velocity and velocity.y or 0) <= 0
+                local top = props and props.collisionbox and props.collisionbox[5] or (player and 1.75 or 0.3)
+                exit_depth = from_above and -(math.max(0, top) + 0.6) or 0.75
+            end
+            local arrival = point(target, axis, u, v, exit_depth)
+            if not api.is_protected(q, name) and not api.is_protected(arrival, name)
+                and (axis ~= 2 or horizontal_exit_clear(arrival, props, player)) then
                 cooldown[object] = now + 4
-                local velocity = object:get_velocity()
                 object:set_pos(arrival)
                 if not player and velocity then
                     object:set_velocity(velocity)

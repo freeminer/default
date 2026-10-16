@@ -1,7 +1,8 @@
 # Deep cave portals
 
-Build a vertical rectangular frame of obsidian or obsidian blocks, including all
-four corners, with an empty rectangular opening. Both X and Z orientations work.
+Build a rectangular frame of obsidian or obsidian blocks, including all four
+corners, with an empty rectangular opening. Frames can stand vertically in X/Y
+or Z/Y, or lie flat in X/Z.
 Frames can be **3×3 through 64×64 outer nodes** by default; change
 `portals_max_frame_size` to allow larger frames (up to 1024 per side). Placing the
 final frame block starts the search and lights both ends when a destination is
@@ -9,6 +10,17 @@ found. The generated destination matches the source frame's dimensions.
 Generated cave frames use `default:obsidian_block`; upper frames use
 `default:obsidian`. Reconnecting preserves existing materials. No ignition item
 or Nether mod is required. Old 4×5 portals and their saved links remain valid.
+
+Flat frames search at the **same X/Z coordinates**, using only the configured
+vertical offset and vertical search range. Horizontal offsets, area-based distance,
+and X/Z search jitter do not apply to flat frames. The destination ring also lies
+flat and matches the source footprint. Generated rings leave three clear air
+layers below and above their plane, with natural solid ground four nodes below,
+so an object can safely emerge on either face. Blocked exits refuse object travel.
+Objects entering from above emerge below the other ring; objects entering from
+below emerge above it. Liquids follow the same opposite-face mapping plus one
+node down in world Y; if that position is a portal cell (entry from below), the
+air-only rule leaves the liquid in place instead of replacing the portal.
 
 Upward-travel surfaces have a slightly cooler violet-blue tint; downward-travel
 surfaces remain purple. Existing surfaces update when their portals are processed.
@@ -36,7 +48,7 @@ name (the builder's name for items). Protection is provided by the server's
 Settings in `luanti.conf` (also available in the settings menu):
 
 ```
-portals_y_offset = 10000
+portals_y_offset = 30000
 portals_y_radius = 250
 portals_xz_offset = 10000
 portals_search_radius = 128
@@ -45,13 +57,13 @@ portals_max_frame_size = 64
 portals_search_timeout = 180
 ```
 
-New obsidian-frame searches center on **source frame Y minus 10000**;
-obsidian-block frames search at **source frame Y plus 10000**, within ±250 nodes.
+New obsidian-frame searches center on **source frame Y minus 30000**;
+obsidian-block frames search at **source frame Y plus 30000**, within ±250 nodes.
 Generated lower frames use obsidian blocks; generated upper frames use obsidian.
 Upper destinations can stand on safe solid ground such as soil, with clear
 space for the frame. Lower destinations still require stone cave footing.
-For example, an obsidian frame at Y=1000 searches near Y=-9000; an
-obsidian-block frame at Y=-9000 searches near Y=1000. The offset and vertical
+For example, an obsidian frame at Y=1000 searches near Y=-29000; an
+obsidian-block frame at Y=-29000 searches near Y=1000. The offset and vertical
 radius are configurable. World bounds come only from the server's `mapgen_limit`,
 including worlds larger than 31000 nodes. The old `portals_y_min` / `portals_y_max`
 settings are no longer used. A target entirely outside the world bounds fails with
