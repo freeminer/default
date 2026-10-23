@@ -1,0 +1,10 @@
+# Render generated Arnis decal objects when no native mod sign is used.
+# Disable to reduce object rendering cost; native mod signs stay visible.
+# Applies to existing worlds after restart. Saved decals are kept and can be
+# displayed again by re-enabling this setting.
+arnis_decal_fallback (Render Arnis decal fallback) bool true
+
+# Texture resolution per generated decal tile: high=128, medium=64, low=32.
+# Lower values reduce GPU texture size at the expense of text readability.
+# Applies after restart, including saved decals; original image data is retained.
+arnis_decal_quality (Arnis decal texture quality) enum high high,medium,low

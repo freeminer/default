@@ -1,0 +1,13 @@
+# Irrlicht OBJ loader negates X and reverses face winding.
+# Loaded geometry and UVs match the cube front (-Z), with two triangles.
+v 0.5 -0.5 -0.0125
+v 0.5 0.5 -0.0125
+v -0.5 0.5 -0.0125
+v -0.5 -0.5 -0.0125
+vt 0 0
+vt 0 1
+vt 1 1
+vt 1 0
+vn 0 0 -1
+f 3/3/1 2/2/1 1/1/1
+f 1/1/1 4/4/1 3/3/1

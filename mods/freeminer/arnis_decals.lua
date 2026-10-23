@@ -1,4 +1,7 @@
 local entity_name = "freeminer:arnis_decal_display"
+local fallback_enabled = minetest.settings:get_bool("arnis_decal_fallback", true)
+local quality = minetest.settings:get("arnis_decal_quality") or "low"
+local texture_size = ({high = 128, medium = 64, low = 32})[quality] or 128
 
 local function rotation_for(facing, turn)
 	local r = (turn % 8) * math.pi / 4
@@ -30,24 +33,40 @@ minetest.register_node("freeminer:arnis_decal_frame", {
 
 minetest.register_entity(entity_name, {
 	initial_properties = {
-		visual = "cube",
-		visual_size = {x = 1, y = 1, z = 0.025},
-		textures = {"default_cloud.png", "default_cloud.png", "default_cloud.png",
-			"default_cloud.png", "default_cloud.png", "default_cloud.png"},
+		visual = "mesh",
+		mesh = "fm_arnis_decal.obj",
+		visual_size = {x = 1, y = 1, z = 1},
+		textures = {"default_cloud.png"},
+		backface_culling = true,
 		physical = false,
 		pointable = false,
 		static_save = true,
 	},
 	on_activate = function(self, staticdata)
+		if not fallback_enabled then
+			self.object:remove()
+			return
+		end
 		local data = minetest.deserialize(staticdata)
 		if type(data) ~= "table" or not data.texture then
 			self.object:remove()
 			return
 		end
 		self.data = data
+		-- Retain the original texture in staticdata so quality can be restored.
+		local texture = data.texture
+		if texture_size < 128 then
+			texture = texture .. "^[resize:" .. texture_size .. "x" .. texture_size
+		end
+		-- Floor/ceiling decals retain their existing two-sided orientation.
+		local horizontal = data.facing == 0 or data.facing == 1
 		self.object:set_properties({
-			textures = {data.texture, data.texture, data.texture,
-				data.texture, data.texture, data.texture},
+			visual = horizontal and "cube" or "mesh",
+			mesh = "fm_arnis_decal.obj",
+			visual_size = {x = 1, y = 1, z = horizontal and 0.025 or 1},
+			backface_culling = true,
+			textures = horizontal and {texture, texture, texture, texture, texture, texture}
+				or {texture},
 			glow = data.glow and minetest.LIGHT_MAX or 0,
 		})
 		self.object:set_rotation(rotation_for(data.facing or 2, data.rotation or 0))
@@ -58,6 +77,9 @@ minetest.register_entity(entity_name, {
 })
 
 local function spawn_display(pos, node)
+	if not fallback_enabled then
+		return
+	end
 	for _, object in ipairs(minetest.get_objects_inside_radius(pos, 0.2)) do
 		local entity = object:get_luaentity()
 		if entity and entity.name == entity_name then
