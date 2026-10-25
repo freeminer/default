@@ -1,9 +1,10 @@
+# Entity meshes use engine units: 10 units = one node.
 # Irrlicht OBJ loader negates X and reverses face winding.
 # Loaded geometry and UVs match the cube front (-Z), with two triangles.
-v 0.5 -0.5 -0.0125
-v 0.5 0.5 -0.0125
-v -0.5 0.5 -0.0125
-v -0.5 -0.5 -0.0125
+v 5 -5 -0.125
+v 5 5 -0.125
+v -5 5 -0.125
+v -5 -5 -0.125
 vt 0 0
 vt 0 1
 vt 1 1
