@@ -8,3 +8,21 @@ arnis_decal_fallback (Render Arnis decal fallback) bool true
 # Lower values reduce GPU texture size at the expense of text readability.
 # Applies after restart, including saved decals; original image data is retained.
 arnis_decal_quality (Arnis decal texture quality) enum high high,medium,low
+
+# Place real, stationary Advtrains wagons on generated Arnis rails in auto mode.
+# Requires Advtrains and a compatible wagon pack. Applies to newly generated
+# terrain after restart. Existing trains are persisted by Advtrains.
+# blocks preserves the existing backend representation; off disables native
+# placement. Neither mode removes existing trains.
+arnis_train_mode (Arnis generated trains) enum auto auto,blocks,off
+
+# Average rail nodes per candidate, not a minimum distance. Candidates need
+# clear, loaded track in both directions; unsuitable candidates stay pending.
+arnis_train_interval (Arnis train candidate interval) int 512 64 65536
+
+# Fully qualified wagon name, e.g. advtrains:subway_wagon. Empty selects a
+# compatible powered wagon from installed packs. Each train has one wagon.
+arnis_train_wagon (Arnis generated wagon type) string
+
+# Owner of generated wagons. Empty leaves them unowned (train_admin access).
+arnis_train_owner (Arnis generated train owner) string
