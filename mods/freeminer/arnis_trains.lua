@@ -182,7 +182,18 @@ minetest.register_on_generated(function(minp, maxp)
     if mode ~= "auto" or not advtrains then
         return
     end
-    local positions = minetest.find_nodes_in_area(minp, maxp, {marker})
+    local notify = minetest.get_mapgen_object("gennotify")
+    local candidates = notify and notify.custom and notify.custom["freeminer:arnis_rails"]
+    if not candidates then return end
+    local positions = {}
+    local seen = {}
+    for _, pos in ipairs(candidates) do
+        local key = minetest.pos_to_string(pos)
+        if not seen[key] and minetest.get_node(pos).name == marker then
+            seen[key] = true
+            positions[#positions + 1] = pos
+        end
+    end
     if #positions == 0 then
         return
     end
