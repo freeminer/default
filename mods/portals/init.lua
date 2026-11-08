@@ -5,14 +5,15 @@ local settings = api.settings
 local function setting(name, fallback, low, high)
     return math.max(low, math.min(high, math.floor(tonumber(settings:get(name)) or fallback)))
 end
--- Never queue blocks beyond the configured world boundary: those may be
--- skipped without an emerge completion callback.
-local map_limit = math.floor(assert(tonumber(api.get_mapgen_setting("mapgen_limit")),
-    "portals requires the mapgen_limit mapgen setting") / 16) * 16
-local y_offset = setting("portals_y_offset", 10000, 1, map_limit * 2)
-local xz_offset = setting("portals_xz_offset", 10000, 0, map_limit)
-local y_radius = setting("portals_y_radius", 500, 2, map_limit)
-local radius = setting("portals_search_radius", 1000, 16, map_limit)
+-- Emerge only complete mapgen chunks, using the actual bounds on each axis.
+local edge_min, edge_max = api.get_mapgen_edges()
+local xz_limit = math.max(math.abs(edge_min.x), math.abs(edge_max.x),
+    math.abs(edge_min.z), math.abs(edge_max.z))
+local y_limit = math.max(math.abs(edge_min.y), math.abs(edge_max.y))
+local y_offset = setting("portals_y_offset", 10000, 1, edge_max.y - edge_min.y)
+local xz_offset = setting("portals_xz_offset", 10000, 0, xz_limit)
+local y_radius = setting("portals_y_radius", 500, 2, y_limit)
+local radius = setting("portals_search_radius", 1000, 16, xz_limit)
 local max_frame_size = setting("portals_max_frame_size", 64, 3, 1024)
 local transfer_liquids = settings:get_bool("portals_transfer_liquids", true)
 local spawn_in_liquids = settings:get_bool("portals_spawn_in_liquids", true)
@@ -28,9 +29,9 @@ local liquid_arrivals = {}
 local timeout = setting("portals_search_timeout", 60, 10, 3600)
 local function emerge_bounds(p)
     return {
-        x = math.max(-map_limit, math.min(map_limit, p.x)),
-        y = math.max(-map_limit, math.min(map_limit, p.y)),
-        z = math.max(-map_limit, math.min(map_limit, p.z)),
+        x = math.max(edge_min.x, math.min(edge_max.x, p.x)),
+        y = math.max(edge_min.y, math.min(edge_max.y, p.y)),
+        z = math.max(edge_min.z, math.min(edge_max.z, p.z)),
     }
 end
 local frame, down_frame, field = "default:obsidian", "default:obsidian_block", "portals:portal"
@@ -235,15 +236,15 @@ local function ignite(p, axis, owner)
     end
     local random = PcgRandom(seed)
     -- Offset along the portal face normal: XY frames use Z, ZY frames use X.
-    local distance = axis == 2 and 0 or math.min(map_limit, math.floor(xz_offset * (width(p) - 2) + 0.5))
+    local distance = axis == 2 and 0 or math.min(xz_limit, math.floor(xz_offset * (width(p) - 2) + 0.5))
     local offset = random:next(0, 1) == 0 and -distance or distance
     local dx = axis == 1 and offset or 0
     local dz = axis == 0 and offset or 0
     -- Prefer the opposite direction if the selected offset crosses the world edge.
-    if math.abs(p.x + dx) > map_limit then
+    if p.x + dx < edge_min.x or p.x + dx > edge_max.x then
         dx = -dx
     end
-    if math.abs(p.z + dz) > map_limit then
+    if p.z + dz < edge_min.z or p.z + dz > edge_max.z then
         dz = -dz
     end
     local target_x, target_z = p.x + dx, p.z + dz
@@ -272,8 +273,8 @@ local function ignite(p, axis, owner)
             end
         end
     end
-    local ymin = math.max(-map_limit + (axis == 2 and 4 or 1), target_y - y_radius)
-    local ymax = math.min(map_limit - (axis == 2 and 3 or 0), target_y + y_radius)
+    local ymin = math.max(edge_min.y + (axis == 2 and 4 or 1), target_y - y_radius)
+    local ymax = math.min(edge_max.y - (axis == 2 and 3 or 0), target_y + y_radius)
     local job = {}
     pending[key] = job
     local trial = 0

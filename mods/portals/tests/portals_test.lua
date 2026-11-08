@@ -30,6 +30,7 @@ local protected = false
 local objects = {}
 local clock = 10000000
 local mapgen_limit = 31000
+local mapgen_edges
 local jobs = {}
 local saved_pairs = {}
 local persist_pairs = false
@@ -55,6 +56,11 @@ PcgRandom = function(seed)
 end
 local immediate_seconds = 20
 core = {
+    get_mapgen_edges = function()
+        if mapgen_edges then return mapgen_edges[1], mapgen_edges[2] end
+        local limit = math.floor(mapgen_limit / 16) * 16
+        return {x = -limit, y = -limit, z = -limit}, {x = limit, y = limit, z = limit}
+    end,
     get_mod_storage = function()
         return storage
     end,
@@ -1293,7 +1299,7 @@ assert(core.get_node(old_cell).name == 'portals:portal_up', 'legacy surface was 
 assert(core.get_meta(old_cell):get_string('target') == old_target, 'recoloring lost link metadata')
 print('PASS: distinct directional tints and legacy recoloring with preserved metadata')
 
--- Large worlds use mapgen_limit, including positions and settings beyond 31000.
+-- Mock large edges to exercise positions and settings beyond 31000.
 core.find_nodes_in_area_under_air = function()
     return {}
 end
@@ -1322,7 +1328,7 @@ assert(wide.a.y == 19998, 'vertical radius retained old 31000 cap')
 PcgRandom = rng
 assert(not relative_range(-71000), 'configured large-world boundary ignored')
 mapgen_limit = 31000
-print('PASS: configured mapgen_limit only, large X/Y coordinates, large offset/radius and boundary rejection')
+print('PASS: simulated large edges, large X/Y coordinates, large offset/radius and boundary rejection')
 
 -- Frame direction chooses the normal axis; coordinates choose its sign.
 local original_rng = PcgRandom
@@ -1368,8 +1374,18 @@ for axis = 0, 1 do
     }, nil, axis))
     assert(disabled.a.x + 10 == 0 and disabled.a.z + 10 == 0, 'horizontal offset could not be disabled')
 end
+mapgen_edges = {
+    {x = -35000, y = -30500, z = -3},
+    {x = 5000, y = 1000, z = 4},
+}
+local asymmetric = assert(relative_range(0, nil, 4000, 1))
+assert(asymmetric.a.x + 10 == -16000, 'asymmetric X edge did not reverse offset')
+assert(asymmetric.a.z == -3 and asymmetric.b.z == 4, 'Z emerge bounds ignored asymmetric edges')
+assert(asymmetric.a.y >= -30500 and asymmetric.b.y <= 1000, 'Y emerge bounds ignored edges')
+assert(not relative_range(-1000), 'search ignored lower Y edge')
+mapgen_edges = nil
 PcgRandom = original_rng
-print('PASS: frame-normal X/Z offsets, both signs, world-edge reversal and disabled offset')
+print('PASS: frame-normal offsets, asymmetric mapgen edges, boundary reversal and disabled offset')
 
 -- Default search samples all axes within a 1000-node-wide target window.
 local repeat_a = relative_range(1000)

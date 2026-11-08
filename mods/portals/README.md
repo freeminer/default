@@ -69,8 +69,8 @@ Upper destinations can stand on safe solid ground such as soil, with clear
 space for the frame. Lower destinations still require stone cave footing.
 For example, a 2×3 obsidian opening at Y=1000 searches near Y=-29000; an
 obsidian-block opening of the same size at Y=-29000 searches near Y=1000. The offset and vertical
-radius are configurable. World bounds come only from the server's `mapgen_limit`,
-including worlds larger than 31000 nodes. The old `portals_y_min` / `portals_y_max`
+radius are configurable. World bounds come from the engine's mapgen edges,
+which account for the configured limit and chunk size. The old `portals_y_min` / `portals_y_max`
 settings are no longer used. A target entirely outside the world bounds fails with
 a message. Existing saved links still reconnect to their previous destination.
 The complete destination frame lies within the resulting Y range. Search
@@ -78,7 +78,7 @@ regions are emerged asynchronously without changing mapgen. Frame orientation
 selects the horizontal offset axis perpendicular to its surface: a frame spanning
 X shifts on Z; a frame spanning Z shifts on X. The horizontal distance is
 `portals_xz_offset × opening_width`, rounded to the nearest
-node and capped at `mapgen_limit`. With the default base of 10000, a 2×3 opening
+node and capped at the horizontal mapgen extent. With the default base of 10000, a 2×3 opening
 shifts 20000 nodes and a 4×3 opening shifts 40000. Frame borders are excluded from
 these dimensions. Portal coordinates determine the offset sign. A direction crossing the world boundary is reversed. The local
 `portals_search_radius` applies around that shifted position. Set
