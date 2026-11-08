@@ -22,6 +22,7 @@ end
 local lava_search_radius = 3
 local growth_heat_min = 80
 local freeze_heat_max = 40
+local mapgen_min_y = core.get_mapgen_edges().y
 
 minetest.register_node(":" .. root_name, {
     description = "Lava Tree Root",
@@ -146,7 +147,7 @@ local function offset(pos, x, y, z)
 end
 
 local function climate_allows_growth(pos)
-    if pos.y > -1000 or pos.y < -31000 then
+    if pos.y > -1000 or pos.y < mapgen_min_y then
         return false
     end
 

@@ -6,6 +6,7 @@
 -- marinara:reed is the above-water decorative form; reed_root represents the
 -- rooted aquatic plant and is the form that spreads here.
 
+local mapgen_min_y = core.get_mapgen_edges().y
 local rules = {
     ["marinara:reed_root"] = {
         substrate = "default:dirt",
@@ -237,7 +238,7 @@ local rules = {
         height_divisor = 8,
         water_depth_min = 2,
         water_direction = 1,
-        y_min = -31000,
+        y_min = mapgen_min_y,
         y_max = -27000,
         light_min = 0,
         light_max = 12,

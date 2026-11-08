@@ -3,7 +3,9 @@
 
 -- The API documentation in here was moved into game_api.txt
 
-MAP_GENERATION_LIMIT=31000
+-- fm:
+MAP_GENERATION_LIMIT = select(2, core.get_mapgen_edges()).y
+-- ===
 
 -- Load support for MT game translation.
 local S = minetest.get_translator("default")
