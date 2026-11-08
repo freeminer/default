@@ -1,4 +1,5 @@
 local default_path = minetest.get_modpath("freeminer")
+dofile(default_path .. "/mapgen_edges.lua")
 dofile(default_path .. "/nodes.lua")
 dofile(default_path .. "/ice_tree.lua")
 dofile(default_path .. "/lava_tree.lua")
