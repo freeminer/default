@@ -31,7 +31,6 @@ end)
 ]]
 
 
--- fm:
 local function positive_setting(name)
 	local value = tonumber(core.settings:get(name) or "")
 	if value and value > 0 then
@@ -62,7 +61,6 @@ tnt.blast_resistance_scale = tonumber(core.settings:get("tnt_blast_resistance_sc
 tnt.blast_default_resistance = tonumber(core.settings:get("tnt_blast_default_resistance") or 1)
 tnt.blast_min_strength = tonumber(core.settings:get("tnt_blast_min_strength") or 0.15)
 local tnt_radius = tonumber(minetest.settings:get("tnt_radius") or 4)
--- ===
 
 
 
@@ -74,11 +72,10 @@ local function particle_texture(name)
 	return ret
 end
 
--- fm: Keep drop placement in loaded nodes, even at a sparse blast frontier.
+-- Keep drop placement in loaded nodes, even at a sparse blast frontier.
 local rand_pos = dofile(minetest.get_modpath("tnt") .. "/fm_drop_position.lua")
--- ===
 
--- fm: Aggregate wide counts separately from bounded ItemStacks.
+-- Aggregate wide counts separately from bounded ItemStacks.
 local drop_store = dofile(minetest.get_modpath("tnt") .. "/fm_drops.lua")
 local queue_chain = dofile(minetest.get_modpath("tnt") .. "/fm_chain.lua")
 local add_drop = drop_store.add
@@ -94,7 +91,6 @@ local function eject_drops(drops, pos, radius)
 		end
 	end)
 end
--- ===
 
 --[[
 local basic_flame_on_construct -- cached value
@@ -260,11 +256,10 @@ local function add_effects(pos, radius, drops)
 	local texture = "tnt_blast.png" -- fallback
 	local node
 	local most = 0
-	-- fm: Read the wide aggregate count, preserving the prototype's item name.
+	-- Read the wide aggregate count, preserving the prototype's item name.
 	for _, entry in pairs(drops) do
 		local name = entry.item:get_name()
 		local count = entry.count
-		-- ===
 		if count > most then
 			most = count
 			local def = minetest.registered_nodes[name]
@@ -469,7 +464,7 @@ local function tnt_explode(pos, def, radius, ignore_protection, ignore_on_blast,
 	local drops = {}
 		local result = core.tnt_explode(pos, {
 			radius = radius or def.radius or tnt_radius,
-			-- fm: Core object effects; retain entity callbacks and drops.
+			-- Core object effects; retain entity callbacks and drops.
 			damage_multiplier = def.damage_multiplier or 1,
 			knockback_multiplier = def.knockback_multiplier or 1,
 			object_radius_multiplier = def.object_radius_multiplier or 3,
@@ -488,8 +483,9 @@ local function tnt_explode(pos, def, radius, ignore_protection, ignore_on_blast,
 				end
 				return true, true
 			end,
-			-- ===
-			time_max = def.time_max or tnt.time_max,
+			time_max = def._blast_budget or def.time_max or tnt.time_max,
+			resumable = def._blast_budget ~= nil,
+			continuation = def._blast_continuation,
 			liquid_real = tnt.liquid_real,
 			ignore_protection = ignore_protection,
 			ignore_on_blast = ignore_on_blast,
@@ -499,12 +495,11 @@ local function tnt_explode(pos, def, radius, ignore_protection, ignore_on_blast,
 		melt_min_radius = def.melt_min_radius or tnt.melt_min_radius,
 		blast_strength = def.blast_strength or tnt.blast_strength,
 		blast_tnt_strength = def.blast_tnt_strength or tnt.blast_tnt_strength,
-		-- fm: Absorption and angular core controls.
+		-- Absorption and angular core controls.
 		blast_tnt_absorb_strength = def.blast_tnt_absorb_strength or tnt.blast_tnt_absorb_strength,
 		blast_tnt_ray_fraction = def.blast_tnt_ray_fraction or tnt.blast_tnt_ray_fraction,
 		blast_core_radius = def.blast_core_radius or tnt.blast_core_radius,
 		blast_core_shell_fraction = def.blast_core_shell_fraction or tnt.blast_core_shell_fraction,
-		-- ===
 		blast_distance_loss = def.blast_distance_loss or tnt.blast_distance_loss,
 		blast_resistance_scale = def.blast_resistance_scale or tnt.blast_resistance_scale,
 		blast_default_resistance = def.blast_default_resistance or tnt.blast_default_resistance,
@@ -513,6 +508,8 @@ local function tnt_explode(pos, def, radius, ignore_protection, ignore_on_blast,
 		boom_node = def.boom_node or "tnt:boom",
 		tnt_node = def.tnt_node or "tnt:tnt",
 		tnt_burning_node = def.tnt_burning_node or "tnt:tnt_burning",
+		-- Absorb every registered explosive variant.
+		tnt_nodes = tnt.explosive_nodes,
 	})
 
 	add_core_drops(drops, result.drops)
@@ -529,38 +526,70 @@ local function tnt_explode(pos, def, radius, ignore_protection, ignore_on_blast,
 		end
 	end
 
-	-- fm: Defer chained explosions to avoid recursive budget resets.
+	-- Defer chained explosions to avoid recursive budget resets.
 	queue_chain(result.chained_tnt, def)
-	-- ===
 
-	-- fm: Distant air rays do not set the drop and particle radius.
-	return drops, result.effect_radius or result.radius or radius
-	-- ===
+	-- Distant air rays do not set the drop and particle radius.
+	return drops, result.effect_radius or result.radius or radius, result.continuation
 end
 
 
-function tnt.boom(pos, def)
+local function run_boom(pos, def)
 	def = def or {}
 	def.radius = def.radius or 1
 	def.damage_radius = def.damage_radius or def.radius * 2
 	local meta = minetest.get_meta(pos)
-	local owner = meta:get_string("owner")
-	if not def.explode_center and def.ignore_protection ~= true then
+	local owner = def._blast_owner or meta:get_string("owner")
+	def._blast_owner = owner
+	if not def._blast_continuation and not def.explode_center and def.ignore_protection ~= true then
 		minetest.set_node(pos, {name = "tnt:boom"})
 	end
 	local sound = def.sound or "tnt_explode"
+	if not def._blast_continuation then
 	minetest.sound_play(sound, {pos = pos, gain = 2.5,
 			max_hear_distance = math.min(def.radius * 20, 128)}, true)
-	local drops, radius = tnt_explode(pos, def, def.radius, def.ignore_protection,
+	end
+	local drops, radius, continuation = tnt_explode(pos, def, def.radius, def.ignore_protection,
 			def.ignore_on_blast, owner, def.explode_center)
-	-- fm: Object damage, knockback and entity drops are handled by core.tnt_explode.
-	-- ===
+	-- Object damage, knockback and entity drops are handled by core.tnt_explode.
 	if not def.disable_drops then
 		eject_drops(drops, pos, radius)
 	end
+	if continuation then return continuation end
 	add_effects(pos, radius, drops)
 	minetest.log("action", "A TNT explosion occurred at " .. minetest.pos_to_string(pos) ..
 		" with radius " .. radius)
+end
+
+-- Resume waves fairly within one shared server-step budget.
+-- Resumable jobs share a soft wall-clock budget; each shell is atomic.
+local queue = {}
+local pending = {}
+core.register_globalstep(function()
+	local budget = math.max(1, tonumber(core.settings:get("tnt_async_budget_ms")) or 100)
+	local deadline = core.get_us_time() + budget * 1000
+	local count = #queue
+	for _ = 1, count do
+		local remaining = deadline - core.get_us_time()
+		if remaining <= 0 then break end
+		local job = table.remove(queue, 1)
+		job.def._blast_budget = remaining / 1000000
+		job.def._blast_continuation = run_boom(job.pos, job.def)
+		if job.def._blast_continuation then
+			queue[#queue + 1] = job
+		else
+			pending[job.key] = nil
+		end
+	end
+end)
+local function enqueue_blast(pos, def)
+	local key = core.pos_to_string(vector.round(pos))
+	if pending[key] then return end
+	pending[key] = true
+	queue[#queue + 1] = {pos = vector.new(pos), def = table.copy(def), key = key}
+end
+function tnt.boom(pos, def)
+	enqueue_blast(pos, def or {})
 end
 
 minetest.register_node("tnt:boom", {
@@ -575,9 +604,8 @@ minetest.register_node("tnt:boom", {
 	on_blast = function() end,
 })
 
--- fm: Expire explosion markers and clean up markers saved by older versions.
+-- Expire explosion markers and clean up markers saved by older versions.
 dofile(minetest.get_modpath("tnt") .. "/fm_boom_cleanup.lua")
--- ===
 
 minetest.register_node("tnt:gunpowder", {
 	description = S("Gun Powder"),
@@ -741,6 +769,8 @@ if enable_tnt then
 	})
 end
 
+-- Include normal TNT, nukes and registered variants in every blast.
+tnt.explosive_nodes = {}
 function tnt.register_tnt(def)
 	local name
 	if not def.name:find(':') then
@@ -749,6 +779,9 @@ function tnt.register_tnt(def)
 		name = def.name
 		def.name = def.name:match(":([%w_]+)")
 	end
+	-- Keep both states available to the core blast.
+	table.insert(tnt.explosive_nodes, name)
+	table.insert(tnt.explosive_nodes, name .. "_burning")
 	if not def.tiles then def.tiles = {} end
 	local tnt_top = def.tiles.top or def.name .. "_top.png"
 	local tnt_bottom = def.tiles.bottom or def.name .. "_bottom.png"
@@ -799,6 +832,8 @@ function tnt.register_tnt(def)
 			end,
 			on_blast = function(pos, intensity)
 				minetest.after(0.1, function()
+					-- Another blast may already have consumed this node.
+					if minetest.get_node(pos).name ~= name then return end
 					tnt.boom(pos, def)
 				end)
 			end,
