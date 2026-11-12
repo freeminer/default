@@ -566,7 +566,7 @@ end
 local queue = {}
 local pending = {}
 core.register_globalstep(function()
-	local budget = math.max(1, tonumber(core.settings:get("tnt_async_budget_ms")) or 100)
+	local budget = math.max(1, tonumber(core.settings:get("tnt_async_budget_ms")) or 700)
 	local deadline = core.get_us_time() + budget * 1000
 	local count = #queue
 	for _ = 1, count do
