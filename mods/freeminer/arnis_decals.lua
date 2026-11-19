@@ -34,7 +34,7 @@ minetest.register_node("freeminer:arnis_decal_frame", {
 minetest.register_entity(entity_name, {
 	initial_properties = {
 		visual = "mesh",
-		mesh = "fm_arnis_decal.obj",
+		mesh = "arnis_decal.obj",
 		visual_size = {x = 1, y = 1, z = 1},
 		textures = {"default_cloud.png"},
 		backface_culling = true,
@@ -62,7 +62,7 @@ minetest.register_entity(entity_name, {
 		local horizontal = data.facing == 0 or data.facing == 1
 		self.object:set_properties({
 			visual = horizontal and "cube" or "mesh",
-			mesh = "fm_arnis_decal.obj",
+			mesh = "arnis_decal.obj",
 			visual_size = {x = 1, y = 1, z = horizontal and 0.025 or 1},
 			backface_culling = true,
 			textures = horizontal and {texture, texture, texture, texture, texture, texture}
